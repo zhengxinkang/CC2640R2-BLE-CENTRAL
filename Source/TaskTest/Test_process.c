@@ -9,7 +9,7 @@
 #include "Test_process.h"
 #include "TestProcess_ble.h"
 
-#define TIMEOUT_TEST_PROCESS_BLE    12000
+#define TIMEOUT_TEST_PROCESS_BLE    12000//12√Î
 
 uint32_t events;
 

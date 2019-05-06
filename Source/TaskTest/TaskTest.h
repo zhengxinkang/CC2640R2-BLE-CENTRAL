@@ -15,7 +15,8 @@
 #define EVENT_START_TEST                        Event_Id_00
 
 #define EVENT_TESTPROCESS_BLE                   Event_Id_01
-
+#define EVENT_TESTPROCESS_CARD                  Event_Id_02
+#define EVENT_TESTPROCESS_KEYBOARD              Event_Id_03
 //#define EVENT_DO_UNLOCK                         Event_Id_01
 //#define EVENT_BOLT_LOCK                         Event_Id_02
 //#define EVENT_BOLT_UNLOCK                       Event_Id_03

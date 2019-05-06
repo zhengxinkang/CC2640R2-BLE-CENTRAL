@@ -26,6 +26,8 @@
 #include "StringExchange.h"
 #include "TaskTest.h"
 #include "Test_process.h"
+#include "Driver_adc.h"
+#include "Driver_gpio.h"
 //#include "Ble_adv.h"
 //#include "Ble_advDataConfig.h"
 //#include "StateMachine_ble.h"
@@ -56,6 +58,8 @@ const CmdLineVersion g_kCmdLineVersion =
 //static int Cmd_bleAdvDataTest(int argc, char *argv[]);
 //static int Cmd_bleAdvTest(int argc, char *argv[]);
 //static int Cmd_wakeTxTest(int argc, char *argv[]);
+static int Cmd_gpioTest(int argc, char *argv[]);
+static int Cmd_adcTest(int argc, char *argv[]);
 static int Cmd_testTaskTest(int argc, char *argv[]);
 
 static int Cmd_help(int argc, char *argv[]);
@@ -91,6 +95,8 @@ const CmdLineEntry g_kConsoleCmdTable[] =
 //    { "bleAdvData",         Cmd_bleAdvDataTest,     "\t\t: bleAdvData advRefresh/advPrint num." },
 //    { "bleAdv",             Cmd_bleAdvTest,         "\t\t\t: bleAdv enable/disable/restart/disconnect/isConnected/bleSendData/resetBle." },
 //    { "wakeTxTest",         Cmd_wakeTxTest,         "\t\t: wakeTxTest high/low." },
+    { "gpioTest",               Cmd_gpioTest,               "\t\t: gpioTest" },
+    { "adcTest",                Cmd_adcTest,                "\t\t\t: adcTest" },
     { "testTaskTest",           Cmd_testTaskTest,           "\t\t: testTaskTest EVENT_START_TEST." },
 
     { "help",       Cmd_help,       "\t\t\t: Display list of commands. Short format: h or ?." },
@@ -115,12 +121,55 @@ void CmdLine_Init(void)
 // 4、命令处理函数
 //*****************************************************************************
 
-//----------------------------------------------------CmdLine randomTest-----------------
+//----------------------------------------------------Cmd_gpioTest-----------------
+static int Cmd_gpioTest(int argc, char *argv[])
+{
+    TRACE_DEBUG("GPIO测试.\n");
+    if(!memcmp("GPIO_GET", argv[1], strlen("GPIO_GET")))
+    {
+        uint8_t portValue = 0;
+        if(!memcmp("PORT_MOTOR_FORWARD", argv[2], strlen("PORT_MOTOR_FORWARD")))
+        {
+            portValue=Driver_gpioGet(PORT_MOTOR_FORWARD);
+            TRACE_DEBUG("PORT_MOTOR_FORWARD 电平状态是：%d.\n", portValue);
+        }
+        else if(!memcmp("PORT_MOTOR_REVERSAL", argv[2], strlen("PORT_MOTOR_REVERSAL")))
+        {
+            portValue=Driver_gpioGet(PORT_MOTOR_REVERSAL);
+            TRACE_DEBUG("PORT_MOTOR_REVERSAL 电平状态是：%d.\n", portValue);
+        }
+    }
+    else if(!memcmp("GPIO_SET", argv[1], strlen("GPIO_SET")))
+    {
+        PortValue portValue = StringToUint32(argv[3]);
+        if(!memcmp("PORT_ANTI_LOCK", argv[2], strlen("PORT_ANTI_LOCK")))
+        {
+            Driver_gpioSet(PORT_ANTI_LOCK, portValue);
+            TRACE_DEBUG("PORT_ANTI_LOCK 电平状态设置为：%d.\n", portValue);
+        }
+        else if(!memcmp("PORT_PREVENT_DISMANTLE", argv[2], strlen("PORT_PREVENT_DISMANTLE")))
+        {
+            Driver_gpioSet(PORT_PREVENT_DISMANTLE,portValue);
+            TRACE_DEBUG("PORT_PREVENT_DISMANTLE 电平状态设置为：%d.\n", portValue);
+        }
+    }
+    return 0;
+}
+
+//----------------------------------------------------Cmd_adcTest-----------------
+static int Cmd_adcTest(int argc, char *argv[])
+{
+    TRACE_DEBUG("ADC测试.\n");
+    Driver_adcGet();
+    return 0;
+}
+
+//----------------------------------------------------Cmd_testTaskTest-----------------
 static int Cmd_testTaskTest(int argc, char *argv[])
 {
     if(!memcmp("EVENT_START_TEST", argv[1], strlen("EVENT_START_TEST")))
     {
-        uint8_t macAddr[6];
+        char macAddr[6];
         TRACE_DEBUG("send EVENT_START_TEST.\n");
         StringToHexGroup(argv[2], strlen(argv[2]), macAddr);
         Test_process_setMacAddr(macAddr);

@@ -13,6 +13,8 @@
 //#include "simple_peripheral.h"
 #include "CmdLine.h"
 #include "Driver_UartEmulator.h"
+#include "Driver_adc.h"
+#include "Driver_gpio.h"
 //#include "Driver_uart.h"
 #include "Trace.h"
 //#include "IwupUart_adapter.h"
@@ -42,6 +44,8 @@ void Module_initInTask()
     Driver_uartEmulator_init(115200);
     CmdLine_Init();
 #endif  //CONSOLE_EMULATOR
+    Driver_adcInit();
+    Driver_gpioInit();
 //    Driver_uartInit(115200);
 //    Uart_adapter_init();
 //
