@@ -17,6 +17,11 @@
                     <property Type="choicelist" Value="1" id="XDS110 Aux Port"/>
                 </choice>
             </property>
+            <property Type="choicelist" Value="1" id="Debug Probe Selection">
+                <choice Name="Select by serial number" value="0">
+                    <property Type="stringfield" Value="L5000FUV" id="-- Enter the serial number"/>
+                </choice>
+            </property>
             <platform XML_version="1.2" id="platform_0">
                 <instance XML_version="1.2" desc="CC2640R2F" href="devices/cc2640r2f.xml" id="CC2640R2F" xml="cc2640r2f.xml" xmlpath="devices"/>
             </platform>

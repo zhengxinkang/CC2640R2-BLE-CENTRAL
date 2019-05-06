@@ -60,6 +60,7 @@
 #include "hal_assert.h"
 #include "central.h"
 #include "simple_central.h"
+#include "TaskTest.h"
 
 /* Header files required to enable instruction fetch cache */
 #include <inc/hw_memmap.h>
@@ -180,6 +181,8 @@ int main()
 
   /* Kick off application - Priority 1 */
   SimpleBLECentral_createTask();
+
+  Test_createTask();
 
   /* enable interrupts and start SYS/BIOS */
   BIOS_start();

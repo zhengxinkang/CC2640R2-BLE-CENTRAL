@@ -47,10 +47,17 @@
 									<listOptionValue builtIn="false" value="${PROJECT_ROOT}"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/BleCentral"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Common"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Config"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Console"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Driver"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Driver/Boards"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Hal"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Os"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/SDK"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/SDK/ICall"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/SDK/ICallBLE"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/TaskTest"/>
 									<listOptionValue builtIn="false" value="${SRC_BLE_DIR}/controller/cc26xx_r2/inc"/>
 									<listOptionValue builtIn="false" value="${SRC_BLE_DIR}/inc"/>
 									<listOptionValue builtIn="false" value="${SRC_BLE_DIR}/rom"/>
@@ -60,7 +67,7 @@
 									<listOptionValue builtIn="false" value="${SRC_BLE_DIR}/profiles/roles/cc26xx"/>
 									<listOptionValue builtIn="false" value="${SRC_BLE_DIR}/profiles/roles"/>
 									<listOptionValue builtIn="false" value="${SRC_BLE_DIR}/profiles/simple_profile"/>
-									<listOptionValue builtIn="false" value="${SRC_BLE_DIR}/target"/>
+									<listOptionValue builtIn="false" value="///${SRC_BLE_DIR}/target"/>
 									<listOptionValue builtIn="false" value="${SRC_BLE_DIR}/hal/src/target/_common"/>
 									<listOptionValue builtIn="false" value="${SRC_BLE_DIR}/hal/src/target/_common/cc26xx"/>
 									<listOptionValue builtIn="false" value="${SRC_BLE_DIR}/hal/src/inc"/>
@@ -78,7 +85,7 @@
 									<listOptionValue builtIn="false" value="${SRC_BLE_DIR}/config/factory_config.opt"/>
 									<listOptionValue builtIn="false" value="${WORKSPACE_LOC}/simple_central_cc2640r2lp_stack_library/TOOLS/build_config.opt"/>
 								</option>
-								<option id="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.OPT_LEVEL.1449302899" name="Optimization level (--opt_level, -O)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.OPT_LEVEL" useByScannerDiscovery="false" value="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.OPT_LEVEL.4" valueType="enumerated"/>
+								<option id="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.OPT_LEVEL.1449302899" name="Optimization level (--opt_level, -O)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.OPT_LEVEL" useByScannerDiscovery="false" value="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.OPT_LEVEL.off" valueType="enumerated"/>
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.OPT_FOR_SPEED.673182852" name="Speed vs. size trade-offs (--opt_for_speed, -mf)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.OPT_FOR_SPEED" useByScannerDiscovery="false" value="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.OPT_FOR_SPEED.0" valueType="enumerated"/>
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.DEBUGGING_MODEL.1372638221" name="Debugging model" superClass="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.DEBUGGING_MODEL" useByScannerDiscovery="false" value="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.DEBUGGING_MODEL.SYMDEBUG__DWARF" valueType="enumerated"/>
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.C_DIALECT.868939484" name="C Dialect" superClass="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.C_DIALECT" useByScannerDiscovery="false" value="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.C_DIALECT.C99" valueType="enumerated"/>
@@ -86,7 +93,11 @@
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.GEN_FUNC_SUBSECTIONS.851997243" name="Place each function in a separate subsection (--gen_func_subsections, -ms)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.GEN_FUNC_SUBSECTIONS" useByScannerDiscovery="false" value="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.GEN_FUNC_SUBSECTIONS.on" valueType="enumerated"/>
 								<option id="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.DEFINE.563153196" name="Pre-define NAME (--define, -D)" superClass="com.ti.ccstudio.buildDefinitions.TMS470_18.1.compilerID.DEFINE" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="${INHERITED_SYMBOLS}"/>
+									<listOptionValue builtIn="false" value="___myDefine___start_________________________________"/>
+									<listOptionValue builtIn="false" value="BOARD_LAUNCHPAD"/>
+									<listOptionValue builtIn="false" value="___myDefine___end_________________________________"/>
 									<listOptionValue builtIn="false" value="${COM_TI_SIMPLELINK_CC2640R2_SDK_SYMBOLS}"/>
+									<listOptionValue builtIn="false" value="DEVICE_FAMILY=CC26X0R2"/>
 									<listOptionValue builtIn="false" value="DeviceFamily_CC26X0R2"/>
 									<listOptionValue builtIn="false" value="BOARD_DISPLAY_USE_LCD=0"/>
 									<listOptionValue builtIn="false" value="BOARD_DISPLAY_USE_UART=1"/>

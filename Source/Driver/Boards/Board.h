@@ -1,13 +1,18 @@
+/*
+ * Board.h
+ *
+ *  Created on: 2017年8月10日
+ *      Author: blue.zhengxinkang
+ */
 /*******************************************************************************
 
- @file       board.c
+ @file  board.h
 
  @brief This file is a simple gateway to include the appropriate board.h file
         which is located in a corresponding subdirectory relative to this file.
         In this way, all projects look the same and only need to include this
         board.h. To change a board, the project only need update the board
-        define in the application preprocessor options. Presently, the following
-        board target defines are possible:
+        define. Presently, the following board targets are possible:
 
         CC2640R2DK_CXS
         CC2640R2_LAUNCHXL
@@ -22,7 +27,7 @@
  Target Device: CC2640R2
 
  *******************************************************************************
- 
+
  Copyright (c) 2015-2017, Texas Instruments Incorporated
  All rights reserved.
 
@@ -54,17 +59,41 @@
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  *******************************************************************************
- Release Name: simplelink_cc2640r2_sdk_01_50_00_58
- Release Date: 2017-10-17 18:09:51
+ Release Name: simplelink_cc2640r2_sdk_1_30_00_25
+ Release Date: 2017-03-02 20:08:35
  ******************************************************************************/
+#ifndef SOURCE_DRIVERS_BOARD_BOARD_H_
+#define SOURCE_DRIVERS_BOARD_BOARD_H_
 
-#if defined(CC2640R2DK_CXS) || defined (CC2640R2DK_4XS) \
-      || defined (CC2640R2DK_5XD) ||  defined (CC2640R2DK_7ID)
-    #include "./cc2640r2em/cc2640r2em_board.c"
-#elif defined(CC2640R2_LAUNCHXL)
-    #include "./cc2640r2lp/cc2640r2lp_board.c"
-#elif defined(CC2640R2_RC)
-    #include "./cc2640r2rc/cc2640r2rc_board.c"
-#else // unknown board
-    #error "***ERROR*** Invalid Board Specified! Please see board.h for options."
+
+#include "Config/ConfigProtocol.h"
+
+#if     (BOARD_DEFINE == BOARD_DEFINE_BLEONLOCK_S31)
+    #warning "BOARD_DEFINE  == BOARD_DEFINE_BLEONLOCK_S31"
+    #include "BOARD_BLEONLOCK_4XS/Board.h"
+    #include "BOARD_BLEONLOCK_4XS/ex_include_tirtos.h"
+    #include "BOARD_BLEONLOCK_4XS/scif.h"
+#elif   (BOARD_DEFINE == BOARD_DEFINE_BLEMODULE_PA)
+    #warning "BOARD_DEFINE  == BOARD_DEFINE_BLEMODULE_PA"
+    #include "BOARD_BLEMODULE_4XS/Board.h"
+    #include "BOARD_BLEMODULE_4XS/ex_include_tirtos.h"
+    #include "BOARD_BLEMODULE_4XS/scif.h"
+#elif   (BOARD_DEFINE == BOARD_DEFINE_LANUCHPAD)
+    #warning "BOARD_DEFINE  == BOARD_DEFINE_LANUCHPAD"
+    #include "CC2640R2_BOARD_7XS/Board.h"
+    #include "CC2640R2_BOARD_7XS/ex_include_tirtos.h"
+    #include "CC2640R2_BOARD_7XS/scif.h"
+#else
+    #error "***ERROR*** BOARD_DEFINE not select!"
 #endif
+
+#if defined (CC2640R2DK_4XS)
+    #warning "CHIP_PACKAGE  == CC2640R2DK_4XS"
+#elif defined (CC2640R2DK_7XS)
+    #warning "CHIP_PACKAGE  == CC2640R2DK_7XS"
+#else
+    #error "***ERROR*** Invalid CHIP_PACKAGE Specified! CHIP_PACKAGE not define!"
+#endif
+
+
+#endif /* SOURCE_DRIVERS_BOARD_BOARD_H_ */

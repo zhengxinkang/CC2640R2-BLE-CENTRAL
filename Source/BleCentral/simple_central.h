@@ -56,7 +56,7 @@ extern "C"
 /*********************************************************************
  * INCLUDES
  */
-
+#include "Types.h"
 /*********************************************************************
 *  EXTERNAL VARIABLES
 */
@@ -76,7 +76,11 @@ extern "C"
  * Task creation function for the Simple Central.
  */
 extern void SimpleBLECentral_createTask(void);
-
+extern void MyEvent_post(UArg arg);
+void simpleCentral_setSearchDeviceAddr(uint8_t* searchAddr);
+extern void Timer_sendDataHandle(UArg arg);
+extern void MyEvent_sendDataHandle();
+void simpleCentral_action();
 /*********************************************************************
 *********************************************************************/
 
