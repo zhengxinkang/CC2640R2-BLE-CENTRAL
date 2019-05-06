@@ -18,6 +18,6 @@ typedef enum{
 }RET_TEST_UARTECHO;
 
 RET_TEST_UARTECHO TestProcess_uartEcho();
-
+RET_TEST_UARTECHO TestProcess_uartEchoCheck();
 
 #endif /* SOURCE_TASKTEST_TESTPROCESS_UARTECHO_H_ */

@@ -33,6 +33,13 @@
 #include "IWUP_notify_group/NotifyGroup_qcTest.h"
 #include "TestProcess_powerMode.h"
 #include "BoardAction.h"
+#include "Driver_hc595.h"
+#include "Driver_hc165.h"
+#include "Driver_ADCmpc3901.h"
+#include "Hal_expandOutput.h"
+#include "Hal_expandInput.h"
+#include "Driver_voice.h"
+#include "Lock_atcion.h"
 //#include "Ble_adv.h"
 //#include "Ble_advDataConfig.h"
 //#include "StateMachine_ble.h"
@@ -73,6 +80,12 @@ static int Cmd_adcTest(int argc, char *argv[]);
 static int Cmd_testTaskTest(int argc, char *argv[]);
 static int Cmd_setPinLowPower(int argc, char *argv[]);
 static int Cmd_boardAction(int argc, char *argv[]);
+static int Cmd_595test(int argc, char *argv[]);
+static int Cmd_165test(int argc, char *argv[]);
+static int Cmd_adcMpc3901Test(int argc, char *argv[]);
+static int Cmd_expandOutTest(int argc, char *argv[]);
+static int Cmd_expandInTest(int argc, char *argv[]);
+static int Cmd_voiceTest(int argc, char *argv[]);
 
 static int Cmd_help(int argc, char *argv[]);
 static int Cmd_version(int argc, char *argv[]);
@@ -118,6 +131,12 @@ const CmdLineEntry g_kConsoleCmdTable[] =
     { "testTaskTest",           Cmd_testTaskTest,           "\t\t: testTaskTest EVENT_START_TEST" },
     { "setPinLowPower",         Cmd_setPinLowPower,         "\t\t: setPinLowPower" },
     { "boardAction",            Cmd_boardAction,            "\t\t: boardAction" },
+    { "595test",                Cmd_595test,                "\t\t\t: 595test" },
+    { "165test",                Cmd_165test,                "\t\t\t: 165test" },
+    { "adcMpc3901Test",         Cmd_adcMpc3901Test,         "\t\t: adcMpc3901Test" },
+    { "expandOutTest",          Cmd_expandOutTest,          "\t\t: expandOutTest serial value" },
+    { "expandInTest",           Cmd_expandInTest,           "\t\t: expandInTest serial" },
+    { "voiceTest",              Cmd_voiceTest,              "\t\t: voiceTest data" },
 
     { "help",       Cmd_help,       "\t\t\t: Display list of commands. Short format: h or ?." },
     { "?",          Cmd_help,       0 },
@@ -140,35 +159,110 @@ void CmdLine_Init(void)
 //*****************************************************************************
 // 4、命令处理函数
 //*****************************************************************************
-//----------------------------------------------------CmdLine setPinLowPower-----------------
-static int Cmd_boardAction(int argc, char *argv[])
+//----------------------------------------------------CmdLine voiceTest-----------------
+static int Cmd_voiceTest(int argc, char *argv[])
 {
-    uint8_t hexData[30];
-    if(0 != strlen(argv[2])%2)
-    {
-        TRACE_ERROR("Para len error! para len not Double number!\n");
-        return 0;
-    }
-    StringToHexGroup((char*)argv[2], strlen(argv[2]), (char*)hexData);
+    uint32_t serial = StringToHex(argv[1],2);
+//    Send_threelines(serial);
+    TRACE_DEBUG("voice = %x \n", serial);
 
-    if(!memcmp("setModeNormal", argv[1], strlen("setModeNormal")))
-    {
-        BoardAction_setModeNormal();
-        TRACE_DEBUG("正常模式。\n");
-    }
-    else if(!memcmp("buttonSetting", argv[1], strlen("buttonSetting")))
-    {
-        BoardAction_setting(300);
-        TRACE_DEBUG("执行设置-%dms。\n",300);
-    }
-    else if(!memcmp("buttonClear", argv[1], strlen("buttonClear")))
-    {
-        TRACE_DEBUG("开始清空-%dms。\n",6000);
-        BoardAction_clear(6000);
-        TRACE_DEBUG("清空完成。\n");
-    }
     return 0;
 }
+
+//----------------------------------------------------CmdLine expandInTest-----------------
+static int Cmd_expandInTest(int argc, char *argv[])
+{
+    PortValue portValue = PORT_VALUE_LOW;
+
+    uint32_t serial = StringToUint32(argv[1]);
+    portValue = Hal_expandInput_get(serial);
+    TRACE_DEBUG("Serial = %d,value = %d.\n",serial, portValue);
+
+    return 0;
+}
+
+//----------------------------------------------------CmdLine expandOutTest-----------------
+static int Cmd_expandOutTest(int argc, char *argv[])
+{
+    PortValue portValue = PORT_VALUE_LOW;
+
+    uint32_t serial = StringToUint32(argv[1]);
+    uint32_t value = StringToUint32(argv[2]);
+
+    if(0 == value)
+    {
+        portValue = PORT_VALUE_LOW;
+    }
+    else
+    {
+        portValue = PORT_VALUE_HIGH;
+    }
+
+    Hal_expandOutput(serial, portValue);
+    return 0;
+}
+
+//----------------------------------------------------CmdLine adcMpc3901Test-----------------
+static int Cmd_adcMpc3901Test(int argc, char *argv[])
+{
+//    TRACE_DEBUG("%d.\n", Get_AD_adcIC());
+    return 0;
+}
+
+//----------------------------------------------------CmdLine 165test-----------------
+static int Cmd_165test(int argc, char *argv[])
+{
+    uint32_t data = Driver_hc165_get();
+    TRACE_DEBUG("并行输入-%06x。\n",data);
+    return 0;
+}
+
+//----------------------------------------------------CmdLine 595test-----------------
+static int Cmd_595test(int argc, char *argv[])
+{
+    uint32_t outData = StringToHex(argv[1], strlen(argv[1]));
+    TRACE_DEBUG("并行输出-%x。\n",outData);
+
+    Driver_hc595_sendData(outData);
+
+    return 0;
+}
+
+//----------------------------------------------------CmdLine boardAction-----------------
+static int Cmd_boardAction(int argc, char *argv[])
+{
+//    uint8_t hexData[30];
+//    if(0 != strlen(argv[2])%2)
+//    {
+//        TRACE_ERROR("Para len error! para len not Double number!\n");
+//        return 0;
+//    }
+//    StringToHexGroup((char*)argv[2], strlen(argv[2]), (char*)hexData);
+//
+//    if(!memcmp("setModeNormal", argv[1], strlen("setModeNormal")))
+//    {
+//        BoardAction_setModeNormal();
+//        TRACE_DEBUG("正常模式。\n");
+//    }
+//    else if(!memcmp("buttonSetting", argv[1], strlen("buttonSetting")))
+//    {
+//        BoardAction_setting(300);
+//        TRACE_DEBUG("执行设置-%dms。\n",300);
+//    }
+//    else if(!memcmp("buttonClear", argv[1], strlen("buttonClear")))
+//    {
+//        TRACE_DEBUG("开始清空-%dms。\n",6000);
+//        BoardAction_clear(6000);
+//        TRACE_DEBUG("清空完成。\n");
+//    }
+//    else if(!memcmp("cardAction", argv[1], strlen("cardAction")))
+//    {
+//        TRACE_DEBUG("执行刷卡。\n");
+//        Lock_action_cardActive(1000);
+//    }
+    return 0;
+}
+
 //----------------------------------------------------CmdLine setPinLowPower-----------------
 static int Cmd_setPinLowPower(int argc, char *argv[])
 {
@@ -181,43 +275,44 @@ static int Cmd_setPinLowPower(int argc, char *argv[])
 #if defined     IWUP_ROLE_WIRELESS_MODULE
 static int Cmd_iwupCmdTest(int argc, char *argv[])
 {
-    uint8_t hexData[30];
-    if(0 != strlen(argv[2])%2)
-    {
-        TRACE_ERROR("Para len error! para len not Double number!\n");
-        return 0;
-    }
-    StringToHexGroup((char*)argv[2], strlen(argv[2]), (char*)hexData);
-//CMDGROUP_QCTEST ##################
-    if(!memcmp("SendCmd_qcTest_echo", argv[1], strlen("SendCmd_qcTest_echo")))
-    {
-        SendCmd_qcTest_echo( hexData, strlen(argv[2])/2 );
-    }
-    else if(!memcmp("SendCmd_qcTest_selfTest", argv[1], strlen("SendCmd_qcTest_selfTest")))
-    {
-        SendCmd_qcTest_selfTest( hexData, strlen(argv[2])/2 );
-    }
-    else if(!memcmp("SendCmd_qcTest_action", argv[1], strlen("SendCmd_qcTest_action")))
-    {
-        SendCmd_qcTest_action( hexData, strlen(argv[2])/2 );
-    }
-    else if(!memcmp("SendCmd_qcTest_getDeviceInfo", argv[1], strlen("SendCmd_qcTest_getDeviceInfo")))
-    {
-        SendCmd_qcTest_getDeviceInfo();
-    }
-    else if(!memcmp("SendCmd_qcTest_getDeviceStatus", argv[1], strlen("SendCmd_qcTest_getDeviceStatus")))
-    {
-        SendCmd_qcTest_getDeviceStatus();;
-    }
-    else if(!memcmp("SendCmd_qcTest_setDevicePower", argv[1], strlen("SendCmd_qcTest_setDevicePower")))
-    {
-        uint8_t para = 0x00;
-        SendCmd_qcTest_setDevicePower( &para, 1 );
-    }
-    else if(!memcmp("SendCmd_qcTest_setDeviceInfo", argv[1], strlen("SendCmd_qcTest_setDeviceInfo")))
-    {
-        SendCmd_qcTest_setDeviceInfo( hexData, strlen(argv[2])/2 );
-    }
+//    uint8_t hexData[30];
+//    if(0 != strlen(argv[2])%2)
+//    {
+//        TRACE_ERROR("Para len error! para len not Double number!\n");
+//        return 0;
+//    }
+//    StringToHexGroup((char*)argv[2], strlen(argv[2]), (char*)hexData);
+////CMDGROUP_QCTEST ##################
+//    if(!memcmp("SendCmd_qcTest_echo", argv[1], strlen("SendCmd_qcTest_echo")))
+//    {
+//        SendCmd_qcTest_echo( hexData, strlen(argv[2])/2 );
+//        TRACE_DEBUG("SendCmd_qcTest_echo\n");
+//    }
+//    else if(!memcmp("SendCmd_qcTest_selfTest", argv[1], strlen("SendCmd_qcTest_selfTest")))
+//    {
+//        SendCmd_qcTest_selfTest( hexData, strlen(argv[2])/2 );
+//    }
+//    else if(!memcmp("SendCmd_qcTest_action", argv[1], strlen("SendCmd_qcTest_action")))
+//    {
+//        SendCmd_qcTest_action( hexData, strlen(argv[2])/2 );
+//    }
+//    else if(!memcmp("SendCmd_qcTest_getDeviceInfo", argv[1], strlen("SendCmd_qcTest_getDeviceInfo")))
+//    {
+//        SendCmd_qcTest_getDeviceInfo();
+//    }
+//    else if(!memcmp("SendCmd_qcTest_getDeviceStatus", argv[1], strlen("SendCmd_qcTest_getDeviceStatus")))
+//    {
+//        SendCmd_qcTest_getDeviceStatus();;
+//    }
+//    else if(!memcmp("SendCmd_qcTest_setDevicePower", argv[1], strlen("SendCmd_qcTest_setDevicePower")))
+//    {
+//        uint8_t para = 0x00;
+//        SendCmd_qcTest_setDevicePower( &para, 1 );
+//    }
+//    else if(!memcmp("SendCmd_qcTest_setDeviceInfo", argv[1], strlen("SendCmd_qcTest_setDeviceInfo")))
+//    {
+//        SendCmd_qcTest_setDeviceInfo( hexData, strlen(argv[2])/2 );
+//    }
     return 0;
 }
 #elif defined   IWUP_ROLE_LOCK_BOARD
@@ -245,35 +340,35 @@ static int Cmd_iwupNotifyTest(int argc, char *argv[])
 //----------------------------------------------------Cmd_gpioTest-----------------
 static int Cmd_gpioTest(int argc, char *argv[])
 {
-    TRACE_DEBUG("GPIO测试.\n");
-    if(!memcmp("GPIO_GET", argv[1], strlen("GPIO_GET")))
-    {
-        uint8_t portValue = 0;
-        if(!memcmp("PORT_MOTOR_FORWARD", argv[2], strlen("PORT_MOTOR_FORWARD")))
-        {
-            portValue=Driver_gpioGet(PORT_MOTOR_FORWARD);
-            TRACE_DEBUG("PORT_MOTOR_FORWARD 电平状态是：%d.\n", portValue);
-        }
-        else if(!memcmp("PORT_MOTOR_REVERSAL", argv[2], strlen("PORT_MOTOR_REVERSAL")))
-        {
-            portValue=Driver_gpioGet(PORT_MOTOR_REVERSAL);
-            TRACE_DEBUG("PORT_MOTOR_REVERSAL 电平状态是：%d.\n", portValue);
-        }
-    }
-    else if(!memcmp("GPIO_SET", argv[1], strlen("GPIO_SET")))
-    {
-        PortValue portValue = (PortValue)StringToUint32(argv[3]);
-        if(!memcmp("PORT_ANTI_LOCK", argv[2], strlen("PORT_ANTI_LOCK")))
-        {
-            Driver_gpioSet(PORT_ANTI_LOCK, portValue);
-            TRACE_DEBUG("PORT_ANTI_LOCK 电平状态设置为：%d.\n", portValue);
-        }
-        else if(!memcmp("PORT_PREVENT_DISMANTLE", argv[2], strlen("PORT_PREVENT_DISMANTLE")))
-        {
-            Driver_gpioSet(PORT_PREVENT_DISMANTLE,portValue);
-            TRACE_DEBUG("PORT_PREVENT_DISMANTLE 电平状态设置为：%d.\n", portValue);
-        }
-    }
+//    TRACE_DEBUG("GPIO测试.\n");
+//    if(!memcmp("GPIO_GET", argv[1], strlen("GPIO_GET")))
+//    {
+//        uint8_t portValue = 0;
+//        if(!memcmp("PORT_MOTOR_FORWARD", argv[2], strlen("PORT_MOTOR_FORWARD")))
+//        {
+//            portValue=Driver_gpioGet(PORT_MOTOR_FORWARD);
+//            TRACE_DEBUG("PORT_MOTOR_FORWARD 电平状态是：%d.\n", portValue);
+//        }
+//        else if(!memcmp("PORT_MOTOR_REVERSAL", argv[2], strlen("PORT_MOTOR_REVERSAL")))
+//        {
+//            portValue=Driver_gpioGet(PORT_MOTOR_REVERSAL);
+//            TRACE_DEBUG("PORT_MOTOR_REVERSAL 电平状态是：%d.\n", portValue);
+//        }
+//    }
+//    else if(!memcmp("GPIO_SET", argv[1], strlen("GPIO_SET")))
+//    {
+//        PortValue portValue = (PortValue)StringToUint32(argv[3]);
+//        if(!memcmp("PORT_ANTI_LOCK", argv[2], strlen("PORT_ANTI_LOCK")))
+//        {
+//            Driver_gpioSet(PORT_ANTI_LOCK, portValue);
+//            TRACE_DEBUG("PORT_ANTI_LOCK 电平状态设置为：%d.\n", portValue);
+//        }
+//        else if(!memcmp("PORT_PREVENT_DISMANTLE", argv[2], strlen("PORT_PREVENT_DISMANTLE")))
+//        {
+//            Driver_gpioSet(PORT_PREVENT_DISMANTLE,portValue);
+//            TRACE_DEBUG("PORT_PREVENT_DISMANTLE 电平状态设置为：%d.\n", portValue);
+//        }
+//    }
     return 0;
 }
 
@@ -288,15 +383,15 @@ static int Cmd_adcTest(int argc, char *argv[])
 //----------------------------------------------------Cmd_testTaskTest-----------------
 static int Cmd_testTaskTest(int argc, char *argv[])
 {
-    if(!memcmp("EVENT_START_TEST", argv[1], strlen("EVENT_START_TEST")))
-    {
-        uint8_t macAddr[6];
-        TRACE_DEBUG("send EVENT_START_TEST.\n");
-        StringToHexGroup(argv[2], strlen(argv[2]), (char*)macAddr);
-        Test_process_setMacAddr(macAddr);
-        if(!IsBusy_testProcess())
-            TestEvent_post(EVENT_START_TEST);
-    }
+//    if(!memcmp("EVENT_START_TEST", argv[1], strlen("EVENT_START_TEST")))
+//    {
+//        uint8_t macAddr[6];
+//        TRACE_DEBUG("send EVENT_START_TEST.\n");
+//        StringToHexGroup(argv[2], strlen(argv[2]), (char*)macAddr);
+//        Test_process_setMacAddr(macAddr);
+//        if(!IsBusy_testProcess())
+//            TestEvent_post(EVENT_START_TEST);
+//    }
     return 0;
 }
 

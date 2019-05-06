@@ -11,9 +11,10 @@
 #include "TestProcess_writeReadTestResult.h"
 #include "IWUP_cmd_group/CmdGroup_qcTest.h"
 #include "DataType.h"
+#include "BF_Util.h"
 
-#define TIMEOUT_TEST_PROCESS_WRITEREAD_TESTRESULT   3000
-
+#define TIMEOUT_TEST_PROCESS_WRITEREAD_TESTRESULT   1200
+#define TIMEOUT_TEST_PROCESS_ERASE_TESTRESULT   4000
 
 RET_TEST_WRITEREAD_TESTRESULT TestProcess_writeTestResult(char result)
 {
@@ -31,7 +32,7 @@ RET_TEST_WRITEREAD_TESTRESULT TestProcess_writeTestResult(char result)
     if (events & EVENT_TESTPROCESS_WRITEREAD_TESTRESULT)
     {
         ret = RET_TEST_WRITEREAD_TESTRESULT_SUCCESS;
-        TRACE_DEBUG("设置测试结果成功.\n");
+        TRACE_CODE("设置测试结果成功.\n");
     }
     else
     {
@@ -45,6 +46,7 @@ RET_TEST_WRITEREAD_TESTRESULT TestProcess_readTestResult(char* result)
 {
     RET_TEST_WRITEREAD_TESTRESULT ret;
     //发送获取测试结果指令----------------------------------
+    BF_taskSleepMs(200);
     uint8_t para[2];
     para[0] = WRITEREAD_TESTRESULT_TYPE_READ;
     para[1] = 0x00;
@@ -55,7 +57,7 @@ RET_TEST_WRITEREAD_TESTRESULT TestProcess_readTestResult(char* result)
     if (events & EVENT_TESTPROCESS_WRITEREAD_TESTRESULT)
     {
         ret = RET_TEST_WRITEREAD_TESTRESULT_SUCCESS;
-        TRACE_DEBUG("读取测试结果成功.\n");
+        TRACE_CODE("读取测试结果成功.\n");
         *result = testResult;
     }
     else
@@ -70,17 +72,19 @@ RET_TEST_WRITEREAD_TESTRESULT TestProcess_clearTestResult()
 {
     RET_TEST_WRITEREAD_TESTRESULT ret;
     //发送获取测试结果指令----------------------------------
+    BF_taskSleepMs(200);
     uint8_t para[2];
     para[0] = WRITEREAD_TESTRESULT_TYPE_CLEAR;
     para[1] = 0x00;
     SendCmd_qcTest_writeReadTestResult(para, 2);
 
     //等待接收返回消息
-    uint32_t events = TestEvent_pend(EVENT_TESTPROCESS_WRITEREAD_TESTRESULT, TIMEOUT_TEST_PROCESS_WRITEREAD_TESTRESULT);
+    uint32_t events = TestEvent_pend(EVENT_TESTPROCESS_WRITEREAD_TESTRESULT, TIMEOUT_TEST_PROCESS_ERASE_TESTRESULT);
     if (events & EVENT_TESTPROCESS_WRITEREAD_TESTRESULT)
     {
         ret = RET_TEST_WRITEREAD_TESTRESULT_SUCCESS;
         TRACE_CODE("擦除测试结果成功.\n");
+        BF_taskSleepMs(200);
     }
     else
     {

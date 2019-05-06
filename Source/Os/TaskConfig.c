@@ -28,7 +28,14 @@
 #include "ConfigProtocol.h"
 #include "TargetModel.h"
 #include "Driver_portUart.h"
-
+#include "Hal_expandOutput.h"
+#include "Driver_ADCmpc3901.h"
+#include "Hal_electricCurrent.h"
+#include "Driver_CS1231.h"
+#include "Driver_interrupt.h"
+#include "Hal_oled.h"
+#include "Lock_atcion.h"
+#include "Hal_buzz.h"
 
 void AllTask_create()
 {
@@ -44,6 +51,7 @@ void AllTask_create()
 
 void Module_initInTask()
 {
+
     TimerConfig_init();
 #if CONSOLE_EMULATOR
     Driver_uartEmulator_init(115200);
@@ -53,11 +61,19 @@ void Module_initInTask()
     Driver_gpioInit();
 
     TestProcess_bleInit();
-    TargetModel_init();
+    //老化治具，先关闭串口
     Driver_uart_init(9600, Uart_adapter_recieve);
     Driver_uartGpio_close();
     Driver_uart_open();
-
+    Hal_expandOutput_init();
+    Init_mcp3901(GAIN_NUM_ADC, 1);
+    Hal_electricCurrent_init();
+//    Init_adcIC();
+    Driver_interrupt_init();
+    Hal_oled_init();
+    Lock_action_init();
+    Buzz_init();
+    Buzz_action(200, 100, 1);
 //    Driver_uart_open();
 //    Driver_uartInit(115200);
 //    Uart_adapter_init();
@@ -67,4 +83,16 @@ void Module_initInTask()
 //    Driver_portPa_enable();
 //#endif
 //    Protocol_BLEInit();
+#if defined     (TEST_D3151)
+    #warning "TEST_D3151"
+    TargetModel_init(TARGET_MODEL_S31X);
+#elif defined   (TEST_D3111)
+    #warning "TEST_D3111"
+    TargetModel_init(TARGET_MODEL_D3111);
+#elif defined   (TEST_D3100)
+    #warning "TEST_D3100"
+    TargetModel_init(TARGET_MODEL_D3100);
+#else
+    #error "TEST TARGET ERROR!"
+#endif
 }

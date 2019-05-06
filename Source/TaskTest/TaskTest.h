@@ -35,6 +35,17 @@
 #define EVENT_TESTPROCESS_EVENT_SETTINGBUTTON   Event_Id_19
 #define EVENT_TESTPROCESS_EVENT_CLEARBUTTON     Event_Id_20
 #define EVENT_TESTPROCESS_EVENT_OBLIQUETONGUE   Event_Id_21
+
+#define EVENT_TESTPROCESS_MOTOR_SW1             Event_Id_22
+#define EVENT_TESTPROCESS_MOTOR_SW2             Event_Id_23
+
+#define EVENT_ADD_CARD                          Event_Id_24
+#define EVENT_TRY_PW                            Event_Id_25
+
+#define EVENT_TESTPROCESS_EVENT_VOICE           Event_Id_26
+#define EVENT_LIGHT_ON                          Event_Id_27
+#define EVENT_LIGHT_OFF                         Event_Id_28
+#define EVENT_TESTPROCESS_BLE_DISCOVER_FAIL_RSSI     Event_Id_29
 //#define EVENT_DO_UNLOCK                         Event_Id_01
 //#define EVENT_BOLT_LOCK                         Event_Id_02
 //#define EVENT_BOLT_UNLOCK                       Event_Id_03

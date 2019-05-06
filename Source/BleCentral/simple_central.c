@@ -39,6 +39,7 @@
 #include "BF_Util.h"
 #include "Trace.h"
 #include "TaskTest.h"
+#include "Hal_oled.h"
 /*********************************************************************
  * MACROS
  */
@@ -66,7 +67,7 @@
 #define DEFAULT_MAX_SCAN_RES                  8
 
 // Scan duration in ms
-#define DEFAULT_SCAN_DURATION                 4000
+#define DEFAULT_SCAN_DURATION                 300
 
 // Discovery mode (limited, general, all)
 #define DEFAULT_DISCOVERY_MODE                DEVDISC_MODE_ALL
@@ -143,7 +144,7 @@
 #define SBC_TASK_PRIORITY                     2
 
 #ifndef SBC_TASK_STACK_SIZE
-#define SBC_TASK_STACK_SIZE                   3000
+#define SBC_TASK_STACK_SIZE                   2200
 #endif
 
 // Application states
@@ -760,6 +761,26 @@ static void SimpleBLECentral_processAppMsg(sbcEvt_t *pMsg)
   }
 }
 
+
+static gapCentralRoleEvent_t peripheralByRssi;
+static uint8_t times_findPeripheralByRssi = 0;
+static uint8_t times_findPeripheralByRssiError = 0;
+static uint8_t peripheralMinRssi = 0xff;
+static uint8_t peripheralTimesSearchSatisfy = 0;
+static uint8_t peripheralTimesSearchNotSatisfy = 0;
+static bool bleBindingStatus = false;
+uint8_t searchDeviceAddr[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+void simpleCentral_clearBindingStatus()
+{
+    bleBindingStatus = false;
+}
+
+bool simpleCentral_getBindingStatus()
+{
+    return bleBindingStatus;
+}
+
 /*********************************************************************
  * @fn      SimpleBLECentral_processRoleEvent
  *
@@ -798,8 +819,69 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
                                            pEvent->deviceInfo.pEvtData,
                                            pEvent->deviceInfo.dataLen))
           {
-            SimpleBLECentral_addDeviceInfo(pEvent->deviceInfo.addr,
-                                           pEvent->deviceInfo.addrType);
+            TRACE_CODE("发现设备: %s, rssi:-%d dB\n", \
+                        (uint8 *)Util_convertBdAddr2Str(pEvent->deviceInfo.addr),\
+                        (uint8)(-( pEvent->deviceInfo.rssi )));
+
+            if( true == BF_UtilCompairHex(pEvent->deviceInfo.addr, searchDeviceAddr, 6) )
+            {
+                //rssi值满足要求
+                if(peripheralMinRssi > (uint8)(-( pEvent->deviceInfo.rssi )))
+                {
+                    if(0 == times_findPeripheralByRssi)
+                    {
+                        times_findPeripheralByRssi++;
+                        memcpy(&peripheralByRssi, pEvent, sizeof(peripheralByRssi));
+                        TRACE_CODE("第1次发现满足: %s, rssi:-%d dB\n", \
+                                    (uint8 *)Util_convertBdAddr2Str(pEvent->deviceInfo.addr),\
+                                    (uint8)(-( pEvent->deviceInfo.rssi )));
+                    }
+                    else
+                    {
+                        //多次获取到相同的设备满足条件
+                        if( 0 == memcmp((uint8 *)Util_convertBdAddr2Str(pEvent->deviceInfo.addr), \
+                                        (uint8 *)Util_convertBdAddr2Str(peripheralByRssi.deviceInfo.addr), \
+                                 strlen((char *)Util_convertBdAddr2Str(peripheralByRssi.deviceInfo.addr))) )
+                        {
+                            times_findPeripheralByRssi++;
+                            TRACE_CODE("第%d次发现满足: %s, rssi:-%d dB\n", \
+                                        times_findPeripheralByRssi,\
+                                        (uint8 *)Util_convertBdAddr2Str(pEvent->deviceInfo.addr),\
+                                        (uint8)(-( pEvent->deviceInfo.rssi )));
+                        }
+                        //一个新的设备满足条件
+                        else
+                        {
+                            times_findPeripheralByRssi=1;
+                            TRACE_CODE("更换对象，第%d次发现满足: %s, rssi:-%d dB\n", \
+                                        times_findPeripheralByRssi,\
+                                        (uint8 *)Util_convertBdAddr2Str(pEvent->deviceInfo.addr),\
+                                        (uint8)(-( pEvent->deviceInfo.rssi )));
+                            TRACE_CODE("save-%s\nnew -%s\n",(uint8 *)Util_convertBdAddr2Str(peripheralByRssi.deviceInfo.addr),\
+                                        (uint8 *)Util_convertBdAddr2Str(pEvent->deviceInfo.addr));
+                            memcpy(&peripheralByRssi, pEvent, sizeof(peripheralByRssi));
+                        }
+                    }
+                }
+                else//rssi值不满足要求
+                {
+                    TRACE_ERROR("mac地址匹配成功，但蓝牙RSSI值不满足要求，要求<%d,但此次扫描为%d。\n", peripheralMinRssi, (uint8)(-( pEvent->deviceInfo.rssi )) );
+                    times_findPeripheralByRssiError++;
+                    if(times_findPeripheralByRssiError >= peripheralTimesSearchNotSatisfy)
+                    {
+                        TRACE_ERROR("mac地址匹配成功，但蓝牙RSSI值不满足要求，要求<%d,但此次扫描为%d,达到%d次，返回错误。\n",\
+                                    peripheralMinRssi, (uint8)(-( pEvent->deviceInfo.rssi )) ,peripheralTimesSearchNotSatisfy);
+                        TestEvent_post(EVENT_TESTPROCESS_BLE_DISCOVER_FAIL_RSSI);
+                    }
+                }
+
+                if(times_findPeripheralByRssi >= peripheralTimesSearchSatisfy)
+                {
+                    SimpleBLECentral_addDeviceInfo(pEvent->deviceInfo.addr, pEvent->deviceInfo.addrType);
+                    bleBindingStatus = true;
+                    TRACE_CODE("绑定成功。\n");
+                }
+            }
           }
         }
       }
@@ -815,13 +897,21 @@ static void SimpleBLECentral_processRoleEvent(gapCentralRoleEvent_t *pEvent)
         {
           // Copy results
           scanRes = pEvent->discCmpl.numDevs;
-          memcpy(devList, pEvent->discCmpl.pDevList,
-                 (sizeof(gapDevRec_t) * scanRes));
+          memcpy(devList, pEvent->discCmpl.pDevList, (sizeof(gapDevRec_t) * scanRes));
         }
 
         Display_print1(dispHandle, 2, 0, "Devices Found %d", scanRes);
+        TRACE_CODE("Devices Found %d\n", scanRes);
+        if(scanRes == 0)
+        {
+            TestEvent_post(EVENT_TESTPROCESS_BLE_DISCOVER_FAIL);
+        }
+        else
+        {
+            TestEvent_post(EVENT_TESTPROCESS_BLE_DISCOVER);
+        }
 //        simpleCentral_findDevice(scanRes);
-        TestEvent_post(EVENT_TESTPROCESS_BLE_DISCOVER);
+
         for(uint8_t i=0; i<scanRes; i++)
         {
             Display_print0(dispHandle, 20+i, 0, Util_convertBdAddr2Str(devList[i].addr));
@@ -933,12 +1023,12 @@ static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys)
 //  (void)shift;  // Intentionally unreferenced parameter
   if (keys & KEY_LEFT)
   {
-      TestEvent_post(EVENT_TESTPROCESS_CONFIRM_SUCCESS);
+//      TestEvent_post(EVENT_TESTPROCESS_CONFIRM_SUCCESS);
   }
 
   if (keys & KEY_RIGHT)
   {
-      TestEvent_post(EVENT_TESTPROCESS_CONFIRM_FAIL);
+//      TestEvent_post(EVENT_TESTPROCESS_CONFIRM_FAIL);
   }
 //
 //  if (keys & KEY_LEFT)
@@ -1217,9 +1307,19 @@ typedef struct
 
 static flashParam_ts flashParam;
 static uint16_t flashParamIndex=0;
-uint8_t searchDeviceAddr[6] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 static uint32_t countSendNum = 0;
 static uint32_t countRecieveNum = 0;
+
+//Rssi 如果是0xff，则忽略Rssi
+void simpleCentral_searchCondition(uint8_t minRssi, uint8_t timesSearchSatisfy, uint8_t timesSearchNoSatisfy)
+{
+    peripheralMinRssi = minRssi;
+    peripheralTimesSearchSatisfy = timesSearchSatisfy;
+    peripheralTimesSearchNotSatisfy = timesSearchNoSatisfy;
+
+    times_findPeripheralByRssi = 0;
+    times_findPeripheralByRssiError = 0;
+}
 
 void simpleCentral_setSearchDeviceAddr(uint8_t* searchAddr)
 {
@@ -1399,7 +1499,7 @@ extern void MyEvent_sendDataHandle()
     }
 }
 
-RET_FIND_DEVICE_INLIST BleTest_findDeviceInList()
+RET_FIND_DEVICE_INLIST BleTest_findDeviceInList(uint8_t* addr)
 {
     RET_FIND_DEVICE_INLIST ret;
     // If not currently scanning
@@ -1422,7 +1522,7 @@ RET_FIND_DEVICE_INLIST BleTest_findDeviceInList()
             Display_print0(dispHandle, 2, 0, "");
             Display_print0(dispHandle, 3, 0, "");
             Display_print0(dispHandle, 5, 0, "Discover ->");
-//            TRACE_DEBUG("Find device in list: no device!\n");
+            TRACE_DEBUG("BleTest_findDeviceInList: 没有找到任何设备!\n");
         }
         else
         {
@@ -1431,14 +1531,17 @@ RET_FIND_DEVICE_INLIST BleTest_findDeviceInList()
             Display_print0(dispHandle, 3, 0,Util_convertBdAddr2Str(devList[scanIdx].addr));
             Display_print0(dispHandle, 5, 0, "Connect ->");
             Display_print0(dispHandle, 6, 0, "<- Next Option");
-            TRACE_CODE("Search dist addr in %d device: [%s]\n", scanRes, Util_convertBdAddr2Str(searchDeviceAddr));
+            TRACE_CODE("在已扫描到的列表%d中匹配目标: [%s]\n", scanRes, (uint8 *)Util_convertBdAddr2Str(peripheralByRssi.deviceInfo.addr));
             for(uint8_t i=0; i<scanRes; i++)
             {
                 TRACE_CODE("compare... %s\n",Util_convertBdAddr2Str(devList[i].addr));
-                if(0 == memcmp(devList[i].addr, searchDeviceAddr, 6))
+                if(true == BF_UtilCompairHex(devList[i].addr, addr, 6))
+//                if( 0 == memcmp((uint8 *)Util_convertBdAddr2Str(devList[i].addr), \
+//                                (uint8 *)Util_convertBdAddr2Str(peripheralByRssi.deviceInfo.addr), \
+//                                strlen((char *)Util_convertBdAddr2Str(peripheralByRssi.deviceInfo.addr))) )
                 {
                     ret = RET_FIND_DEVICE_INLIST_OK;
-                    TRACE_CODE("Find device by mac addr %s.\n",Util_convertBdAddr2Str(devList[i].addr));
+                    TRACE_CODE("匹配设备成功 %s.\n",Util_convertBdAddr2Str(devList[i].addr));
                     scanIdx = i;
                     TRACE_CODE("6----------------scanIdx = i = %d.\n", i);
                     break;
@@ -1448,7 +1551,7 @@ RET_FIND_DEVICE_INLIST BleTest_findDeviceInList()
                 else
                 {
                     ret = RET_FIND_DEVICE_INLIST_ERROR_NOFIND;
-                    TRACE_CODE("Compare fail %s!\n",Util_convertBdAddr2Str(devList[i].addr));
+                    TRACE_CODE("匹配设备失败 %s!\n",Util_convertBdAddr2Str(devList[i].addr));
 //                        TestProcess_setResult(RET_TEST_BLE_NOFIND);
 //                        TestEvent_post(EVENT_TESTPROCESS_BLE_DISCOVER_FAIL);
                 }
@@ -1486,13 +1589,13 @@ void simpleCentral_select()
                 Display_print0(dispHandle, 3, 0,Util_convertBdAddr2Str(devList[scanIdx].addr));
                 Display_print0(dispHandle, 5, 0, "Connect ->");
                 Display_print0(dispHandle, 6, 0, "<- Next Option");
-                TRACE_CODE("Search dist addr: [%s]\n", Util_convertBdAddr2Str(searchDeviceAddr));
+                TRACE_CODE("想要寻找: [%s]\n", Util_convertBdAddr2Str(searchDeviceAddr));
                 for(uint8_t i=0; i<scanRes; i++)
                 {
-                    TRACE_CODE("compare... %s\n",Util_convertBdAddr2Str(devList[i].addr));
-                    if(0 == memcmp(devList[i].addr, searchDeviceAddr, 6))
+                    TRACE_CODE("本次对比目标...\n",Util_convertBdAddr2Str(devList[i].addr));
+                    if(true == BF_UtilCompairHex(devList[i].addr, searchDeviceAddr, 6) )
                     {
-                        TRACE_CODE("Find device by mac addr %s.\n",Util_convertBdAddr2Str(devList[scanIdx].addr));
+                        TRACE_CODE("找到目标 %s.\n",Util_convertBdAddr2Str(devList[scanIdx].addr));
                         scanIdx = i;
                         TRACE_CODE("8----------------scanIdx = i.\n");
 //                        simpleCentral_action();
@@ -1550,41 +1653,70 @@ void simpleCentral_select()
     return;
 }
 
-RET_CONNECT BleTest_connect()
+RET_CONNECT BleTest_connect(bool isFirstConnect)
 {
     RET_CONNECT ret = RET_CONNECT_OK;
-    if (scanIdx == -1)
+    if (isFirstConnect)
     {
-        if (!scanningStarted)
+        TRACE_CODE("第一次连接.\n");
+        if (scanIdx == -1)
         {
-            ret = RET_CONNECT_ERROR_NODEVICE;
+            if (!scanningStarted)
+            {
+                ret = RET_CONNECT_ERROR_NODEVICE;
+            }
+            else
+            {
+                ret = RET_CONNECT_ERROR_SCANNING;
+            }
         }
+        // Connect if there is a scan result
         else
         {
-            ret = RET_CONNECT_ERROR_SCANNING;
+            ret = RET_CONNECT_OK;
+            // connect to current device in scan result
+            uint8_t *peerAddr = devList[scanIdx].addr;
+            //        uint8_t *peerAddr = peripheralByRssi.deviceInfo.addr;
+            uint8_t addrType = devList[scanIdx].addrType;
+
+            state = BLE_STATE_CONNECTING;
+            TRACE_CODE("Connect target -%s \n",
+                       Util_convertBdAddr2Str(peerAddr));
+            bStatus_t status = GAPCentralRole_EstablishLink(
+                    DEFAULT_LINK_HIGH_DUTY_CYCLE, DEFAULT_LINK_WHITE_LIST,
+                    addrType, peerAddr);
+
+            Display_print0(dispHandle, 2, 0, "Connecting");
+            TRACE_CODE("Connect ret %d\n", status);
+            TRACE_CODE(Util_convertBdAddr2Str(peerAddr));
+            Display_clearLine(dispHandle, 4);
+
+            // Forget the scan results.
+            scanRes = 0;
+            scanIdx = -1;
+            TRACE_CODE("9----------------scanIdx = -1.\n");
         }
     }
-    // Connect if there is a scan result
     else
     {
+        TRACE_CODE("不是第一次连接.\n");
         ret = RET_CONNECT_OK;
-        // connect to current device in scan result
-        uint8_t *peerAddr = devList[scanIdx].addr;
-        uint8_t addrType = devList[scanIdx].addrType;
-
         state = BLE_STATE_CONNECTING;
+        TRACE_CODE("Connect target -%s \n",
+                Util_convertBdAddr2Str(peripheralByRssi.deviceInfo.addr));
+        bStatus_t status = GAPCentralRole_EstablishLink(
+                DEFAULT_LINK_HIGH_DUTY_CYCLE, DEFAULT_LINK_WHITE_LIST,
+                peripheralByRssi.deviceInfo.addrType, peripheralByRssi.deviceInfo.addr);
 
-        GAPCentralRole_EstablishLink(DEFAULT_LINK_HIGH_DUTY_CYCLE, DEFAULT_LINK_WHITE_LIST, addrType, peerAddr);
-
-        Display_print0(dispHandle, 2, 0, "Connecting");
-        Display_print0(dispHandle, 3, 0, Util_convertBdAddr2Str(peerAddr));
+        TRACE_CODE("Connect ret %d\n", status);
+        TRACE_CODE(Util_convertBdAddr2Str(peripheralByRssi.deviceInfo.addr));
         Display_clearLine(dispHandle, 4);
 
         // Forget the scan results.
         scanRes = 0;
         scanIdx = -1;
-        TRACE_CODE("9----------------scanIdx = -1.\n");
     }
+
     return ret;
 }
 
@@ -2221,7 +2353,8 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
             discState = BLE_DISC_STATE_SVC;
 
             // Discovery simple service
-            Display_print2(dispHandle, 10, 0, "Start find server by UUID %02x%02x...", uuid[1], uuid[0]);
+            Display_print2(dispHandle, 10, 0, "Start find server by UUID %02x%02x...\n", uuid[1], uuid[0]);
+            TRACE_CODE("Start find server by UUID %02x%02x...", uuid[1], uuid[0]);
             VOID GATT_DiscPrimaryServiceByUUID(connHandle, uuid, ATT_BT_UUID_SIZE, selfEntity);
         }
         else
@@ -2236,6 +2369,7 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
         if (pMsg->method == ATT_FIND_BY_TYPE_VALUE_RSP && pMsg->msg.findByTypeValueRsp.numInfo > 0)
         {
             Display_print2(dispHandle, 11,0,"Service found, store handles,svcStartHdl=%04x; svcEndHdl=%04x",svcStartHdl, svcEndHdl);
+            TRACE_CODE("Service found, store handles,svcStartHdl=%04x; svcEndHdl=%04x\n",svcStartHdl, svcEndHdl);
             svcStartHdl = ATT_ATTR_HANDLE(pMsg->msg.findByTypeValueRsp.pHandlesInfo, 0);
             svcEndHdl = ATT_GRP_END_HANDLE(pMsg->msg.findByTypeValueRsp.pHandlesInfo, 0);
         }
@@ -2266,6 +2400,9 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
                         dispHandle, 12, 0,
                         "Start Discover characteristic by UUID %02x%02x...",
                         req.type.uuid[1], req.type.uuid[0]);
+                TRACE_CODE(
+                        "Start Discover characteristic by UUID %02x%02x...\n",
+                        req.type.uuid[1], req.type.uuid[0]);
                 VOID GATT_ReadUsingCharUUID(connHandle, &req, selfEntity);
             }
         }
@@ -2286,6 +2423,7 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
                                    pMsg->msg.readByTypeRsp.pDataList[1]);
 
             Display_print0(dispHandle, 2, 0, "Simple Svc Found");
+            TRACE_CODE("Simple Svc Found\n");
             procedureInProgress = FALSE;
             countSend = 0;
             countSendNum = 0;
@@ -2296,6 +2434,7 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
             Display_print1(dispHandle, 13, 0,
                            "Discover characteristic success, charHdl = %04x.",
                            charHdl);
+            TRACE_CODE(    "Discover characteristic success, charHdl = %04x.\n",charHdl);
 //            simpleCentral_findCharacteristicSuccess();
             TestEvent_post(EVENT_TESTPROCESS_BLE_CONNECT);
         }

@@ -23,12 +23,19 @@ typedef enum{
     RET_TEST_BLE_ERROR_GETBLEINFO           = 10,
     RET_TEST_BLE_ERROR_ACTIVEBLE            = 11,
     RET_TEST_BLE_ERROR_NOTINIT              = 12,   //蓝牙模块没有初始化
+    RET_TEST_BLE_ERROR_RSSI                 = 13,
 }RET_TEST_BLE;
 
 void TestProcess_bleInit(void);
-RET_TEST_BLE TestProcess_ble(uint8_t* searchAddr);
+RET_TEST_BLE TestProcess_ble(uint8_t minRssi, uint8_t timesSearch, uint8_t timesSearchSatisfy);
+RET_TEST_BLE TestProcess_bleByMacAddr(uint8_t* addr ,uint8_t minRssi, uint8_t timesSearch, uint8_t timesSearchSatisfy, uint8_t timesSearchNoSatisfy);
+
+
+
+
 //RET_TEST_BLE TestProcess_getResult();
 void TestProcess_setResult(RET_TEST_BLE ret);
 extern void MyEvent_testProcessHandle();
+
 
 #endif /* SOURCE_TASKTEST_TESTPROCESS_BLE_H_ */

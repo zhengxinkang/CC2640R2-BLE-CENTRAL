@@ -13,6 +13,7 @@
 typedef enum{
     RET_TEST_VOICE_SUCCESS           = 0,
     RET_TEST_VOICE_ERROR             = 1,
+    RET_TEST_VOICE_ENVIRONMENT_ERROR = 2,
 }RET_TEST_VOICE;
 
 RET_TEST_VOICE TestProcess_voice();

@@ -16,9 +16,10 @@ typedef enum{
     TARGET_MODEL_D3111      = 0x03,
     TARGET_MODEL_D3151      = 0x04,
     TARGET_MODEL_D3100      = 0x05,
+    TARGET_MODEL_UNKNOW     = 0x06,
 }TARGET_MODEL;
 
-void TargetModel_init();
+void TargetModel_init(TARGET_MODEL model);
 TARGET_MODEL TargetModel_get();
 
 

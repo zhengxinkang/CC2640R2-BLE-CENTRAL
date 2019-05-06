@@ -111,49 +111,87 @@ extern const PIN_Config BoardGpioInitTable[];
  */
 
 //---define start---------------------------------------------------------------------------------------
+#define PORT_ADC_DR                             IOID_0
+#define PORT_ADC_CS                             IOID_1
+//#define PORT_ADC_SCK                            IOID_27
+//#define PORT_ADC_SDO                            IOID_28
+//#define PORT_ADC_SDI                            IOID_29
+//#define PORT_ADC_RST                            IOID_30
+
 //uartEmulator已在<scif.h>中定义
 //#define CC2640R2_LAUNCHXL_EMULATOR_UART_RX    IOID_2         /* RXD */
 //#define CC2640R2_LAUNCHXL_EMULATOR_UART_TX    IOID_3         /* TXD */
 
 //电源控制
-#define PORT_POWER_BAT                          IOID_4
-#define PORT_POWER_USB                          IOID_5
+#define PORT_POWER_BAT                          PIN_UNASSIGNED  //IOID_4
+#define PORT_POWER_USB                          PIN_UNASSIGNED  //IOID_5
 
 //LED灯
-#define CC2640R2_LAUNCHXL_PIN_RLED              IOID_6
-#define CC2640R2_LAUNCHXL_PIN_GLED              IOID_7
+#define CC2640R2_LAUNCHXL_PIN_RLED              PIN_UNASSIGNED  //IOID_6
+#define CC2640R2_LAUNCHXL_PIN_GLED              PIN_UNASSIGNED  //IOID_7
+
+#define PORT_HC595_SRCLRn                       IOID_4
+#define PORT_HC595_SRCLK                        IOID_5
+#define PORT_HC595_RCLK                         IOID_6
+#define PORT_HC595_SER                          IOID_7
+//#define HC595_OE
 
 //电机检测信号-GPIO输入
-#define PORT_MOTOR_FORWARD                      IOID_8
-#define PORT_MOTOR_REVERSAL                     IOID_9
+#define PORT_MOTOR_FORWARD                      PIN_UNASSIGNED  //IOID_8
+#define PORT_MOTOR_REVERSAL                     PIN_UNASSIGNED  //IOID_9
 
 //反锁开关-GPIO输出
-#define PORT_ANTI_LOCK                          IOID_10
+#define PORT_ANTI_LOCK                          PIN_UNASSIGNED  //IOID_10
 
 //防撬开关-GPIO输出
 #define PORT_PREVENT_DISMANTLE                  IOID_11
 
 //Discrete Inputs 按键输入
 #define CC2640R2_LAUNCHXL_PIN_BTN1              IOID_13
-#define CC2640R2_LAUNCHXL_PIN_BTN2              IOID_14
+#define CC2640R2_LAUNCHXL_PIN_BTN2              PIN_UNASSIGNED  //IOID_14
 
 //输入信号
-#define PORT_TEST_RESET_TARGET                  IOID_15
-#define PORT_TEST_START                         IOID_16
-#define PORT_TEST_MODEL_S31                     IOID_17
-#define PORT_TEST_MODEL_S31X                    IOID_18
+#define PORT_TEST_START                         PIN_UNASSIGNED  //IOID_16
+
+#define PORT_HC165_SL                           IOID_8
+#define PORT_HC165_CLK                          IOID_9
+#define PORT_HC165_QH                           IOID_10
+
+#define PORT_TEST_MODEL_S31                     PIN_UNASSIGNED  //IOID_17
+#define PORT_TEST_MODEL_S31X                    PIN_UNASSIGNED  //IOID_18
 
 //输出信号
-#define PORT_TEST_OBLIQUE_LOCK_TONGUE           IOID_19 //斜舌
-#define PORT_TEST_SETTING_BUTTON                IOID_20 //设置键
-#define PORT_TEST_CLEAR_BUTTON                  IOID_21 //清空键
+#define PORT_TEST_OBLIQUE_LOCK_TONGUE           PIN_UNASSIGNED  //IOID_19 //斜舌
+#define PORT_TEST_SETTING_BUTTON                PIN_UNASSIGNED  //IOID_20 //设置键
+#define PORT_TEST_CLEAR_BUTTON                  PIN_UNASSIGNED  //IOID_21 //清空键
 
+#define CC2640R2_LAUNCHXL_PWMPIN0               IOID_15
 //ADC采样
+#define PORT_SP_OUT                             IOID_16
+
+
+#define PORT_OLED_SCLK                          IOID_18
+#define PORT_OLED_SDIN                          IOID_19
+#define PORT_OLED_RST                           IOID_20
+#define PORT_OLED_DC                            IOID_21
+#define PORT_OLED_CS                            IOID_22
+
 #define CC2640R2_LAUNCHXL_DIO23_ANALOG          IOID_23
 
+//锁MCU复位
+#define PORT_TEST_RESET_TARGET                  IOID_24
+
 //uart0
-#define CC2640R2_LAUNCHXL_UART_TX               IOID_25         /* TXD */
-#define CC2640R2_LAUNCHXL_UART_RX               IOID_26         /* RXD */
+#define CC2640R2_LAUNCHXL_UART_TX               IOID_26         /* TXD */
+#define CC2640R2_LAUNCHXL_UART_RX               IOID_25         /* RXD */
+
+//#define PORT_SPI_DATA                           IOID_27
+//#define PORT_SPI_CLK                            IOID_28
+
+#define PORT_ADC_SCK                            IOID_27
+#define PORT_ADC_SDO                            IOID_28
+#define PORT_ADC_SDI                            IOID_29
+#define PORT_ADC_RST                            IOID_30
 
 //---define end---------------------------------------------------------------------------------------
 #define BOARD_PORT_UART_RX                      CC2640R2_LAUNCHXL_UART_RX
@@ -200,7 +238,7 @@ extern const PIN_Config BoardGpioInitTable[];
 #define CC2640R2_LAUNCHXL_PIN_LED_OFF           0
 
 /* PWM Outputs */
-#define CC2640R2_LAUNCHXL_PWMPIN0               CC2640R2_LAUNCHXL_PIN_RLED
+//#define CC2640R2_LAUNCHXL_PWMPIN0               CC2640R2_LAUNCHXL_PIN_RLED
 #define CC2640R2_LAUNCHXL_PWMPIN1               CC2640R2_LAUNCHXL_PIN_GLED
 #define CC2640R2_LAUNCHXL_PWMPIN2               PIN_UNASSIGNED
 #define CC2640R2_LAUNCHXL_PWMPIN3               PIN_UNASSIGNED

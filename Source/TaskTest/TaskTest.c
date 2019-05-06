@@ -46,7 +46,7 @@ static void Test_taskFxn(UArg a0, UArg a1)
     for(;;)
     {
         uint32_t events;
-        events = TestEvent_pend(EVENT_START_TEST, 0x0fffffff);
+        events = TestEvent_pend(EVENT_START_TEST|EVENT_TESTPROCESS_CONFIRM_FAIL, 0x0fffffff);
 
         if(events)
         {
@@ -55,6 +55,16 @@ static void Test_taskFxn(UArg a0, UArg a1)
                 TRACE_DEBUG("Event start test.\n");
                 Test_process();
             }
+            else if (events & EVENT_TESTPROCESS_CONFIRM_FAIL)
+            {
+                TRACE_DEBUG("Event add card.\n");
+                AddBle_process();
+            }
+//            else if (events & EVENT_TRY_PW)
+//            {
+//                TRACE_DEBUG("Event try pw.\n");
+//                TryPssword_process();
+//            }
         }
     }
 }

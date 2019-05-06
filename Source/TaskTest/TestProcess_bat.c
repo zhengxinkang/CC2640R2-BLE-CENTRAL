@@ -6,13 +6,17 @@
  */
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/knl/Clock.h>
+#include "BF_Util.h"
 #include "TestProcess_bat.h"
 #include "Driver_adc.h"
 #include "Driver_gpio.h"
 #include "Trace.h"
+#include "Lock_atcion.h"
 
-#define MAX_TIMES_BAT_CHECK         5
-#define TIMES_BAT_CHECK             3
+#define MAX_TIMES_VOLTAGE_CHECK     5
+#define TIMES_VOLTAGE_CHECK         3
+#define VOLTAGE_MIN                 1500000
+#define VOLTAGE_MAX                 1700000
 
 RET_TEST_BAT TestProcess_bat()
 {
@@ -21,29 +25,30 @@ RET_TEST_BAT TestProcess_bat()
     uint8_t checkFailTimes = 0;
     uint8_t times = 0;
 
-    Driver_gpioSet(PORT_POWER_BAT, PORT_VALUE_LOW);
-    Driver_gpioSet(PORT_POWER_USB, PORT_VALUE_LOW);
-    Task_sleep((300*1000)/Clock_tickPeriod);
+    //电源全部关闭
+    Lock_action_power(false, false);
+    BF_taskSleepMs(200);
+
     //电源选择-BAT
-    Driver_gpioSet(PORT_POWER_BAT, PORT_VALUE_HIGH);
-    Driver_gpioSet(PORT_POWER_USB, PORT_VALUE_LOW);
-    Task_sleep((100*1000)/Clock_tickPeriod);
+    Lock_action_power(true, false);
+    BF_taskSleepMs(200);
+
     if(RET_TEST_BAT_SUCCESS == ret)
     {
-        for (times = 0; times < MAX_TIMES_BAT_CHECK; times++)
+        for (times = 0; times < MAX_TIMES_VOLTAGE_CHECK; times++)
         {
             uint32_t adcValue = Driver_adcGet();
-            if (adcValue > 2700000 && adcValue < 3400000)
+            if (adcValue > VOLTAGE_MIN && adcValue < VOLTAGE_MAX)
                 checkSuccessTimes++;
             else
                 checkFailTimes++;
 
-            if (checkSuccessTimes >= TIMES_BAT_CHECK)
+            if (checkSuccessTimes >= TIMES_VOLTAGE_CHECK)
             {
                 ret = RET_TEST_BAT_SUCCESS;
                 break;
             }
-            if (times >= MAX_TIMES_BAT_CHECK - 1)
+            if (times >= MAX_TIMES_VOLTAGE_CHECK - 1)
             {
                 ret = RET_TEST_BAT_ERROR;
                 break;
@@ -62,29 +67,30 @@ RET_TEST_BAT TestProcess_usb()
     uint8_t checkFailTimes = 0;
     uint8_t times = 0;
 
-    Driver_gpioSet(PORT_POWER_BAT, PORT_VALUE_LOW);
-    Driver_gpioSet(PORT_POWER_USB, PORT_VALUE_LOW);
-    Task_sleep((300*1000)/Clock_tickPeriod);
+    //电源全部关闭
+    Lock_action_power(false, false);
+    BF_taskSleepMs(200);
+
     //电源选择-USB
-    Driver_gpioSet(PORT_POWER_BAT, PORT_VALUE_LOW);
-    Driver_gpioSet(PORT_POWER_USB, PORT_VALUE_HIGH);
-    Task_sleep((500*1000)/Clock_tickPeriod);
+    Lock_action_power(false, true);
+    BF_taskSleepMs(200);
+
     if(RET_TEST_BAT_SUCCESS == ret)
     {
-        for (times = 0; times < MAX_TIMES_BAT_CHECK; times++)
+        for (times = 0; times < MAX_TIMES_VOLTAGE_CHECK; times++)
         {
             uint32_t adcValue = Driver_adcGet();
-            if (adcValue > 3200000 && adcValue < 3400000)
+            if (adcValue > VOLTAGE_MIN && adcValue < VOLTAGE_MAX)
                 checkSuccessTimes++;
             else
                 checkFailTimes++;
 
-            if (checkSuccessTimes >= TIMES_BAT_CHECK)
+            if (checkSuccessTimes >= TIMES_VOLTAGE_CHECK)
             {
                 ret = RET_TEST_BAT_SUCCESS;
                 break;
             }
-            if (times >= MAX_TIMES_BAT_CHECK - 1)
+            if (times >= MAX_TIMES_VOLTAGE_CHECK - 1)
             {
                 ret = RET_TEST_BAT_ERROR;
                 break;

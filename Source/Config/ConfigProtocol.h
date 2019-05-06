@@ -19,6 +19,8 @@
 
 #define NPI_USE_UART    1
 
+#define BIAS_VOLTAGE    (-50)//(+312)//(+80)//(+176)//(+256)//(+70)//(+256)//(-50)//(+256)  //正向偏大256uA，校正
+
 #if defined BOARD_BLEMODULE_PA              //(蓝牙模块4*4)------------------------------------
     #warning "config-1       == BOARD_BLEMODULE_PA"             //0-自我表述
     #define BOARD_DEFINE            BOARD_DEFINE_BLEMODULE_PA   //1-引脚定义

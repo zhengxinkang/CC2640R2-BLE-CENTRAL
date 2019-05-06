@@ -30,6 +30,8 @@ typedef void (*OnReceived)(uint8_t* data, uint16_t len);
 #define NULL            ((void *)0)     ///< ¿ÕÖ¸Õë
 #endif
 
+void delay_step(uint32_t steps);
+
 //#ifndef Int8
 //#define Int8                char
 //#endif

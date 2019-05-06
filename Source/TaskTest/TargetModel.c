@@ -14,7 +14,9 @@
 
 
 static TARGET_MODEL targetModel = TARGET_MODEL_ERROR;
-void TargetModel_init()
+static void Trace_model(TARGET_MODEL model);
+
+void TargetModel_init(TARGET_MODEL model)
 {
     PortValue pinValue_s31 = PORT_VALUE_HIGH;
     PortValue pinValue_s31x = PORT_VALUE_HIGH;
@@ -41,84 +43,78 @@ void TargetModel_init()
         Task_sleep((10*1000)/Clock_tickPeriod);
     }
 
-    if
-    (
-        PORT_VALUE_LOW    ==pinValue_s31
-        &&PORT_VALUE_HIGH   ==pinValue_s31x
-    )
+    //如果初始化设置了类型，则无需去获取
+    if(model != TARGET_MODEL_UNKNOW)
+    {
+        targetModel = model;
+    }
+    else if(PORT_VALUE_LOW==pinValue_s31 && PORT_VALUE_HIGH==pinValue_s31x)
     {
         targetModel = TARGET_MODEL_S31;
-        TRACE_DEBUG("-------------------------------------------------------|\n");
-        TRACE_DEBUG("-------------------测试目标：S31-----------------------|\n");
-        TRACE_DEBUG("-------------------------------------------------------|\n");
     }
-    else if
-    (
-        PORT_VALUE_HIGH  ==pinValue_s31
-        &&PORT_VALUE_LOW   ==pinValue_s31x
-    )
+    else if(PORT_VALUE_HIGH  ==pinValue_s31 && PORT_VALUE_LOW   ==pinValue_s31x)
     {
         targetModel = TARGET_MODEL_S31X;
-        TRACE_DEBUG("-------------------------------------------------------|\n");
-        TRACE_DEBUG("-------------------测试目标：S31X----------------------|\n");
-        TRACE_DEBUG("-------------------------------------------------------|\n");
     }
     else
     {
         targetModel = TARGET_MODEL_ERROR;
-        TRACE_DEBUG("-------------------------------------------------------|\n");
-        TRACE_DEBUG("-------------------测试目标：错误，请检测设置后重启！----|\n");
-        TRACE_DEBUG("-------------------------------------------------------|\n");
     }
+    Trace_model(targetModel);
 }
 
 TARGET_MODEL TargetModel_get()
 {
-    switch(targetModel)
+    Trace_model(targetModel);
+    return targetModel;
+}
+
+static void Trace_model(TARGET_MODEL model)
+{
+    switch(model)
     {
+        case TARGET_MODEL_UNKNOW:
         case TARGET_MODEL_ERROR:
         {
-            TRACE_DEBUG("\n");
-            TRACE_DEBUG("\n\n\n-------------------------------------------------\n");
-            TRACE_DEBUG("------检测机型号设置错误，请设置检测机的型号开关后重启!-----\n");
-            TRACE_DEBUG("-------------------------------------------------\n\n");
+            TRACE_DEBUG("-------------------------------------------------------|\n");
+            TRACE_DEBUG("-------------------测试目标：错误，请修改配置后重启！----|\n");
+            TRACE_DEBUG("-------------------------------------------------------|\n");
             break;
         }
         case TARGET_MODEL_S31:
         {
-            TRACE_DEBUG("\n\n\n-------------------------------------------------|\n");
-            TRACE_DEBUG("------检测机型号设置为：S31----------------------|\n");
-            TRACE_DEBUG("-------------------------------------------------|\n\n");
+            TRACE_DEBUG("-------------------------------------------------------|\n");
+            TRACE_DEBUG("-------------------测试目标：S31------------------------|\n");
+            TRACE_DEBUG("-------------------------------------------------------|\n\n");
             break;
         }
         case TARGET_MODEL_S31X:
         {
-            TRACE_DEBUG("\n\n\n-------------------------------------------------|\n");
-            TRACE_DEBUG("------检测机型号设置为：S31X---------------------|\n");
-            TRACE_DEBUG("-------------------------------------------------|\n\n");
+            TRACE_DEBUG("-------------------------------------------------------|\n");
+            TRACE_DEBUG("-------------------测试目标：S31X-----------------------|\n");
+            TRACE_DEBUG("-------------------------------------------------------|\n\n");
             break;
         }
         case TARGET_MODEL_D3111:
         {
-            TRACE_DEBUG("\n\n\n-------------------------------------------------|\n");
-            TRACE_DEBUG("------检测机型号设置为：D3111----------------------|\n");
-            TRACE_DEBUG("-------------------------------------------------|\n\n");
+            TRACE_DEBUG("-------------------------------------------------------|\n");
+            TRACE_DEBUG("-------------------测试目标：D3111----------------------|\n");
+            TRACE_DEBUG("-------------------------------------------------------|\n\n");
             break;
         }
         case TARGET_MODEL_D3151:
         {
-            TRACE_DEBUG("\n\n\n-------------------------------------------------|\n");
-            TRACE_DEBUG("------检测机型号设置为：D3151----------------------|\n");
-            TRACE_DEBUG("-------------------------------------------------|\n\n");
+            TRACE_DEBUG("-------------------------------------------------------|\n");
+            TRACE_DEBUG("-------------------测试目标：D3151----------------------|\n");
+            TRACE_DEBUG("-------------------------------------------------------|\n\n");
             break;
         }
         case TARGET_MODEL_D3100:
         {
-            TRACE_DEBUG("\n\n\n-------------------------------------------------|\n");
-            TRACE_DEBUG("------检测机型号设置为：D3100----------------------|\n");
-            TRACE_DEBUG("-------------------------------------------------|\n\n");
+            TRACE_DEBUG("-------------------------------------------------------|\n");
+            TRACE_DEBUG("-------------------测试目标：D3100----------------------|\n");
+            TRACE_DEBUG("-------------------------------------------------------|\n\n");
             break;
         }
     }
-    return targetModel;
 }

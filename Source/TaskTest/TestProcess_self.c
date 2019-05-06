@@ -17,7 +17,7 @@
 RET_TEST_SELF TestProcess_self( )
 {
     RET_TEST_SELF ret;
-    Task_sleep((3000*1000)/Clock_tickPeriod);
+    Task_sleep((200*1000)/Clock_tickPeriod);
     //发送开始自测指令----------------------------------
     SendCmd_qcTest_selfTest(NULL, 0);
 

@@ -15,9 +15,13 @@
 #include "Driver_gpio.h"
 #include "Driver_portUart.h"
 #include "Driver_uart.h"
+#include "Hal_electricCurrent.h"
+#include "TestProcess_resetTarget.h"
 
 
-#define TIMEOUT_TEST_PROCESS_POWERMODE       6000000//60秒
+#define TIMEOUT_TEST_PROCESS_POWERMODE      60000//60秒
+#define MIN_CURRENT                         65
+#define MAX_TIME_POWER_CHECK                2
 void SetPin_lowPower();
 
 RET_TEST_POWER_MODE TestProcess_powerMode(POWER_MODE powerMode)
@@ -27,36 +31,53 @@ RET_TEST_POWER_MODE TestProcess_powerMode(POWER_MODE powerMode)
     {
         case POWER_MODE_SLEEP:
         {
-            //设置功耗模式
-            Task_sleep((200*1000)/Clock_tickPeriod);
-            //消除之前的事件
-            TestEvent_pend(EVENT_TESTPROCESS_CONFIRM_SUCCESS|EVENT_TESTPROCESS_CONFIRM_FAIL, 1);
-            uint8_t para = POWER_MODE_SLEEP;
-            SendCmd_qcTest_setDevicePower(&para, 1);
-            Task_sleep((200*1000)/Clock_tickPeriod);
-            SetPin_lowPower();
+            for(uint8_t time=0; time<MAX_TIME_POWER_CHECK; time++)
+            {
+                //设置功耗模式
+                Task_sleep((200*1000)/Clock_tickPeriod);
 
-            //延迟500ms
-            Task_sleep((500*1000)/Clock_tickPeriod);
-            TRACE_DEBUG("<<<<<<等待睡眠功耗测试结果\n");
-            TRACE_DEBUG("<<<<<<测试通过（电流小于00.040）请按下【成功】，测试不通过请按下【失败】\n");
+                uint8_t para = POWER_MODE_SLEEP;
+                SendCmd_qcTest_setDevicePower(&para, 1);
+                Task_sleep((200*1000)/Clock_tickPeriod);
+                SetPin_lowPower();
 
-            //等待按键消息10秒钟
-            uint32_t events = TestEvent_pend(EVENT_TESTPROCESS_CONFIRM_SUCCESS|EVENT_TESTPROCESS_CONFIRM_FAIL, TIMEOUT_TEST_PROCESS_POWERMODE);
-            if (events & EVENT_TESTPROCESS_CONFIRM_SUCCESS)
-            {
-                ret = RET_TEST_POWER_MODE_SUCCESS;
-                TRACE_DEBUG("睡眠功耗确认为“成功”.\n");
-            }
-            else if (events & EVENT_TESTPROCESS_CONFIRM_FAIL)
-            {
-                ret = RET_TEST_POWER_MODE_ERROR;
-                TRACE_DEBUG("睡眠功耗确认为“失败”.\n");
-            }
-            else
-            {
-                ret = RET_TEST_POWER_MODE_ERROR;
-                TRACE_DEBUG("睡眠功耗确认%dms后超时！\n",TIMEOUT_TEST_PROCESS_POWERMODE);
+                //            TRACE_DEBUG("<<<<<<测试通过（电流小于00.060）请按下【成功】，测试不通过请按下【失败】\n");
+                Task_sleep((5000*1000)/Clock_tickPeriod);
+
+                uint32_t avgCurrent = avgCurrentCount(0, false, 8);
+                if(avgCurrent <= MIN_CURRENT)
+                {
+                    ret = RET_TEST_POWER_MODE_SUCCESS;
+                    TRACE_CODE("睡眠功耗确认为“成功”,休眠功耗为%d uA.\n", avgCurrent);
+                    break;
+                }
+                else
+                {
+                    //再次读取
+                    TRACE_CODE("睡眠功耗第一次确认失败,休眠功耗为%d uA!再次确认。\n", avgCurrent);
+                    Task_sleep((2000*1000)/Clock_tickPeriod);
+                    avgCurrent = avgCurrentCount(0, false, 8);
+                    if(avgCurrent <= MIN_CURRENT)
+                    {
+                        ret = RET_TEST_POWER_MODE_SUCCESS;
+                        TRACE_CODE("睡眠功耗确认为“成功”,休眠功耗为%d uA.\n", avgCurrent);
+                        break;
+                    }
+                    else
+                    {
+                        ret = RET_TEST_POWER_MODE_ERROR;
+                        if(time >= MAX_TIME_POWER_CHECK-1)
+                        {
+                            TRACE_CODE("睡眠功耗确认为“失败”,休眠功耗为%d uA!!!尝试%d次后放弃。\n", avgCurrent, MAX_TIME_POWER_CHECK);
+                            break;
+                        }
+                        else
+                        {
+                            TRACE_CODE("睡眠功耗确认为“失败”,休眠功耗为%d uA!!!,再次尝试。\n", avgCurrent);
+                            TestProcess_resetTarget();
+                        }
+                    }
+                }
             }
             break;
         }

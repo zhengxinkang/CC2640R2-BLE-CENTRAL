@@ -224,18 +224,18 @@ void BF_UtilProcessEvt(uint8_t timerID)
 //  }
 //}
 
-//bool BF_UtilCompairHex(uint8_t *hexA, uint8_t *hexB, uint8_t len)
-//{
-//  uint8_t i;
-//  for(i = 0;i < len;i++)
-//  {
-//    if(*(hexA + i) != *(hexB + i))
-//    {
-//      return false;
-//    }
-//  }
-//  return true;
-//}
+bool BF_UtilCompairHex(uint8_t *hexA, uint8_t *hexB, uint8_t len)
+{
+  uint8_t i;
+  for(i = 0;i < len;i++)
+  {
+    if(*(hexA + i) != *(hexB + i))
+    {
+      return false;
+    }
+  }
+  return true;
+}
 
 
 //void BF_UtilGetRand(void *array, uint8_t len, uint8_t size)
@@ -299,4 +299,8 @@ void BF_UtilConverByteBigEndian(uint8_t *array, void *data, uint8_t size, bool t
   }
 }
 
+void BF_taskSleepMs(uint32_t ms)
+{
+    Task_sleep((ms * 1000) / Clock_tickPeriod);
+}
 

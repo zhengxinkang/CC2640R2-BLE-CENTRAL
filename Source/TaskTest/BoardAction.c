@@ -24,7 +24,7 @@ void BoardAction_setModeNormal()
     Driver_uartGpioSetHigh();
     //¸´Î»Ä¿±ê°å
     Driver_gpioSet(PORT_TEST_RESET_TARGET, PORT_VALUE_LOW);
-    Task_sleep((10*1000)/Clock_tickPeriod);
+    Task_sleep((30*1000)/Clock_tickPeriod);
     Driver_gpioSet(PORT_TEST_RESET_TARGET, PORT_VALUE_HIGH);
 }
 

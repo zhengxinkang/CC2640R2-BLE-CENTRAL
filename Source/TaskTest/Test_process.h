@@ -95,6 +95,7 @@ typedef enum{
 
 TEST_PROCESS_STATE Test_process();
 bool IsBusy_testProcess();
+void AddBle_process();
 void Test_process_setMacAddr(uint8_t* addr);
 
 

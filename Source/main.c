@@ -179,7 +179,7 @@ int main()
   /* Kick off profile - Priority 3 */
   GAPCentralRole_createTask();
 
-  /* Kick off application - Priority 1 */
+  /* Kick off application - Priority 2 */
   SimpleBLECentral_createTask();
 
   Test_createTask();

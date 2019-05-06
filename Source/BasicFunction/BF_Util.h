@@ -88,9 +88,10 @@ void BF_UtilWaitHandle(uint8_t thisIndex);
 void BF_UtilProcessEvt(uint8_t timerID);
 
 //void BF_UtilReverseArray(uint8_t *array, uint8_t len);
-//bool BF_UtilCompairHex(uint8_t *hexA, uint8_t *hexB, uint8_t len);
+bool BF_UtilCompairHex(uint8_t *hexA, uint8_t *hexB, uint8_t len);
 //void BF_UtilGetRand(void *array, uint8_t len, uint8_t size);
 void BF_UtilConverByteBigEndian(uint8_t *array, void *data, uint8_t size, bool toByte);
+void BF_taskSleepMs(uint32_t ms);
 /*********************************************************************
 *********************************************************************/
 

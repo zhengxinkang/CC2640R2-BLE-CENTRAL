@@ -12,21 +12,22 @@
 #include "Trace.h"
 #include "IWUP_cmd_group/CmdGroup_qcTest.h"
 #include "TestProcess_switch.h"
-#include "Driver_gpio.h"
+#include "Hal_expandOutput.h"
 
 #define TIMEOUT_TEST_GET_DEVICESTATUS   500
 #define TIMEOUT_TEST_GET_DEVICESTATUS   500
 #define TIMEOUT_TEST_GET_EVENT          1000
+#define TIMES_RELOCK_CHECK              6
 
 RET_TEST_SWITCH TestProcess_antiLock()
 {
     RET_TEST_SWITCH ret = RET_TEST_SWITCH_SUCCESS;
 
-    for(uint8_t i=0; i<4; i++)
+    for(uint8_t i=0; i<6; i++)
     {
         bool dir = i%2;
         //反锁开关转换----------------------------------
-        Driver_gpioSet(PORT_ANTI_LOCK, (PortValue)dir);
+        Hal_expandOutput(USR_RELOCK, (PortValue)dir);
         Task_sleep((50*1000)/Clock_tickPeriod);
         //获取锁状态
         SendCmd_qcTest_getDeviceStatus();
@@ -55,6 +56,7 @@ RET_TEST_SWITCH TestProcess_antiLock()
             break;
         }
     }
+    Hal_expandOutput(USR_RELOCK, PORT_VALUE_HIGH);
     return ret;
 }
 
@@ -66,7 +68,7 @@ RET_TEST_SWITCH TestProcess_preventDismantle()
     {
         bool dir = i%2;
         //反锁开关转换----------------------------------
-        Driver_gpioSet(PORT_PREVENT_DISMANTLE, (PortValue)dir);
+        Hal_expandOutput(FQ_SW, (PortValue)dir);
         Task_sleep((50*1000)/Clock_tickPeriod);
         //获取锁状态
         SendCmd_qcTest_getDeviceStatus();
@@ -95,6 +97,7 @@ RET_TEST_SWITCH TestProcess_preventDismantle()
             break;
         }
     }
+    Hal_expandOutput(FQ_SW, PORT_VALUE_HIGH);
     return ret;
 }
 
@@ -105,11 +108,11 @@ RET_TEST_SWITCH TestProcess_settingButton()
     for(uint8_t i=0; i<3; i++)
     {
         //触发设置键---下降沿-------------------------------
-        Driver_gpioSet(PORT_TEST_SETTING_BUTTON, PORT_VALUE_HIGH);
+        Hal_expandOutput(USR_SET, PORT_VALUE_HIGH);
         Task_sleep((50*1000)/Clock_tickPeriod);
-        Driver_gpioSet(PORT_TEST_SETTING_BUTTON, PORT_VALUE_LOW);
+        Hal_expandOutput(USR_SET, PORT_VALUE_LOW);
         Task_sleep((50*1000)/Clock_tickPeriod);
-        Driver_gpioSet(PORT_TEST_SETTING_BUTTON, PORT_VALUE_HIGH);
+        Hal_expandOutput(USR_SET, PORT_VALUE_HIGH);
 
         //等待接收setting button事件
         uint32_t events = TestEvent_pend(EVENT_TESTPROCESS_EVENT_SETTINGBUTTON, TIMEOUT_TEST_GET_EVENT);
@@ -126,6 +129,7 @@ RET_TEST_SWITCH TestProcess_settingButton()
             break;
         }
     }
+    Hal_expandOutput(USR_SET, PORT_VALUE_HIGH);
     return ret;
 }
 
@@ -137,11 +141,11 @@ RET_TEST_SWITCH TestProcess_clearButton()
     {
         //触发设置键---下降沿-------------------------------
         Task_sleep((50*1000)/Clock_tickPeriod);
-        Driver_gpioSet(PORT_TEST_CLEAR_BUTTON, PORT_VALUE_HIGH);
+        Hal_expandOutput(USR_CLR, PORT_VALUE_HIGH);
         Task_sleep((50*1000)/Clock_tickPeriod);
-        Driver_gpioSet(PORT_TEST_CLEAR_BUTTON, PORT_VALUE_LOW);
+        Hal_expandOutput(USR_CLR, PORT_VALUE_LOW);
         Task_sleep((50*1000)/Clock_tickPeriod);
-        Driver_gpioSet(PORT_TEST_CLEAR_BUTTON, PORT_VALUE_HIGH);
+        Hal_expandOutput(USR_CLR, PORT_VALUE_HIGH);
         Task_sleep((50*1000)/Clock_tickPeriod);
 
         //等待接收clear button事件
@@ -159,6 +163,7 @@ RET_TEST_SWITCH TestProcess_clearButton()
             break;
         }
     }
+    Hal_expandOutput(USR_CLR, PORT_VALUE_HIGH);
     return ret;
 }
 
@@ -169,11 +174,11 @@ RET_TEST_SWITCH TestProcess_obliqueTongue()
     for(uint8_t i=0; i<3; i++)
     {
         //触发设置键---下降沿-------------------------------
-        Driver_gpioSet(PORT_TEST_OBLIQUE_LOCK_TONGUE, PORT_VALUE_HIGH);
+        Hal_expandOutput(LATCH_BOLT, PORT_VALUE_HIGH);
         Task_sleep((50*1000)/Clock_tickPeriod);
-        Driver_gpioSet(PORT_TEST_OBLIQUE_LOCK_TONGUE, PORT_VALUE_LOW);
+        Hal_expandOutput(LATCH_BOLT, PORT_VALUE_LOW);
         Task_sleep((50*1000)/Clock_tickPeriod);
-        Driver_gpioSet(PORT_TEST_OBLIQUE_LOCK_TONGUE, PORT_VALUE_HIGH);
+        Hal_expandOutput(LATCH_BOLT, PORT_VALUE_HIGH);
 
         //等待接收斜舌缩回事件
         uint32_t events = TestEvent_pend(EVENT_TESTPROCESS_EVENT_OBLIQUETONGUE, TIMEOUT_TEST_GET_EVENT);
@@ -190,5 +195,6 @@ RET_TEST_SWITCH TestProcess_obliqueTongue()
             break;
         }
     }
+    Hal_expandOutput(LATCH_BOLT, PORT_VALUE_HIGH);
     return ret;
 }

@@ -97,6 +97,7 @@ typedef enum{
 extern void SimpleBLECentral_createTask(void);
 extern void MyEvent_post(UArg arg);
 void simpleCentral_setSearchDeviceAddr(uint8_t* searchAddr);
+void simpleCentral_searchCondition(uint8_t minRssi, uint8_t timesSearchSatisfy, uint8_t timesSearchNoSatisfy);
 extern void Timer_sendDataHandle(UArg arg);
 extern void MyEvent_sendDataHandle();
 void simpleCentral_action();
@@ -105,9 +106,11 @@ void simpleCentral_action();
 extern void             BleTest_writeData();
 extern void             BleTest_readData();
 extern bool             BleTest_finish(bool isSuccess);
+extern void             simpleCentral_clearBindingStatus();
+extern bool             simpleCentral_getBindingStatus();
 
-RET_FIND_DEVICE_INLIST  BleTest_findDeviceInList();
-RET_CONNECT             BleTest_connect();
+RET_FIND_DEVICE_INLIST  BleTest_findDeviceInList(uint8_t* addr);
+RET_CONNECT             BleTest_connect(bool isFirstConnect);
 RET_DISCOVER            BleTest_discover();
 /*********************************************************************
 *********************************************************************/

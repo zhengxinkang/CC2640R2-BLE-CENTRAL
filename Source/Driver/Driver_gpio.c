@@ -12,10 +12,44 @@
 #include "Test_process.h"
 #include "TaskTest.h"
 
+#define PORT_ADC_DR                             IOID_0
+#define PORT_ADC_CS                             IOID_1
+//#define PORT_ADC_SCK                            IOID_27
+//#define PORT_ADC_SDO                            IOID_28
+//#define PORT_ADC_SDI                            IOID_29
+//#define PORT_ADC_RST                            IOID_30
+
 static PIN_Config GpioPinTable[] =
 {
-    PORT_POWER_BAT                  | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_LOW      | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
-    PORT_POWER_USB                  | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_LOW      | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+    PORT_OLED_SCLK                  | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_LOW      | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+    PORT_OLED_SDIN                  | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_LOW      | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+    PORT_OLED_RST                   | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_LOW      | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+    PORT_OLED_DC                    | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_LOW      | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+    PORT_OLED_CS                    | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_HIGH     | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+
+//    PORT_AUDIO_DATA                 | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_LOW      | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+//    PORT_AUDIO_CS                   | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_LOW      | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+//    PORT_AUDIO_CLK                  | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_HIGH     | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+
+//    PORT_SPI_DATA                   | PIN_INPUT_EN          | PIN_PULLUP        | PIN_IRQ_DIS   | PIN_HYSTERESIS,
+//    PORT_SPI_CLK                    | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_LOW      | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+    PORT_SP_OUT                     | PIN_INPUT_EN          | PIN_NOPULL        | PIN_IRQ_NEGEDGE| PIN_HYSTERESIS,
+    PORT_HC595_SRCLRn               | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_LOW      | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+    PORT_HC595_SRCLK                | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_LOW      | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+    PORT_HC595_RCLK                 | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_LOW      | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+    PORT_HC595_SER                  | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_LOW      | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+
+    PORT_HC165_SL                   | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_HIGH     | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+    PORT_HC165_CLK                  | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_LOW      | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+    PORT_HC165_QH                   | PIN_INPUT_EN          | PIN_PULLUP        | PIN_IRQ_DIS   | PIN_HYSTERESIS,
+
+    PORT_ADC_DR                     | PIN_INPUT_EN          | PIN_NOPULL        | PIN_IRQ_DIS   | PIN_HYSTERESIS,
+    PORT_ADC_CS                     | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_HIGH     | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+    PORT_ADC_SCK                    | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_HIGH     | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+    PORT_ADC_SDO                    | PIN_INPUT_EN          | PIN_NOPULL        | PIN_IRQ_DIS   | PIN_HYSTERESIS,
+    PORT_ADC_SDI                    | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_HIGH     | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+    PORT_ADC_RST                    | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_HIGH     | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
+
     PORT_MOTOR_FORWARD              | PIN_INPUT_EN          | PIN_PULLUP        | PIN_IRQ_DIS   | PIN_HYSTERESIS,
     PORT_MOTOR_REVERSAL             | PIN_INPUT_EN          | PIN_PULLUP        | PIN_IRQ_DIS   | PIN_HYSTERESIS,
     PORT_ANTI_LOCK                  | PIN_GPIO_OUTPUT_EN    | PIN_GPIO_HIGH     | PIN_PUSHPULL  | PIN_DRVSTR_MAX,
@@ -35,7 +69,7 @@ static PIN_Config GpioPinTable[] =
 
 static PIN_Handle hGpioPin = NULL;
 static PIN_State pinState;
-static void TestStart_pinCbFxn(PIN_Handle handle, PIN_Id pinId);
+static void callbackFxn(PIN_Handle handle, PIN_Id pinId);
 
 uint8_t Driver_gpioInit()
 {
@@ -46,7 +80,7 @@ uint8_t Driver_gpioInit()
         ret = false;
     }
     /* Setup callback for button pins */
-    if (PIN_registerIntCb(hGpioPin, TestStart_pinCbFxn) != 0)
+    if (PIN_registerIntCb(hGpioPin, callbackFxn) != 0)
     {
         /* Error registering button callback function */
         ret = false;
@@ -55,10 +89,13 @@ uint8_t Driver_gpioInit()
 }
 
 //PORT_TEST_START pin Cb >>> PORT_TEST_START
-static void TestStart_pinCbFxn(PIN_Handle handle, PIN_Id pinId)
+static void callbackFxn(PIN_Handle handle, PIN_Id pinId)
 {
-    if(!IsBusy_testProcess())
-        TestEvent_post(EVENT_START_TEST);
+    if(PORT_SP_OUT == pinId)
+    {
+        TRACE_CODE("…˘“Ù ‰»Î÷–∂œ°£\n");
+        TestEvent_post(EVENT_TESTPROCESS_EVENT_VOICE);
+    }
 }
 
 uint8_t Driver_gpioSet(PIN_Id pinId, PortValue portValue)

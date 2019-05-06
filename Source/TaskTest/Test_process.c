@@ -9,6 +9,12 @@
 #include "Trace.h"
 #include "stdbool.h"
 #include "string.h"
+#include "BoardAction.h"
+#include "BF_Util.h"
+#include "KeyBoard_action.h"
+#include "Hal_oled.h"
+#include "UI.h"
+#include "Lock_atcion.h"
 #include "Test_process.h"
 #include "TestProcess_ble.h"
 #include "TestProcess_bat.h"
@@ -53,17 +59,22 @@ uint8_t processActive[TOTAL_TEST_ITEM] = {  1,      1,      1,      1,      1,  
 //低功耗测试
 //uint8_t processActive[TOTAL_TEST_ITEM] = {  1,      0,      1,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      1,      0,      0,      0,      0,      0,      0,      0};
 //BLE
-//uint8_t processActive[TOTAL_TEST_ITEM] = {  1,      0,      1,      0,      0,      0,      1,      0,      0,      0,      0,      0,      0,      0,      1,      0,      0,      0,      0,      1,      0,      0};
+//uint8_t processActive[TOTAL_TEST_ITEM] = {  1,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      1,      0,      0};
+//LED
+//uint8_t processActive[TOTAL_TEST_ITEM] = {  1,      1,      1,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      1,      0,      0,      0};
 
                                                    //0     //1     //2     //3     //4     //5     //6
 //自测项目                                                                          //BLE   //ZIG   //EEPROM//指纹    //FLASH //RTC   //ADC
 uint8_t processSelfActive[LEN_SELF_TEST_RESULT] = { 1,      1,      1,      1,      1,      1,      1};
 
-#define     GOTO_TESTEND //{goto testEnd;}
+#define     GOTO_TESTEND  {goto testEnd;}
+#define     GOTO_TESTOUT  {goto testOut;}
 TEST_PROCESS_STATE Test_process()
 {
     //测试开始
     memset(checkResult, 0x00, sizeof(checkResult));
+    memset(checkSelfResult, 0x01, sizeof(checkSelfResult));
+
     uint8_t testItems = 0;
 
     //获取检测机 设置
@@ -76,10 +87,11 @@ TEST_PROCESS_STATE Test_process()
     }
 
     TRACE_DEBUG("---测试开始---------\n");
+    UI(UI_TYPE_READY, 0, NULL, 0);
     //0测试项---USB电源检测--------------------------------------------------------------------
-    //TODO:切换到USB电源
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-usb power   ", 0);
         test_process_state = TEST_PROCESS_STATE_USB;
         TRACE_DEBUG("---%d---USB电源检测-----------",testItems);
         RET_TEST_BAT ret_bat = TestProcess_usb();
@@ -98,10 +110,10 @@ TEST_PROCESS_STATE Test_process()
     testItems++;
 
     //1测试项---电池电源检测------------------------------------------------------------
-    //TODO:切换到电池电源
     test_process_state = TEST_PROCESS_STATE_BAT;
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-bat power  ", 0);
         TRACE_DEBUG("---%d---电池电源检测----------",testItems);
         RET_TEST_BAT ret_bat = TestProcess_bat();
         checkResult[testItems] = ret_bat;
@@ -124,6 +136,7 @@ TEST_PROCESS_STATE Test_process()
     //2测试项---UART测试通讯--------------------------------------------------------------------
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-uart        ", 0);
         test_process_state = TEST_PROCESS_STATE_UART_ECHO;
         TRACE_DEBUG("---%d---UART测试通讯----------",testItems);
         RET_TEST_UARTECHO ret_echo = TestProcess_uartEcho();
@@ -150,11 +163,12 @@ TEST_PROCESS_STATE Test_process()
         {
             if(TEST_RESULT_SUCCESS == testResult)
             {
+                UI(UI_TYPE_TESTED_PASS, 0, NULL, 0);
                 TRACE_DEBUG(">>>读取上次的测试结果：已经测试过了，上次测试结果为：成功。\n");
-                TRACE_DEBUG(">>>需要重新测试请按：成功。\n>>>不需重新测试请按：失败。\n");
+                TRACE_DEBUG(">>>需要重新测试请按：重测。\n>>>不需重新测试请按：退出。\n");
                 if(RET_TEST_SELECT_SUCCESS != TestProcess_select())
                 {
-                    goto testOut;
+                    GOTO_TESTOUT
                 }
             }
             else if(TEST_RESULT_EMPTY == testResult)
@@ -163,26 +177,28 @@ TEST_PROCESS_STATE Test_process()
             }
             else
             {
+                UI(UI_TYPE_TESTED_FAIL, testResult, NULL, 0);
                 TRACE_DEBUG(">>>读取上次的测试结果：测试过了，上次测试失败（%d）！\n",testResult);
-                TRACE_DEBUG(">>>需要重新测试请按：成功。\n>>>不需重新测试请按：失败。\n");
+                TRACE_DEBUG(">>>需要重新测试请按：重测。\n>>>不需重新测试请按：退出。\n");
                 if(RET_TEST_SELECT_SUCCESS != TestProcess_select())
                 {
-                    goto testOut;
+                    GOTO_TESTOUT
                 }
             }
         }
         else
         {
             TRACE_DEBUG(">>>读取上次测试结果：失败！错误码：%d.\n\n",testResult);
-            goto testOut;
+            GOTO_TESTEND
         }
     }
 
     //3测试项---擦除EEPROM--------------------------------------------------------------------
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-erase eeprom", 0);
         test_process_state = TEST_PROCESS_STATE_ERASE_EEPROM;
-        TRACE_DEBUG("---%d---擦除EEPROM-----------",testItems);
+        TRACE_DEBUG("---%d---擦除EEPROM------------",testItems);
         RET_TEST_WRITEREAD_TESTRESULT ret_eraseTestResult = TestProcess_clearTestResult(test_process_state);
         checkResult[testItems] = ret_eraseTestResult;
         if(0x00 == checkResult[testItems])
@@ -201,6 +217,7 @@ TEST_PROCESS_STATE Test_process()
     //4测试项---配置写入--------------------------------------------------------------------
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-settingWrite", 0);
         test_process_state = TEST_PROCESS_STATE_SET_INFO;
         TRACE_DEBUG("---%d---配置写入--------------",testItems);
         RET_TEST_SETINFO ret_setInfo = TestProcess_setInfo(targetModel);
@@ -221,6 +238,7 @@ TEST_PROCESS_STATE Test_process()
     //5测试项---配置校验--------------------------------------------------------------------
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-settingCheck", 0);
         test_process_state = TEST_PROCESS_STATE_SET_INFO;
         TRACE_DEBUG("---%d---配置校验--------------",testItems);
         RET_TEST_SETINFO ret_setInfo = TestProcess_readInfo(targetModel);
@@ -243,13 +261,27 @@ TEST_PROCESS_STATE Test_process()
     //6测试项---锁自测------------------------------------------------------------------------
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-lockSelfChk ", 0);
         //自测：目标板上电需要大约4秒时间进行自测
         test_process_state = TEST_PROCESS_STATE_SELFCHECK;
         TRACE_DEBUG("---%d---锁自测----------------",testItems);
-        RET_TEST_SELF ret_self = TestProcess_self(targetModel);
+//        RET_TEST_SELF ret_self = TestProcess_self(targetModel);
+        RET_TEST_SELF ret_self = TestProcess_self();
         if(RET_TEST_SELF_SUCCESS == ret_self)
         {
             memcpy(checkSelfResult, selfTestResult, LEN_SELF_TEST_RESULT);
+            if(TARGET_MODEL_D3111 == targetModel)
+            {
+                //D31-11不带zigbee模块，跳过zigbee模块检测
+                checkSelfResult[1] = 0x01;
+            }
+            else if(TARGET_MODEL_D3100 == targetModel)
+            {
+                //D31-00不带zigbee模块，跳过zigbee模块检测
+                checkSelfResult[1] = 0x01;
+                //D31-00不带指纹模块，跳过指纹模块检测
+                checkSelfResult[3] = 0x01;
+            }
             for(uint8_t i=0; i<LEN_SELF_TEST_RESULT; i++)
             {
                 if(0x01 != checkSelfResult[i])
@@ -298,10 +330,12 @@ TEST_PROCESS_STATE Test_process()
         }
         else
         {
-            memset(checkSelfResult, 0x01, LEN_SELF_TEST_RESULT);
+
             test_process_state = TEST_PROCESS_STATE_SELFCHECK_FAIL;
             TRACE_DEBUG(">>>锁自测：失败！获取锁自测结果失败！\n\n",);
+            memset(checkSelfResult, 0xff, LEN_SELF_TEST_RESULT);
         }
+
         if(TEST_PROCESS_STATE_SELFCHECK_FAIL == test_process_state)
         {
             test_process_state = TEST_PROCESS_STATE_SELFCHECK_FAIL;
@@ -314,11 +348,12 @@ TEST_PROCESS_STATE Test_process()
     }
     testItems ++;
 
-    //8测试项---电机正转测试--------------------------------------------------------------------------------
+    //7测试项---电机正转测试--------------------------------------------------------------------------------
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-motor Zhen  ", 0);
         test_process_state = TEST_PROCESS_STATE_MOTOR_FORWARD;
-        TRACE_DEBUG("---%d---电机正转测试-----------",testItems);
+        TRACE_DEBUG("---%d---电机正转测试----------",testItems);
         RET_TEST_MOTOR ret_motor = TestProcess_motorForward();
         checkResult[testItems] = ret_motor;
         if(0x00 == checkResult[testItems])
@@ -334,11 +369,12 @@ TEST_PROCESS_STATE Test_process()
     }
     testItems++;
 
-    //9测试项---电机反转测试---------------------------------------------------------------------------------
+    //8测试项---电机反转测试---------------------------------------------------------------------------------
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-motor Fan   ", 0);
         test_process_state = TEST_PROCESS_STATE_MOTOR_REVERSAL;
-        TRACE_DEBUG("---%d---电机反转测试-----------",testItems);
+        TRACE_DEBUG("---%d---电机反转测试----------",testItems);
         RET_TEST_MOTOR ret_motor = TestProcess_motorReversal();
         checkResult[testItems] = ret_motor;
         if(0x00 == checkResult[testItems])
@@ -354,11 +390,12 @@ TEST_PROCESS_STATE Test_process()
     }
     testItems++;
 
-    //10测试项---反锁旋钮检测--------------------------------------------------------------------
+    //9测试项---反锁旋钮检测--------------------------------------------------------------------
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-anti lock   ", 0);
         test_process_state = TEST_PROCESS_STATE_ANTI_LOCK;
-        TRACE_DEBUG("---%d---反锁旋钮检测---------",testItems);
+        TRACE_DEBUG("---%d---反锁旋钮检测----------",testItems);
         RET_TEST_SWITCH ret_antiLock = TestProcess_antiLock();
         checkResult[testItems] = ret_antiLock;
         if (0x00 == checkResult[testItems])
@@ -374,11 +411,12 @@ TEST_PROCESS_STATE Test_process()
     }
     testItems++;
 
-    //11测试项---防撬开关检测--------------------------------------------------------------------
+    //10测试项---防撬开关检测--------------------------------------------------------------------
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-fanqiao     ", 0);
         test_process_state = TEST_PROCESS_STATE_PREVENT_DISMANTLE;
-        TRACE_DEBUG("---%d---防撬开关检测----------",testItems);
+        TRACE_DEBUG("---%d---防撬开关检测---------",testItems);
         RET_TEST_SWITCH ret_preventDismantle = TestProcess_preventDismantle();
         checkResult[testItems] = ret_preventDismantle;
         if (0x00 == checkResult[testItems])
@@ -395,9 +433,10 @@ TEST_PROCESS_STATE Test_process()
     }
     testItems++;
 
-    //12测试项---设置键--------------------------------------------------------------------
+    //11测试项---设置键--------------------------------------------------------------------
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-set btn     ", 0);
         test_process_state = TEST_PROCESS_STATE_SETTING_BUTTON;
         TRACE_DEBUG("---%d---设置键---------------",testItems);
         RET_TEST_SWITCH ret_settingButton = TestProcess_settingButton();
@@ -415,9 +454,10 @@ TEST_PROCESS_STATE Test_process()
     }
     testItems++;
 
-    //13测试项---清空键--------------------------------------------------------------------
+    //12测试项---清空键--------------------------------------------------------------------
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-clear btn   ", 0);
         test_process_state = TEST_PROCESS_STATE_CLEAR_BUTTON;
         TRACE_DEBUG("---%d---清空键---------------",testItems);
         RET_TEST_SWITCH ret_clearButton = TestProcess_clearButton();
@@ -435,9 +475,10 @@ TEST_PROCESS_STATE Test_process()
     }
     testItems++;
 
-    //14测试项---斜舌--------------------------------------------------------------------
+    //13测试项---斜舌--------------------------------------------------------------------
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-xieshe      ", 0);
         test_process_state = TEST_PROCESS_STATE_OBLIQUE_TONGUE;
         TRACE_DEBUG("---%d---斜舌-----------------",testItems);
         RET_TEST_SWITCH ret_obliqueTonque = TestProcess_obliqueTongue();
@@ -455,9 +496,10 @@ TEST_PROCESS_STATE Test_process()
     }
     testItems++;
 
-    //15测试项---休眠功耗测试--------------------------------------------------------------------
+    //14测试项---休眠功耗测试--------------------------------------------------------------------
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-min power   ", 0);
         test_process_state = TEST_PROCESS_STATE_POWER_MIN;
         TRACE_DEBUG("---%d---休眠功耗测试---------",testItems);
         RET_TEST_POWER_MODE ret_powerModeSleep = TestProcess_powerMode(POWER_MODE_SLEEP);
@@ -478,9 +520,10 @@ TEST_PROCESS_STATE Test_process()
     }
     testItems++;
 
-    //16测试项---刷卡测试----------------------------------------------------------------------------
+    //15测试项---刷卡测试----------------------------------------------------------------------------
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-card        ", 0);
         test_process_state = TEST_PROCESS_STATE_CARD;
         TRACE_DEBUG("---%d---刷卡测试-------------",testItems);
         RET_TEST_CARD ret_card = TestProcess_card();
@@ -493,14 +536,15 @@ TEST_PROCESS_STATE Test_process()
          {
              TRACE_DEBUG(">>>刷卡测试：失败！错误码：%d.\n\n", checkResult[testItems]);
              test_process_state = TEST_PROCESS_STATE_CARD_FAIL;
-             //        GOTO_TESTEND
+             GOTO_TESTEND
          }
     }
     testItems++;
 
-    //17测试项---键盘测试-------------------------------------------------------------------------------
+    //16测试项---键盘测试-------------------------------------------------------------------------------
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-touch Btn   ", 0);
         test_process_state = TEST_PROCESS_STATE_KEYBOARD;
         TRACE_DEBUG("---%d---键盘测试-------------",testItems);
         RET_TEST_KEYBOARD ret_keyBoard = TestProcess_keyBoard();
@@ -513,14 +557,15 @@ TEST_PROCESS_STATE Test_process()
          {
              TRACE_DEBUG(">>>键盘测试：失败！错误码：%d.\n\n", checkResult[testItems]);
              test_process_state = TEST_PROCESS_STATE_KEYBOARD_FAIL;
-             //        GOTO_TESTEND
+             GOTO_TESTEND
          }
     }
     testItems++;
 
-    //18测试项---语音测试--------------------------------------------------------------------
+    //17测试项---语音测试--------------------------------------------------------------------
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-voice       ", 0);
         test_process_state = TEST_PROCESS_STATE_VOICE;
         TRACE_DEBUG("---%d---语音测试-------------",testItems);
         RET_TEST_VOICE ret_voice = TestProcess_voice();
@@ -533,14 +578,15 @@ TEST_PROCESS_STATE Test_process()
         {
             TRACE_DEBUG(">>>语音测试：失败！错误码：%d.\n\n", checkResult[testItems]);
             test_process_state = TEST_PROCESS_STATE_VOICE_FAIL;
-            //        GOTO_TESTEND
+            GOTO_TESTEND
         }
     }
     testItems++;
 
-    //19测试项---LED灯测试--------------------------------------------------------------------
+    //18测试项---LED灯测试--------------------------------------------------------------------
     if(processActive[testItems])
     {
+        UI(UI_TYPE_PROCESS, testItems, "-led         ", 0);
         test_process_state = TEST_PROCESS_STATE_LED;
         TRACE_DEBUG("---%d---LED灯测试------------",testItems);
         RET_TEST_LED ret_led = TestProcess_led();
@@ -553,17 +599,19 @@ TEST_PROCESS_STATE Test_process()
         {
             TRACE_DEBUG(">>>LED灯测试：失败！错误码：%d.\n\n", checkResult[testItems]);
             test_process_state = TEST_PROCESS_STATE_LED_FAIL;
-            //        GOTO_TESTEND
+            GOTO_TESTEND
         }
     }
     testItems++;
 
-    //7测试项---BLE模块与手机通信测试--------------------------------------------------------------------
+    //19测试项---BLE模块与手机通信测试--------------------------------------------------------------------
     if(processActive[testItems])
+
     {
+        UI(UI_TYPE_PROCESS, testItems, "-ble         ", 0);
         test_process_state = TEST_PROCESS_STATE_BLE;
-        TRACE_DEBUG("---%d---BLE通信测试-----------",testItems);
-        RET_TEST_BLE ret_ble = TestProcess_ble(NULL);
+        TRACE_DEBUG("---%d---BLE通信测试----------",testItems);
+        RET_TEST_BLE ret_ble = TestProcess_bleByMacAddr(NULL, 43, 6, 3, 3);
         checkResult[testItems] = ret_ble;
         if(0x00 == checkResult[testItems])
         {
@@ -627,7 +675,7 @@ TEST_PROCESS_STATE Test_process()
                 }
                 case RET_TEST_BLE_ERROR_NOTINIT:
                 {
-                    TRACE_DEBUG(">>>失败原因：蓝牙模块未初始化.\n\n",);
+                    TRACE_DEBUG(">>>失败原因：蓝牙模块未初始化，请使用《智辉空间App》进行出厂.\n\n",);
                     break;
                 }
             }
@@ -636,16 +684,15 @@ TEST_PROCESS_STATE Test_process()
     }
     testItems++;
 
-    //判断测试结果
-    TRACE_DEBUG("\n====================================");
-    TRACE_DEBUG("\n========测试结果=====================");
-    TRACE_DEBUG("\n=====================================\n");
+    //统计测试错误结果--------------------------
+    testEnd:
     uint8_t testRecord = TEST_RESULT_SUCCESS;
     for(uint8_t i = 0; i<TOTAL_TEST_ITEM; i++)
     {
-        if( processSelfActive[i] && (0x00 != checkResult[i]) )
+        if( processActive[i] && (0x00 != checkResult[i]) )
         {
-            TRACE_CODE("测试结果失败项目：%d。\n",i);
+            TRACE_DEBUG("测试结果失败项目：%d。\n",i);
+            TRACE_DEBUG("失败代码为：%d。\n",checkResult[i]);
             testRecord = i;
             break;
         }
@@ -653,26 +700,31 @@ TEST_PROCESS_STATE Test_process()
 
     if(testRecord == TEST_RESULT_SUCCESS)
     {
-        for(uint8_t i = 0; i<LEN_SELF_TEST_RESULT; i++)
+        if(0xff == checkSelfResult[0])
         {
-            if( processSelfActive[i] && (0x01 != checkSelfResult[i]) )
+            TRACE_DEBUG("自测结果获取失败：%d。\n");
+            testRecord = 69;
+        }
+        else
+        {
+            for(uint8_t i = 0; i<LEN_SELF_TEST_RESULT; i++)
             {
-                TRACE_CODE("自测结果失败项目：%d。\n",i);
-                testRecord = 0x40 + i;
-                break;
+                if( processSelfActive[i] && (0x01 != checkSelfResult[i]) )
+                {
+                    TRACE_DEBUG("自测结果失败项目：%d。\n",i);
+                    TRACE_DEBUG("失败代码为：%d。\n",checkSelfResult[i]);
+                    testRecord = 60 + i;
+                    break;
+                }
             }
         }
     }
 
-    if(testRecord == TEST_RESULT_SUCCESS)
-        TRACE_DEBUG("总测试结果为==================================================|>>>成功<<<|。\n");
-    else
-        TRACE_DEBUG("总测试结果为**************************************************|失败！失败项目（%d）！\n",testRecord);
-
     //20测试项---写入测试结果--------------------------------------------------------------------
-    testEnd:
+    testItems = 20;
     if(processActive[testItems])
     {
+//        UI(UI_TYPE_PROCESS, testItems, "-ret write    ");
     //    test_process_state = TEST_PROCESS_STATE_WRITE_TESTRESULT;
         TRACE_DEBUG("---%d---写入测试结果---------",testItems);
         RET_TEST_WRITEREAD_TESTRESULT ret_writeTestResult = TestProcess_writeTestResult(testRecord);
@@ -685,14 +737,14 @@ TEST_PROCESS_STATE Test_process()
         {
             TRACE_DEBUG(">>>写入测试结果：失败！错误码：%d.\n\n",checkResult[testItems]);
     //        test_process_state = TEST_PROCESS_STATE_WRITE_TESTRESULT_FAIL;
-    //        GOTO_TESTEND
         }
     }
     testItems++;
 
     //21测试项---读取测试结果--------------------------------------------------------------------
-    if(processActive[testItems])
+    if(processActive[testItems] && 0x00==checkResult[testItems-1])
     {
+//        UI(UI_TYPE_PROCESS, testItems, "-ret check    ");
     //    test_process_state = TEST_PROCESS_STATE_READ_TESTRESULT;
         TRACE_DEBUG("---%d---读取测试结果---------",testItems);
         char testResult;
@@ -714,16 +766,43 @@ TEST_PROCESS_STATE Test_process()
         {
             TRACE_DEBUG(">>>读取测试结果：失败！错误码：%d.\n\n",checkResult[testItems]);
             test_process_state = TEST_PROCESS_STATE_READ_TESTRESULT_FAIL;
-    //        GOTO_TESTEND
         }
     }
     testItems++;
 
+    //判断测试结果---------------------------------------------------------
+    if(testRecord == TEST_RESULT_SUCCESS)
+    {
+        UI(UI_TYPE_SUCCESS, 0, NULL, 0);
+        TRACE_DEBUG("总测试结果为==================================================|>>>成功<<<|。\n");
+    }
+    else
+    {
+        TRACE_DEBUG("总测试结果为**************************************************|失败！失败项目（%d）！\n",testRecord);
+        UI(UI_TYPE_FAIL, testRecord, NULL, checkResult[testRecord]);
+    }
+
+
     //测试结束---------------------------------------------------------------------------------
     testOut:
+
     test_process_state = TEST_PROCESS_STATE_IDLE;
     TRACE_DEBUG("---测试结束---------\n");
+    TRACE_CODE("---删除所有事件---------\n");
+    TestEvent_pend(0xffffffff, 1);
     return test_process_state;
+}
+
+void AddBle_process()
+{
+    Lock_action_power(true,false);
+    BoardAction_setModeNormal();
+    BF_taskSleepMs(4000);
+    KeyBoard_wake();
+    BF_taskSleepMs(500);
+    KeyBoard_wake();
+    BF_taskSleepMs(500);
+    KeyBoard_wake();
 }
 
 void Test_process_setMacAddr(uint8_t* addr)

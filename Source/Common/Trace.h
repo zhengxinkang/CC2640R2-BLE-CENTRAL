@@ -125,8 +125,8 @@ void TRACE_DATA_LEVEL(unsigned char level, unsigned char* data, unsigned short l
  * @details 通常在程序出现错误时使用，程序仍能继续运行，但结果可能是错误的。
  *  <p> 使用格式与 printf 相似。
  */
-#define TRACE_ERROR(fmt, ...)               TRACE_LEVEL(TRACE_LEVEL_ERROR, fmt, ##__VA_ARGS__)
 #define TRACE_ERROR_HEXGROUP(_x,_y,_z)      TRACE_HEXGROUP_LEVEL(TRACE_LEVEL_ERROR, _x,_y,_z)
+#define TRACE_ERROR(fmt, ...)               TRACE_LEVEL(TRACE_LEVEL_ERROR, fmt, ##__VA_ARGS__)
 #define TRACE_ERROR_DATA(_x, _y)            TRACE_DATA_LEVEL(TRACE_LEVEL_ERROR, _x, _y)
 
 /**

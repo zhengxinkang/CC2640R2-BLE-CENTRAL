@@ -12,10 +12,13 @@
 #include "IWUP_cmd_group/CmdGroup_qcTest.h"
 #include "Config_TargetBord.h"
 #include "DataType.h"
+#include "BF_Util.h"
+#include "TestProcess_resetTarget.h"
 
 
-#define TIMEOUT_TEST_PROCESS_SET_DEVICEINFO     500
-#define TIMEOUT_TEST_PROCESS_GET_DEVICEINFO     200
+#define TIMEOUT_TEST_PROCESS_SET_DEVICEINFO     1000
+#define TIMEOUT_TEST_PROCESS_GET_DEVICEINFO     800
+#define MAX_TIME_SETINFO_TRY                    2
 
 RET_TEST_SETINFO TestProcess_setInfo(TARGET_MODEL targetModel)
 {
@@ -69,19 +72,26 @@ RET_TEST_SETINFO TestProcess_setInfo(TARGET_MODEL targetModel)
             break;
         }
     }
-    SendCmd_qcTest_setDeviceInfo((uint8_t*)&s_setDeviceInfo, sizeof(s_setDeviceInfo));
+    BF_taskSleepMs(500);
 
-    //等待接收返回消息
-    uint32_t events = TestEvent_pend(EVENT_TESTPROCESS_SET_DEVICEINFO, TIMEOUT_TEST_PROCESS_SET_DEVICEINFO);
-    if (events & EVENT_TESTPROCESS_SET_DEVICEINFO)
+    for(uint8_t time=0; time<MAX_TIME_SETINFO_TRY; time++)
     {
-        ret = RET_TEST_SETINFO_SUCCESS;
-        TRACE_CODE("设置设备信息成功.\n");
-    }
-    else
-    {
-        ret = RET_TEST_SETINFO_ERROR;
-        TRACE_CODE("设置设备信息%dms后超时！\n",TIMEOUT_TEST_PROCESS_SET_DEVICEINFO);
+        SendCmd_qcTest_setDeviceInfo((uint8_t*)&s_setDeviceInfo, sizeof(s_setDeviceInfo));
+
+        //等待接收返回消息
+        uint32_t events = TestEvent_pend(EVENT_TESTPROCESS_SET_DEVICEINFO, TIMEOUT_TEST_PROCESS_SET_DEVICEINFO);
+        if (events & EVENT_TESTPROCESS_SET_DEVICEINFO)
+        {
+            ret = RET_TEST_SETINFO_SUCCESS;
+            TRACE_CODE("设置设备信息成功.\n");
+            break;
+        }
+        else
+        {
+            ret = RET_TEST_SETINFO_ERROR;
+            TRACE_CODE("设置设备信息%dms后超时！\n",TIMEOUT_TEST_PROCESS_SET_DEVICEINFO);
+            TestProcess_resetTarget();
+        }
     }
     return ret;
 }
@@ -92,7 +102,7 @@ RET_TEST_SETINFO TestProcess_readInfo(TARGET_MODEL targetModel)
     //发送读取信息指令----------------------------------
     Task_sleep((200*1000)/Clock_tickPeriod);
     SendCmd_qcTest_getDeviceInfo();
-    Task_sleep((200*1000)/Clock_tickPeriod);
+
     //等待接收返回消息
     uint32_t events = TestEvent_pend(EVENT_TESTPROCESS_GET_DEVICEINFO, TIMEOUT_TEST_PROCESS_GET_DEVICEINFO);
     if (events & EVENT_TESTPROCESS_GET_DEVICEINFO)
