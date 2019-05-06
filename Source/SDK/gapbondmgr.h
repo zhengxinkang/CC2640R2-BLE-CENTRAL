@@ -378,7 +378,7 @@ extern "C"
  * @brief Enable / Disable LRU Bond Replacement Scheme (Read/Write)
  *
  * Whether to enable the least recently used bond scheme so that, when a  newly bonded device is added and
- * all the entries are full, the least recently used deviceâ€™s bond is deleted to make room.
+ * all the entries are full, the least recently used device¡¯s bond is deleted to make room.
  *
  * size: uint8_t
  *

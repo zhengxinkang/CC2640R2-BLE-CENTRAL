@@ -1,7 +1,7 @@
 /*
  * VersionInfo.c
  *
- *  Created on: 2017å¹´8æœˆ10æ—¥
+ *  Created on: 2017Äê8ÔÂ10ÈÕ
  *      Author: blue.zhengxinkang
  */
 
@@ -12,10 +12,10 @@
     //#error"WA: SOFT_VERSION == DNCP_SOFT_VERSION"
     static const ManufVersion s_kSoftwareVersion =
     {
-     1,      // ä¸»ç‰ˆæœ¬å·
-     0,      // æ¬¡ç‰ˆæœ¬å·
-     0,      // ä¿®è®¢ç‰ˆæœ¬å·
-     0       // ç¼–è¯‘ç‰ˆæœ¬å·
+     1,      // Ö÷°æ±¾ºÅ
+     0,      // ´Î°æ±¾ºÅ
+     0,      // ĞŞ¶©°æ±¾ºÅ
+     0       // ±àÒë°æ±¾ºÅ
     };
 
 #else
@@ -24,8 +24,8 @@
 
 
 /**
- * @brief è·å–è½¯ä»¶ç‰ˆæœ¬å·ã€‚
- * @return è½¯ä»¶ç‰ˆæœ¬å·ã€‚
+ * @brief »ñÈ¡Èí¼ş°æ±¾ºÅ¡£
+ * @return Èí¼ş°æ±¾ºÅ¡£
  */
 ManufVersion VersionInfo_GetSoftwareVersion(void)
 {
@@ -33,8 +33,8 @@ ManufVersion VersionInfo_GetSoftwareVersion(void)
 }
 
 /**
- * @brief è·å–ç¡¬ä»¶ï¼ˆç”µè·¯ï¼‰ç‰ˆæœ¬å·ã€‚
- * @return ç¡¬ä»¶ç‰ˆæœ¬å·ã€‚
+ * @brief »ñÈ¡Ó²¼ş£¨µçÂ·£©°æ±¾ºÅ¡£
+ * @return Ó²¼ş°æ±¾ºÅ¡£
  */
 ManufVersion VersionInfo_GetHardwareVersion(void)
 {

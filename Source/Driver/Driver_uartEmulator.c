@@ -92,14 +92,14 @@ extern void Driver_uartEmulator_init(uint32_t baudRate)
 
 void Task_uartEmulator_txHandle()
 {
-    //é‡‡ç”¨å¤šå­—èŠ‚å‘é€çš„æ–¹å¼
+    //²ÉÓÃ¶à×Ö½Ú·¢ËÍµÄ·½Ê½
     for(uint32_t startPoint = 0; startPoint < uartEnulator_txBufIndex; )
     {
         if(uartEnulator_txBufIndex - startPoint > 50)
         {
             if(scifUartGetTxFifoCount())
             {
-                //å‘é€ç¼“å­˜è¿˜æœ‰æ•°æ®æœªå‘å®Œï¼Œæš‚æ—¶å…ˆä¸å‘
+                //·¢ËÍ»º´æ»¹ÓĞÊı¾İÎ´·¢Íê£¬ÔİÊ±ÏÈ²»·¢
             }
             else
             {
@@ -111,7 +111,7 @@ void Task_uartEmulator_txHandle()
         {
             if(scifUartGetTxFifoCount())
             {
-                //å‘é€ç¼“å­˜è¿˜æœ‰æ•°æ®æœªå‘å®Œï¼Œæš‚æ—¶å…ˆä¸å‘
+                //·¢ËÍ»º´æ»¹ÓĞÊı¾İÎ´·¢Íê£¬ÔİÊ±ÏÈ²»·¢
             }
             else
             {
@@ -157,14 +157,14 @@ SendRet Driver_uartEmulator_sendChars(uint8_t* data, uint16_t len)
     SendRet sendRet = SEND_RET_OK;
     if(SEND_RET_OK == sendRet)
     {
-        //æ˜¯å¦åˆå§‹åŒ–æ£€æŸ¥
+        //ÊÇ·ñ³õÊ¼»¯¼ì²é
         if(!isUartEmulatorInited)
             sendRet = SEND_RET_NOT_INIT;
     }
 
     if(SEND_RET_OK == sendRet)
     {
-        //é•¿åº¦åˆæ³•æ€§æ£€æŸ¥
+        //³¤¶ÈºÏ·¨ĞÔ¼ì²é
         if(uartEnulator_txBufIndex + len > UART_EMULATOR_TX_LEN)
         {
             sendRet = SEND_RET_TX_BUSY;
@@ -172,7 +172,7 @@ SendRet Driver_uartEmulator_sendChars(uint8_t* data, uint16_t len)
     }
 
     if(SEND_RET_OK == sendRet)
-    {   //æ£€æŸ¥é€šè¿‡ï¼Œå‘é€
+    {   //¼ì²éÍ¨¹ı£¬·¢ËÍ
         memcpy(uartEnulator_txBuf + uartEnulator_txBufIndex, data, len);
         uartEnulator_txBufIndex += len;
 

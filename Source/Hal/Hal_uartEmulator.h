@@ -1,7 +1,7 @@
 /*
  * Hal_uart.h
  *
- *  Created on: 2018å¹´7æœˆ5æ—¥
+ *  Created on: 2018Äê7ÔÂ5ÈÕ
  *      Author: zheng
  */
 

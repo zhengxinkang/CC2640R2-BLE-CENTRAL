@@ -340,7 +340,7 @@ extern bStatus_t GAPCentralRole_EstablishLink(uint8_t highDutyCycle, uint8_t whi
  * @return  @ref INVALIDPARAMETER : connection parameters are invalid
  * @return  @ref HCI_ERROR_CODE_INVALID_HCI_CMD_PARAMS : connection parameters do not meet
  * Bluetooth low energy specification requirements:
- * > (Supervision Timeout) > (1 + Slave Latency) Ã— (Connection Interval Ã— 2)
+ * > (Supervision Timeout) > (1 + Slave Latency) ¡Á (Connection Interval ¡Á 2)
  * @return  @ref HCI_ERROR_CODE_UNKNOWN_CONN_ID : connHandle is inactive
  * @return  @ref HCI_ERROR_CODE_CONTROLLER_BUSY : there is already a param update in process
  * @return  @ref HCI_ERROR_CODE_UNACCEPTABLE_CONN_PARAMETERS (0x3B): connection interval

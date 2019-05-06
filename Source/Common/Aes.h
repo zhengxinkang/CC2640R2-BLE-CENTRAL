@@ -1,7 +1,7 @@
 /*
  * Aes.h
  *
- *  Created on: 2017å¹´11æœˆ29æ—¥
+ *  Created on: 2017Äê11ÔÂ29ÈÕ
  *      Author: zheng
  */
 
@@ -10,9 +10,9 @@
 
 
 #include <stdint.h>
-//AESæµ‹è¯•
+//AES²âÊÔ
 void AES_Test(void);
-//----------å°è£…è¿‡çš„åŠ è§£å¯†æ–¹æ³•----åˆå§‹åŒ–å‘é‡é»˜è®¤å…¨0x00----
+//----------·â×°¹ıµÄ¼Ó½âÃÜ·½·¨----³õÊ¼»¯ÏòÁ¿Ä¬ÈÏÈ«0x00----
 void AES_EncJiaMi(uint8_t* pPlain, uint8_t* pCipher,uint32_t len, uint8_t* pKey);
 void AES_DecJieMi(uint8_t* pPlain, uint8_t* pCipher, uint32_t len, uint8_t* pKey);
 

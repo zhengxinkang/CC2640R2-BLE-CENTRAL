@@ -1,7 +1,7 @@
 /*
  * UartDriver.c
  *
- *  Created on: 2017å¹´8æœˆ9æ—¥
+ *  Created on: 2017Äê8ÔÂ9ÈÕ
  *      Author: blue.zhengxinkang
  */
 #include <StrLine.h>
@@ -28,11 +28,11 @@ void StrLine_WriteData(uint8_t* data, uint16_t len)
 
 void StrLine_onRecieve(uint8_t* data, uint16_t len)
 {
-    //è¿›è¡Œæ•°æ®é€ä¸ªè§£æï¼Œæ˜¯å¦ä¸€å¸§
+    //½øĞĞÊı¾İÖğ¸ö½âÎö£¬ÊÇ·ñÒ»Ö¡
     for(uint32_t index = 0; index < len; index++)
     {
         if('\r'==data[index] && '\n'==data[index+1])
-        {   //åˆ¤æ–­åˆ°ä¸€å¸§æ•°æ®
+        {   //ÅĞ¶Ïµ½Ò»Ö¡Êı¾İ
             if(NULL != StrLine_recieveToUp)
             {
                 data[index] = '\0';
@@ -40,7 +40,7 @@ void StrLine_onRecieve(uint8_t* data, uint16_t len)
             }
             else
             {
-                //ç©ºå‡½æ•°ï¼Œè‡´å‘½é”™è¯¯
+                //¿Õº¯Êı£¬ÖÂÃü´íÎó
             }
         }
     }

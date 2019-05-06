@@ -1,7 +1,7 @@
 /*
  * Console.c
  *
- *  Created on: 2017å¹´8æœˆ9æ—¥
+ *  Created on: 2017Äê8ÔÂ9ÈÕ
  *      Author: blue.zhengxinkang
  */
 
@@ -17,24 +17,24 @@
 #include "Manufacture/VersionInfo.h"
 #include "Config/ConfigProtocol.h"
 //************************************
-// å‘½ä»¤è¡Œè§£æçŠ¶æ€
-#define CONSOLE_EVENT_NONE              0   // æš‚æ— å‘½ä»¤
-#define CONSOLE_EVENT_NEW_CMD           1   // æ–°å‘½ä»¤
-#define CONSOLE_EVENT_TERMINATE         2   // ç»ˆæ­¢å‘½ä»¤ï¼Œç»“æŸè¿è¡Œå½“å‰å‘½ä»¤
+// ÃüÁîĞĞ½âÎö×´Ì¬
+#define CONSOLE_EVENT_NONE              0   // ÔİÎŞÃüÁî
+#define CONSOLE_EVENT_NEW_CMD           1   // ĞÂÃüÁî
+#define CONSOLE_EVENT_TERMINATE         2   // ÖÕÖ¹ÃüÁî£¬½áÊøÔËĞĞµ±Ç°ÃüÁî
 static volatile unsigned char s_consoleEvent = CONSOLE_EVENT_NONE;
 
-// å‘½ä»¤è¡Œè§£æç»“æœ
-#define CMDLINE_BAD_CMD         (-1)    // ç³»ç»Ÿä¸æ”¯æŒçš„å‘½ä»¤ï¼ˆæœªå®šä¹‰ï¼‰
-#define CMDLINE_TOO_MANY_ARGS   (-2)    // è¾“å…¥çš„å‘½ä»¤è¡Œå‚æ•°å¤ªå¤š
-#define CMDLINE_NO_CMD          (-3)    // æ— å‘½ä»¤
+// ÃüÁîĞĞ½âÎö½á¹û
+#define CMDLINE_BAD_CMD         (-1)    // ÏµÍ³²»Ö§³ÖµÄÃüÁî£¨Î´¶¨Òå£©
+#define CMDLINE_TOO_MANY_ARGS   (-2)    // ÊäÈëµÄÃüÁîĞĞ²ÎÊıÌ«¶à
+#define CMDLINE_NO_CMD          (-3)    // ÎŞÃüÁî
 
 //************************************
-// å‘½ä»¤è¡Œæ¥æ”¶ç¼“å†²å’Œå†™ç´¢å¼•
+// ÃüÁîĞĞ½ÓÊÕ»º³åºÍĞ´Ë÷Òı
 uint8_t s_bufTx[CONSOLE_TX_BUF_SIZE];
 static void Console_scanf(uint8_t *string, uint16_t len);
 
 /**
- * @brief æ§åˆ¶å°åˆå§‹åŒ–ã€‚
+ * @brief ¿ØÖÆÌ¨³õÊ¼»¯¡£
  */
 void Console_Init(void)
 {
@@ -44,12 +44,12 @@ void Console_Init(void)
 }
 
 /**
- * @brief è§£æå‘½ä»¤è¡Œæ–‡æœ¬å¹¶æ‰§è¡Œå‘½ä»¤ã€‚
- * @param cmdLine å‘½ä»¤è¡Œæ–‡æœ¬å­—ç¬¦ä¸²ã€‚
- * @return è§£ææˆ–æ‰§è¡ŒçŠ¶æ€ã€‚
+ * @brief ½âÎöÃüÁîĞĞÎÄ±¾²¢Ö´ĞĞÃüÁî¡£
+ * @param cmdLine ÃüÁîĞĞÎÄ±¾×Ö·û´®¡£
+ * @return ½âÎö»òÖ´ĞĞ×´Ì¬¡£
  */
 int Console_findCmd(int argc, char *argv[]);
-//è¾“å…¥å­—ç¬¦ä¸²-è½¬åŒ–ä¸ºå‚æ•°
+//ÊäÈë×Ö·û´®-×ª»¯Îª²ÎÊı
 void Console_scanf(uint8_t *string, uint16_t len)
 {
     static char *argv[CONSOLE_MAX_ARGUMENTS + 1];
@@ -58,18 +58,18 @@ void Console_scanf(uint8_t *string, uint16_t len)
     int bFindArg = 1;
     uint8_t char_index=0;
 
-    // åˆå§‹åŒ–å„å‚æ•°ä¸ºç©ºï¼Œæ–¹ä¾¿åº”ç”¨å‘½ä»¤è§£æ
+    // ³õÊ¼»¯¸÷²ÎÊıÎª¿Õ£¬·½±ãÓ¦ÓÃÃüÁî½âÎö
     for (argc = 0; argc <= CONSOLE_MAX_ARGUMENTS; argc++)
         argv[argc] = 0;
 
-    // å¼€å§‹è§£æå‘½ä»¤è¡Œ
+    // ¿ªÊ¼½âÎöÃüÁîĞĞ
     argc = 0;
     pos = (char*)string;
 
-    // è§£ææ•´è¡Œæ–‡æœ¬ç›´åˆ°é‡åˆ°ç©ºå­—ç¬¦ï¼Œè¡¨ç¤ºè¡Œæ–‡æœ¬ç»“æŸ
+    // ½âÎöÕûĞĞÎÄ±¾Ö±µ½Óöµ½¿Õ×Ö·û£¬±íÊ¾ĞĞÎÄ±¾½áÊø
     for(char_index=0; char_index<len; char_index++)
     {
-        // ç©ºç™½å­—ç¬¦æ˜¯ä¸€ä¸ªå‚æ•°çš„ â€œå‰å¯¼ç¬¦â€
+        // ¿Õ°××Ö·ûÊÇÒ»¸ö²ÎÊıµÄ ¡°Ç°µ¼·û¡±
         if(*pos == ' ' || *pos == '\t')
         {
             *pos = 0;
@@ -77,20 +77,20 @@ void Console_scanf(uint8_t *string, uint16_t len)
         }
         else
         {
-            // æœ‰éç©ºç™½å­—ç¬¦ï¼Œä¸€ä¸ªå‚æ•°å¼€å§‹
-            // ä¸Šä¸€æ¬¡æœ‰æ‰¾åˆ°è¿‡å‚æ•°
+            // ÓĞ·Ç¿Õ°××Ö·û£¬Ò»¸ö²ÎÊı¿ªÊ¼
+            // ÉÏÒ»´ÎÓĞÕÒµ½¹ı²ÎÊı
             if(bFindArg)
             {
                 if(argc < CONSOLE_MAX_ARGUMENTS)
                 {
-                    // è®°å½•è¯¥å‚æ•°
+                    // ¼ÇÂ¼¸Ã²ÎÊı
                     argv[argc] = pos;
                     argc++;
                     bFindArg = 0;
                 }
                 else
                 {
-                    // å‚æ•°è¿‡å¤šï¼Œåœæ­¢è§£æ
+                    // ²ÎÊı¹ı¶à£¬Í£Ö¹½âÎö
                     return;
                 }
             }
@@ -99,7 +99,7 @@ void Console_scanf(uint8_t *string, uint16_t len)
         pos++;
     }
 
-    // æœ‰è§£æåˆ°å‚æ•°ï¼›ç¬¬ä¸€ä¸ªå‚æ•°å³æ˜¯å‘½ä»¤å…³é”®å­—
+    // ÓĞ½âÎöµ½²ÎÊı£»µÚÒ»¸ö²ÎÊı¼´ÊÇÃüÁî¹Ø¼ü×Ö
     if(argc)
     {
         Console_findCmd(argc, argv);
@@ -107,18 +107,18 @@ void Console_scanf(uint8_t *string, uint16_t len)
 }
 
 /*****************************************
-æ ¹æ®å‚æ•°è§£æï¼Œå¯»æ‰¾å¯¹åº”çš„å‘½ä»¤
+¸ù¾İ²ÎÊı½âÎö£¬Ñ°ÕÒ¶ÔÓ¦µÄÃüÁî
 ******************************************/
 int Console_findCmd(int argc, char *argv[])
 {
     CmdLineEntry *cmdEntry;
-    // éå†æ•´ä¸ªå‘½ä»¤è¡¨ï¼ŒåŒ¹é…å…³é”®å­—
+    // ±éÀúÕû¸öÃüÁî±í£¬Æ¥Åä¹Ø¼ü×Ö
     cmdEntry = (CmdLineEntry *) &g_kConsoleCmdTable[0];
     TRACE_CODE("CONSOLE INPUT CMD: ");
     Cmd_showparam(argc, argv);
     while(cmdEntry->cmdKeyword)
     {
-        // åŒ¹é…å‘½ä»¤å…³é”®å­—ï¼Œè°ƒç”¨ç›¸åº”çš„å‘½ä»¤å¤„ç†å‡½æ•°
+        // Æ¥ÅäÃüÁî¹Ø¼ü×Ö£¬µ÷ÓÃÏàÓ¦µÄÃüÁî´¦Àíº¯Êı
         if(!strcmp(argv[0], cmdEntry->cmdKeyword))
         {
             return(cmdEntry->cmdHandle(argc, argv));
@@ -130,8 +130,8 @@ int Console_findCmd(int argc, char *argv[])
 }
 
 /**
- * @brief æ˜¾ç¤ºå‘½ä»¤è¾“å…¥æç¤ºç¬¦ã€‚
- * @details æç¤ºç¬¦å®šä¹‰ä¸ºï¼š @ref CONSOLE_PROMPT_STRING ã€‚
+ * @brief ÏÔÊ¾ÃüÁîÊäÈëÌáÊ¾·û¡£
+ * @details ÌáÊ¾·û¶¨ÒåÎª£º @ref CONSOLE_PROMPT_STRING ¡£
  */
 void Console_Prompt(void)
 {
@@ -139,16 +139,16 @@ void Console_Prompt(void)
 }
 
 /**
- * @brief æ§åˆ¶å°æ ¼å¼åŒ–è¾“å‡ºå‡½æ•°ã€‚
- * @param strFormat æ ¼å¼åŒ–å­—ç¬¦ä¸²ã€‚
- * @details ç±»ä¼¼printfçš„å¦ä¸€ä¸ªç®€å•å®ç°ã€‚
- * @note æœ¬æ ¼å¼åŒ–è¾“å‡ºå‡½æ•°æš‚æ—¶ä»…æ”¯æŒä»¥ä¸‹æ ¼å¼åŒ–æ§åˆ¶ç¬¦ï¼š
- *  - %c ï¼šè¾“å‡ºä¸€ä¸ªå­—ç¬¦
- *  - %s ï¼šè¾“å‡ºä¸€ä¸ªå­—ç¬¦ä¸²
- *  - %d ï¼šè¾“å‡ºä¸€ä¸ªæ•´æ•°
- *  - %u ï¼šè¾“å‡ºä¸€ä¸ªæ— ç¬¦å·æ•´æ•°
- *  - %p ï¼šè¾“å‡ºä¸€ä¸ªåœ°å€ï¼ˆåå…­è¿›åˆ¶ï¼‰
- *  - %x å’Œ %X ï¼šä»¥åå…­è¿›åˆ¶æ ¼å¼è¾“å‡ºä¸€ä¸ªæ•´æ•°
+ * @brief ¿ØÖÆÌ¨¸ñÊ½»¯Êä³öº¯Êı¡£
+ * @param strFormat ¸ñÊ½»¯×Ö·û´®¡£
+ * @details ÀàËÆprintfµÄÁíÒ»¸ö¼òµ¥ÊµÏÖ¡£
+ * @note ±¾¸ñÊ½»¯Êä³öº¯ÊıÔİÊ±½öÖ§³ÖÒÔÏÂ¸ñÊ½»¯¿ØÖÆ·û£º
+ *  - %c £ºÊä³öÒ»¸ö×Ö·û
+ *  - %s £ºÊä³öÒ»¸ö×Ö·û´®
+ *  - %d £ºÊä³öÒ»¸öÕûÊı
+ *  - %u £ºÊä³öÒ»¸öÎŞ·ûºÅÕûÊı
+ *  - %p £ºÊä³öÒ»¸öµØÖ·£¨Ê®Áù½øÖÆ£©
+ *  - %x ºÍ %X £ºÒÔÊ®Áù½øÖÆ¸ñÊ½Êä³öÒ»¸öÕûÊı
  */
 void Console_Out(const char *strFormat, ...)
 {
@@ -165,7 +165,7 @@ void Console_Out(const char *strFormat, ...)
 void Console_HexGrounpOut(uint8_t* hexGroup, uint8_t len, char separator)
 {
     if(3*len+3+3 > CONSOLE_TX_BUF_SIZE)
-    {   //é•¿åº¦è¶…è¿‡é™åˆ¶ï¼Œåªæ‰“å°å‰é¢ä¸€éƒ¨åˆ†å†…å®¹
+    {   //³¤¶È³¬¹ıÏŞÖÆ£¬Ö»´òÓ¡Ç°ÃæÒ»²¿·ÖÄÚÈİ
         len = CONSOLE_TX_BUF_SIZE/3 -1 -1;
     }
     s_bufTx[0] = '[';
@@ -187,8 +187,8 @@ void Console_HexGrounpOut(uint8_t* hexGroup, uint8_t len, char separator)
 }
 
 /**
- * @brief è¾“å‡ºä¸€ä¸ªå­—ç¬¦ä¸²åˆ°æ§åˆ¶å°ã€‚
- * @param str è¦è¾“å‡ºçš„å­—ç¬¦ä¸²ã€‚
+ * @brief Êä³öÒ»¸ö×Ö·û´®µ½¿ØÖÆÌ¨¡£
+ * @param str ÒªÊä³öµÄ×Ö·û´®¡£
  */
 void Console_OutData(uint8_t * str, uint8_t len)
 {
@@ -197,17 +197,17 @@ void Console_OutData(uint8_t * str, uint8_t len)
 
 
 /**
- * @brief æ˜¾ç¤ºæ¬¢è¿ä¿¡æ¯ã€‚
+ * @brief ÏÔÊ¾»¶Ó­ĞÅÏ¢¡£
  */
 void Console_Welcome(void)
 {
 #if (CONSOLE_NEED_WELCOME_MSG == 1)
 
-    // æ‰“å°æ¬¢è¿ä¿¡æ¯
+    // ´òÓ¡»¶Ó­ĞÅÏ¢
     Console_Out("\n\n----------------\n");
     Console_Out("Welcome to use %s Console\n", CONSOLE_WELCOME_PRODUCT);
 
-    // æ‰“å°ç‰ˆæœ¬å·
+    // ´òÓ¡°æ±¾ºÅ
 #if (CONSOLE_WELCOME_NEED_VERSION == 1)
     Console_Out("ConsoleVersion: %u.%u.%u.%u\n",
             g_kCmdLineVersion.major,

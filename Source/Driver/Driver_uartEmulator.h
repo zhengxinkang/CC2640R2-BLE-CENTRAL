@@ -14,8 +14,8 @@
 
 typedef enum
 {
-    UART_RX_STATE_EMPTY         =0,//ç©ºé—²
-    UART_RX_STATE_WAIT_FOR_GET  =1,//æœ‰æ•°æ®ç­‰å¾…å¤„ç†
+    UART_RX_STATE_EMPTY         =0,//¿ÕÏÐ
+    UART_RX_STATE_WAIT_FOR_GET  =1,//ÓÐÊý¾ÝµÈ´ý´¦Àí
 }Uart_Rx_State;
 
 typedef enum

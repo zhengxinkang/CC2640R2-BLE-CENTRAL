@@ -1,7 +1,7 @@
 /*
  * TimerConfig.h
  *
- *  Created on: 2018å¹´8æœˆ15æ—¥
+ *  Created on: 2018Äê8ÔÂ15ÈÕ
  *      Author: zheng
  */
 

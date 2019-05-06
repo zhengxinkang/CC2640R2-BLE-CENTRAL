@@ -1,10 +1,10 @@
 /*
  * Hal_uart.c
  *
- *  Created on: 2018å¹´7æœˆ5æ—¥
+ *  Created on: 2018Äê7ÔÂ5ÈÕ
  *      Author: zheng
  */
-#include <stdarg.h>               /*æ”¯æŒå‡½æ•°æ¥æ”¶ä¸å®šé‡å‚æ•°*/
+#include <stdarg.h>               /*Ö§³Öº¯Êı½ÓÊÕ²»¶¨Á¿²ÎÊı*/
 #include "Driver_UartEmulator.h"
 
 
@@ -21,25 +21,25 @@ void Hal_uartEmulator_write(uint8_t *pcBuf, uint16_t ulLen)
 }
 
 ///**
-// * ç®€ä»‹:   ä¸€ä¸ªç®€å•çš„printfå‡½æ•°,æ”¯æŒ\%c, \%d, \%p, \%s, \%u,\%x, and \%X.
+// * ¼ò½é:   Ò»¸ö¼òµ¥µÄprintfº¯Êı,Ö§³Ö\%c, \%d, \%p, \%s, \%u,\%x, and \%X.
 // */
 //void Hal_uartEmulator_printf(const char *pcString, ...)
 //{
 //    uint32_t ulIdx;
-//    uint32_t ulValue;       //ä¿å­˜ä»ä¸å®šé‡å‚æ•°å †æ ˆä¸­å–å‡ºçš„æ•°å€¼å‹å˜é‡
+//    uint32_t ulValue;       //±£´æ´Ó²»¶¨Á¿²ÎÊı¶ÑÕ»ÖĞÈ¡³öµÄÊıÖµĞÍ±äÁ¿
 //    uint32_t ulPos, ulCount;
-//    uint32_t ulBase;        //ä¿å­˜è¿›åˆ¶åŸºæ•°,å¦‚åè¿›åˆ¶åˆ™ä¸º10,åå…­è¿›åˆ¶æ•°åˆ™ä¸º16
-//    uint32_t ulNeg;         //ä¸º1è¡¨ç¤ºä»å˜é‡ä¸ºè´Ÿæ•°
-//    char *pcStr;         //ä¿å­˜ä»ä¸å®šé‡å‚æ•°å †æ ˆä¸­å–å‡ºçš„å­—ç¬¦å‹å˜é‡
-//    char pcBuf[32];      //ä¿å­˜æ•°å€¼å‹å˜é‡å­—ç¬¦åŒ–åçš„å­—ç¬¦
-//    uint8_t cFill;          //'%08x'->ä¸è¶³8ä¸ªå­—ç¬¦ç”¨'0'å¡«å……,cFill='0';
-//                            //'%8x '->ä¸è¶³8ä¸ªå­—ç¬¦ç”¨ç©ºæ ¼å¡«å……,cFill=' '
+//    uint32_t ulBase;        //±£´æ½øÖÆ»ùÊı,ÈçÊ®½øÖÆÔòÎª10,Ê®Áù½øÖÆÊıÔòÎª16
+//    uint32_t ulNeg;         //Îª1±íÊ¾´Ó±äÁ¿Îª¸ºÊı
+//    char *pcStr;         //±£´æ´Ó²»¶¨Á¿²ÎÊı¶ÑÕ»ÖĞÈ¡³öµÄ×Ö·ûĞÍ±äÁ¿
+//    char pcBuf[32];      //±£´æÊıÖµĞÍ±äÁ¿×Ö·û»¯ºóµÄ×Ö·û
+//    uint8_t cFill;          //'%08x'->²»×ã8¸ö×Ö·ûÓÃ'0'Ìî³ä,cFill='0';
+//                            //'%8x '->²»×ã8¸ö×Ö·ûÓÃ¿Õ¸ñÌî³ä,cFill=' '
 //    va_list vaArgP;
 //
 //    va_start(vaArgP, pcString);
 //    while (*pcString)
 //    {
-//        // é¦–å…ˆæœå¯»é%æ ¸å­—ç¬¦ä¸²ç»“æŸå­—ç¬¦
+//        // Ê×ÏÈËÑÑ°·Ç%ºË×Ö·û´®½áÊø×Ö·û
 //        for (ulIdx = 0; (pcString[ulIdx] != '%') && (pcString[ulIdx] != '\0');
 //                ulIdx++)
 //        {
@@ -66,7 +66,7 @@ void Hal_uartEmulator_write(uint8_t *pcBuf, uint16_t ulLen)
 //            case '8':
 //            case '9':
 //            {
-//                // å¦‚æœç¬¬ä¸€ä¸ªæ•°å­—ä¸º0, åˆ™ä½¿ç”¨0åšå¡«å……,åˆ™ç”¨ç©ºæ ¼å¡«å……)
+//                // Èç¹ûµÚÒ»¸öÊı×ÖÎª0, ÔòÊ¹ÓÃ0×öÌî³ä,ÔòÓÃ¿Õ¸ñÌî³ä)
 //                if ((pcString[-1] == '0') && (ulCount == 0))
 //                {
 //                    cFill = '0';
@@ -133,7 +133,7 @@ void Hal_uartEmulator_write(uint8_t *pcBuf, uint16_t ulLen)
 //                ulPos = 0;
 //                ulBase = 16;
 //                ulNeg = 0;
-//                convert:   //å°†æ•°å€¼è½¬æ¢æˆå­—ç¬¦
+//                convert:   //½«ÊıÖµ×ª»»³É×Ö·û
 //                for (ulIdx = 1;
 //                        (((ulIdx * ulBase) <= ulValue)
 //                                && (((ulIdx * ulBase) / ulBase) == ulIdx));
@@ -182,7 +182,7 @@ void Hal_uartEmulator_write(uint8_t *pcBuf, uint16_t ulLen)
 //            }
 //        }
 //    }
-//    //å¯å˜å‚æ•°å¤„ç†ç»“æŸ
+//    //¿É±ä²ÎÊı´¦Àí½áÊø
 //    va_end(vaArgP);
 //}
 

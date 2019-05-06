@@ -1,7 +1,7 @@
 /*
  * Console.h
  *
- *  Created on: 2017å¹´8æœˆ9æ—¥
+ *  Created on: 2017Äê8ÔÂ9ÈÕ
  *      Author: blue.zhengxinkang
  */
 
@@ -11,102 +11,102 @@
 
 #include <stdint.h>
 #include "ConsoleConfig.h"
-// åˆå§‹åŒ–
+// ³õÊ¼»¯
 extern void Console_Init(void);
 
-// åå°ä»»åŠ¡
+// ºóÌ¨ÈÎÎñ
 extern int Console_RoutineHandle(void);
 
-// è¾“å‡ºä¿¡æ¯åˆ°æ§åˆ¶å°
+// Êä³öĞÅÏ¢µ½¿ØÖÆÌ¨
 extern void Console_Prompt(void);
 extern void Console_Welcome(void);
 
-// æ ¼å¼åŒ–è¾“å‡ºå‡½æ•°æ¥å£
+// ¸ñÊ½»¯Êä³öº¯Êı½Ó¿Ú
 extern void Console_Out(const char * strFormat, ...);
 
-//è¿ç»­ä»¥å­—ç¬¦ä¸²å½¢å¼è¾“å‡º16è¿›åˆ¶æ•°æ®
+//Á¬ĞøÒÔ×Ö·û´®ĞÎÊ½Êä³ö16½øÖÆÊı¾İ
 extern void Console_HexGrounpOut(uint8_t* hexGroup, uint8_t len, char separator);
 
-// æ•°æ®ç›´æ¥è¾“å‡º
+// Êı¾İÖ±½ÓÊä³ö
 //extern void Console_OutString(const char * str);
 extern void Console_OutData(uint8_t* str, uint8_t len);
 extern uint8_t s_bufTx[CONSOLE_TX_BUF_SIZE];
 //*******************************************************************
-// è¾“å‡ºå‡½æ•°æ¥å£å®
+// Êä³öº¯Êı½Ó¿Úºê
 
 /**
- * @brief ä¸€ä¸ªç®€å•å®ç°çš„æ ¼å¼åŒ–è¾“å‡ºå‡½æ•°ã€‚
- * @details æœ¬å®æ˜¯å‡½æ•° @ref Console_Out() çš„å®å®šä¹‰ã€‚
+ * @brief Ò»¸ö¼òµ¥ÊµÏÖµÄ¸ñÊ½»¯Êä³öº¯Êı¡£
+ * @details ±¾ºêÊÇº¯Êı @ref Console_Out() µÄºê¶¨Òå¡£
  */
 #define ConsoleOut          Console_Out
 
 /**
- * @brief ä¸€ä¸ªç®€å•å®ç°çš„æ ¼å¼åŒ–è¾“å‡ºå‡½æ•°ã€‚
- * @details æœ¬å®æ˜¯å‡½æ•° Console_Out() çš„å®å®šä¹‰ã€‚
+ * @brief Ò»¸ö¼òµ¥ÊµÏÖµÄ¸ñÊ½»¯Êä³öº¯Êı¡£
+ * @details ±¾ºêÊÇº¯Êı Console_Out() µÄºê¶¨Òå¡£
  */
 #define EM_TRACE            Console_Out
 
 
 //*******************************************************************
-// å‘½ä»¤å¤„ç†å‡½æ•°å’Œå‘½ä»¤è¡¨å®šä¹‰
+// ÃüÁî´¦Àíº¯ÊıºÍÃüÁî±í¶¨Òå
 
 /**
- * @brief æ¥å£å‡½æ•°åŸå‹å®šä¹‰ï¼šæ§åˆ¶å°å‘½ä»¤å¤„ç†å‡½æ•°ã€‚
- * @param argc å‚æ•°ä¸ªæ•°ã€‚
- * @param argv å‘½ä»¤å‚æ•°åˆ—è¡¨ã€‚
- *  argv[0]ä¸ºå‘½ä»¤å…³é”®å­—æœ¬èº«ï¼Œargv[1]å¼€å§‹æ˜¯å‘½ä»¤çš„å‚æ•°å­—ä¸²ã€‚
- * @return å‘½ä»¤æ‰§è¡ŒçŠ¶æ€ï¼Œ0 è¡¨ç¤ºæˆåŠŸæ‰§è¡Œï¼Œé 0 ä¸ºå¼‚å¸¸ï¼Œå‚è§ @ref ConsoleCmdRetCode
+ * @brief ½Ó¿Úº¯ÊıÔ­ĞÍ¶¨Òå£º¿ØÖÆÌ¨ÃüÁî´¦Àíº¯Êı¡£
+ * @param argc ²ÎÊı¸öÊı¡£
+ * @param argv ÃüÁî²ÎÊıÁĞ±í¡£
+ *  argv[0]ÎªÃüÁî¹Ø¼ü×Ö±¾Éí£¬argv[1]¿ªÊ¼ÊÇÃüÁîµÄ²ÎÊı×Ö´®¡£
+ * @return ÃüÁîÖ´ĞĞ×´Ì¬£¬0 ±íÊ¾³É¹¦Ö´ĞĞ£¬·Ç 0 ÎªÒì³££¬²Î¼û @ref ConsoleCmdRetCode
  */
 typedef int (*IfConsoleCommandHandle)(int argc, char *argv[]);
 
 
 /**
- * @brief å‘½ä»¤è¡¨è¡¨é¡¹ç»“ç‚¹ç±»å‹ã€‚
+ * @brief ÃüÁî±í±íÏî½áµãÀàĞÍ¡£
  */
 typedef struct
 {
-    const char * cmdKeyword;            ///< å‘½ä»¤å…³é”®å­—ï¼ˆå­—ç¬¦ä¸²ï¼‰
-    IfConsoleCommandHandle cmdHandle;   ///< å‘½ä»¤å¤„ç†å‡½æ•°
-    const char * cmdHelp;               ///< å‘½ä»¤è¯´æ˜æ–‡æœ¬
+    const char * cmdKeyword;            ///< ÃüÁî¹Ø¼ü×Ö£¨×Ö·û´®£©
+    IfConsoleCommandHandle cmdHandle;   ///< ÃüÁî´¦Àíº¯Êı
+    const char * cmdHelp;               ///< ÃüÁîËµÃ÷ÎÄ±¾
 }
 CmdLineEntry;
 
 
 /**
- * @brief å‘½ä»¤è¡¨ï¼Œä¿å­˜å‘½ä»¤å…³é”®å­—ä¸å…¶å¤„ç†å‡½æ•°ä¹‹é—´çš„å¯¹åº”å…³ç³»ã€‚
- * @details å…·ä½“å‘½ä»¤è¡¨ç”±ç”¨æˆ·æ¥å£æ¨¡å— @ref CmdLine.c ä¸­å®šä¹‰ã€‚
- * @note åº”ç”¨ç¨‹åºå¿…é¡»æä¾›è¯¥è¡¨ã€‚
+ * @brief ÃüÁî±í£¬±£´æÃüÁî¹Ø¼ü×ÖÓëÆä´¦Àíº¯ÊıÖ®¼äµÄ¶ÔÓ¦¹ØÏµ¡£
+ * @details ¾ßÌåÃüÁî±íÓÉÓÃ»§½Ó¿ÚÄ£¿é @ref CmdLine.c ÖĞ¶¨Òå¡£
+ * @note Ó¦ÓÃ³ÌĞò±ØĞëÌá¹©¸Ã±í¡£
  */
 extern const CmdLineEntry g_kConsoleCmdTable[];
 
 
 //*******************************************************************
-// å‘½ä»¤è¡Œç‰ˆæœ¬ç®¡ç†
+// ÃüÁîĞĞ°æ±¾¹ÜÀí
 
 /**
- * @brief å‘½ä»¤è¡Œç‰ˆæœ¬å·
+ * @brief ÃüÁîĞĞ°æ±¾ºÅ
  */
 typedef struct
 {
-    unsigned short major;       ///< ä¸»ç‰ˆæœ¬å·
-    unsigned short minor;       ///< æ¬¡ç‰ˆæœ¬å·
-    unsigned short revision;    ///< ä¿®è®¢ç‰ˆæœ¬å·
-    unsigned short build;       ///< ç¼–è¯‘ç‰ˆæœ¬å·
+    unsigned short major;       ///< Ö÷°æ±¾ºÅ
+    unsigned short minor;       ///< ´Î°æ±¾ºÅ
+    unsigned short revision;    ///< ĞŞ¶©°æ±¾ºÅ
+    unsigned short build;       ///< ±àÒë°æ±¾ºÅ
 }
 CmdLineVersion;
 
 /**
- * @brief å‘½ä»¤è¡Œç‰ˆæœ¬å·ã€‚
- * @note åº”ç”¨ç¨‹åºï¼ˆ @ref CmdLine.c ï¼‰å¿…é¡»å®šä¹‰è¯¥ç‰ˆæœ¬å·ï¼Œå¹¶ä¸”æ ¹æ®éœ€è¦æ›´æ–°ã€‚
+ * @brief ÃüÁîĞĞ°æ±¾ºÅ¡£
+ * @note Ó¦ÓÃ³ÌĞò£¨ @ref CmdLine.c £©±ØĞë¶¨Òå¸Ã°æ±¾ºÅ£¬²¢ÇÒ¸ù¾İĞèÒª¸üĞÂ¡£
  */
 extern const CmdLineVersion g_kCmdLineVersion;
 
 
 //*******************************************************************
-// è¿”å›ç»“æœç å®šä¹‰
+// ·µ»Ø½á¹ûÂë¶¨Òå
 
 /**
- * @brief è¿”å›ç»“æœç å®šä¹‰
+ * @brief ·µ»Ø½á¹ûÂë¶¨Òå
  */
 typedef enum ConsoleCmdRetCodeEnum
 {

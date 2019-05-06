@@ -1,7 +1,7 @@
 /*
  * Aes.c
  *
- *  Created on: 2017å¹´11æœˆ29æ—¥
+ *  Created on: 2017Äê11ÔÂ29ÈÕ
  *      Author: zheng
  */
 
@@ -9,8 +9,8 @@
 #include "stdio.h"
 #include "Trace.h"
 
-//--------------------------å°è£…è¿‡çš„åŠ è§£å¯†
-//åˆå§‹åŒ–å‘é‡
+//--------------------------·â×°¹ıµÄ¼Ó½âÃÜ
+//³õÊ¼»¯ÏòÁ¿
 static uint8_t initIV[16] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
@@ -19,7 +19,7 @@ void AES_EncJiaMi(uint8_t* pPlain, uint8_t* pCipher, uint32_t len, uint8_t* pKey
 	uint8_t i;
 	AES_Init(pKey);
 	for (i = 0; i < len / 16; i++)
-		AES_Encrypt(pPlain + i * 16, pCipher + i * 16, 16, initIV);	//åŠ å¯†
+		AES_Encrypt(pPlain + i * 16, pCipher + i * 16, 16, initIV);	//¼ÓÃÜ
 }
 
 void AES_DecJieMi(uint8_t* pPlain, uint8_t* pCipher, uint32_t len, uint8_t* pKey)
@@ -27,7 +27,7 @@ void AES_DecJieMi(uint8_t* pPlain, uint8_t* pCipher, uint32_t len, uint8_t* pKey
 	uint8_t i;
 	AES_Init(pKey);
 	for (i = 0; i < len / 16; i++)
-		AES_Decrypt(pPlain + i * 16, pCipher + i * 16, 16, initIV);	//è§£å¯†
+		AES_Decrypt(pPlain + i * 16, pCipher + i * 16, 16, initIV);	//½âÃÜ
 }
 
 void AES_Test()

@@ -1,7 +1,7 @@
 /*
  * Types.h
  *
- *  Created on: 2017å¹´8æœˆ9æ—¥
+ *  Created on: 2017Äê8ÔÂ9ÈÕ
  *      Author: blue.zhengxinkang
  */
 
@@ -20,14 +20,14 @@ typedef enum{
 typedef void (*OnReceived)(uint8_t* data, uint16_t len);
 
 #ifndef TRUE
-#define TRUE            1       ///< å¸ƒå°”å€¼ï¼šçœŸ
+#define TRUE            1       ///< ²¼¶ûÖµ£ºÕæ
 #endif
 #ifndef FALSE
-#define FALSE           0       ///< å¸ƒå°”å€¼ï¼šå‡
+#define FALSE           0       ///< ²¼¶ûÖµ£º¼Ù
 #endif
 
 #ifndef NULL
-#define NULL            ((void *)0)     ///< ç©ºæŒ‡é’ˆ
+#define NULL            ((void *)0)     ///< ¿ÕÖ¸Õë
 #endif
 
 //#ifndef Int8

@@ -1,7 +1,7 @@
 /*
  * ConfigProtocol.h
  *
- *  Created on: 2017å¹´8æœˆ8æ—¥
+ *  Created on: 2017Äê8ÔÂ8ÈÕ
  *      Author: blue.zhengxinkang
  */
 
@@ -19,69 +19,69 @@
 
 #define NPI_USE_UART    1
 
-#if defined BOARD_BLEMODULE_PA              //(è“ç‰™æ¨¡å—4*4)------------------------------------
-    #warning "config-1       == BOARD_BLEMODULE_PA"             //0-è‡ªæˆ‘è¡¨è¿°
-    #define BOARD_DEFINE            BOARD_DEFINE_BLEMODULE_PA   //1-å¼•è„šå®šä¹‰
-    #define BOARD_MESG              "Board ble module with PA." //2-æ¿ä¿¡æ¯æ‰“å°
-    #define                         CC2640R2DK_4XS              //3-èŠ¯ç‰‡å°è£…
-    #define SOFT_VERSION            SOFT_VERSION_BLEMODULE_PA   //4-è½¯ä»¶ç‰ˆæœ¬
-    #define                         IWUP_ROLE_WIRELESS_MODULE   //5-IWUPåè®® è§’è‰²
-    #define BLE_ADV_ALOW_SLEEP      1   //1                     //6-BLEå¹¿æ’­å…è®¸ä¼‘çœ 
-    #define UART_ALOW_SLEEP         0   //0                     //7-UARTå…è®¸ä¼‘çœ 
-    #define PA_ENABLE               1   //1                     //8-PAä½¿èƒ½
-    #define CONSOLE_EMULATOR        1   //1                     //9-è°ƒè¯•æŽ§åˆ¶å°
-    #define _CS_TRACE_LEVEL         7   //7                     //A-è°ƒè¯•è¾“å‡ºç­‰çº§
-#elif defined BOARD_LAUNCHPAD               //(è“ç‰™æ¨¡å—7*7)------------------------------------
-    #warning "config-2         == BOARD_LAUNCHPAD"              //0-è‡ªæˆ‘è¡¨è¿°
-    #define BOARD_DEFINE            BOARD_DEFINE_LANUCHPAD      //1-å¼•è„šå®šä¹‰
-    #define BOARD_MESG              "Board launchpad."          //2-æ¿ä¿¡æ¯æ‰“å°
-    #define                         CC2640R2DK_7XS              //3-èŠ¯ç‰‡å°è£…
-    #define SOFT_VERSION            SOFT_VERSION_LAUNCHPAD      //4-è½¯ä»¶ç‰ˆæœ¬
-    #define                         IWUP_ROLE_WIRELESS_MODULE   //5-IWUPåè®® è§’è‰²
-//    #define BLE_ADV_ALOW_SLEEP      1                           //6-BLEå¹¿æ’­å…è®¸ä¼‘çœ 
-//    #define UART_ALOW_SLEEP         0                           //7-UARTå…è®¸ä¼‘çœ 
-    #define PA_ENABLE               0                           //8-PAä½¿èƒ½
-    #define CONSOLE_EMULATOR        1                           //9-è°ƒè¯•æŽ§åˆ¶å°
-    #define _CS_TRACE_LEVEL         7                           //A-è°ƒè¯•è¾“å‡ºç­‰çº§
+#if defined BOARD_BLEMODULE_PA              //(À¶ÑÀÄ£¿é4*4)------------------------------------
+    #warning "config-1       == BOARD_BLEMODULE_PA"             //0-×ÔÎÒ±íÊö
+    #define BOARD_DEFINE            BOARD_DEFINE_BLEMODULE_PA   //1-Òý½Å¶¨Òå
+    #define BOARD_MESG              "Board ble module with PA." //2-°åÐÅÏ¢´òÓ¡
+    #define                         CC2640R2DK_4XS              //3-Ð¾Æ¬·â×°
+    #define SOFT_VERSION            SOFT_VERSION_BLEMODULE_PA   //4-Èí¼þ°æ±¾
+    #define                         IWUP_ROLE_WIRELESS_MODULE   //5-IWUPÐ­Òé ½ÇÉ«
+    #define BLE_ADV_ALOW_SLEEP      1   //1                     //6-BLE¹ã²¥ÔÊÐíÐÝÃß
+    #define UART_ALOW_SLEEP         0   //0                     //7-UARTÔÊÐíÐÝÃß
+    #define PA_ENABLE               1   //1                     //8-PAÊ¹ÄÜ
+    #define CONSOLE_EMULATOR        1   //1                     //9-µ÷ÊÔ¿ØÖÆÌ¨
+    #define _CS_TRACE_LEVEL         7   //7                     //A-µ÷ÊÔÊä³öµÈ¼¶
+#elif defined BOARD_LAUNCHPAD               //(À¶ÑÀÄ£¿é7*7)------------------------------------
+    #warning "config-2         == BOARD_LAUNCHPAD"              //0-×ÔÎÒ±íÊö
+    #define BOARD_DEFINE            BOARD_DEFINE_LANUCHPAD      //1-Òý½Å¶¨Òå
+    #define BOARD_MESG              "Board launchpad."          //2-°åÐÅÏ¢´òÓ¡
+    #define                         CC2640R2DK_7XS              //3-Ð¾Æ¬·â×°
+    #define SOFT_VERSION            SOFT_VERSION_LAUNCHPAD      //4-Èí¼þ°æ±¾
+    #define                         IWUP_ROLE_WIRELESS_MODULE   //5-IWUPÐ­Òé ½ÇÉ«
+//    #define BLE_ADV_ALOW_SLEEP      1                           //6-BLE¹ã²¥ÔÊÐíÐÝÃß
+//    #define UART_ALOW_SLEEP         0                           //7-UARTÔÊÐíÐÝÃß
+    #define PA_ENABLE               0                           //8-PAÊ¹ÄÜ
+    #define CONSOLE_EMULATOR        1                           //9-µ÷ÊÔ¿ØÖÆÌ¨
+    #define _CS_TRACE_LEVEL         7                           //A-µ÷ÊÔÊä³öµÈ¼¶
     #define COMPILIE_VERSION        "1-0"
     #define BLE_ROLE_MESG           "Simple Central."
-#elif defined BOARD_LAUNCHPAD_NODEBUG       //(ä¸è°ƒè¯•-è“ç‰™æ¨¡å—7*7)------------------------------------
-    #warning "config-3         == BOARD_LAUNCHPAD_NODEBUG"        //0-è‡ªæˆ‘è¡¨è¿°
-    #define BOARD_DEFINE            BOARD_DEFINE_LANUCHPAD      //1-å¼•è„šå®šä¹‰
-    #define BOARD_MESG              "Board launchpad."          //2-æ¿ä¿¡æ¯æ‰“å°
-    #define                         CC2640R2DK_7XS              //3-èŠ¯ç‰‡å°è£…
-    #define SOFT_VERSION            SOFT_VERSION_LAUNCHPAD      //4-è½¯ä»¶ç‰ˆæœ¬
-    #define                         IWUP_ROLE_WIRELESS_MODULE   //5-IWUPåè®® è§’è‰²
-    #define BLE_ADV_ALOW_SLEEP      1                           //6-BLEå¹¿æ’­å…è®¸ä¼‘çœ 
-    #define UART_ALOW_SLEEP         1                           //7-UARTå…è®¸ä¼‘çœ 
-    #define PA_ENABLE               0                           //8-PAä½¿èƒ½
-    #define CONSOLE_EMULATOR        0                           //9-è°ƒè¯•æŽ§åˆ¶å°
-    #define _CS_TRACE_LEVEL         0                           //A-è°ƒè¯•è¾“å‡ºç­‰çº§
-#elif defined BOARD_BLEONLOCK_S31           //(S31é”æ¿è“ç‰™4*4)------------------------------------
-    #warning "config-4       == BOARD_BLEONLOCK_S31"            //0-è‡ªæˆ‘è¡¨è¿°
-    #define BOARD_DEFINE            BOARD_DEFINE_BLEONLOCK_S31  //1-å¼•è„šå®šä¹‰
-    #define BOARD_MESG              "Board on lock S31."        //2-æ¿ä¿¡æ¯æ‰“å°
-    #define                         CC2640R2DK_4XS              //3-èŠ¯ç‰‡å°è£…
-    #define SOFT_VERSION            SOFT_VERSION_BLEONLOCK_S31  //4-è½¯ä»¶ç‰ˆæœ¬
-    #define                         IWUP_ROLE_WIRELESS_MODULE   //5-IWUPåè®® è§’è‰²
-//    #define BLE_ADV_ALOW_SLEEP      1   //1                     //6-BLEå¹¿æ’­å…è®¸ä¼‘çœ 
-//    #define UART_ALOW_SLEEP         0   //0                     //7-UARTå…è®¸ä¼‘çœ 
-    #define PA_ENABLE               0   //0                     //8-PAä½¿èƒ½
-    #define CONSOLE_EMULATOR        1   //1                     //9-è°ƒè¯•æŽ§åˆ¶å°
-    #define _CS_TRACE_LEVEL         7   //7                     //A-è°ƒè¯•è¾“å‡ºç­‰çº§
+#elif defined BOARD_LAUNCHPAD_NODEBUG       //(²»µ÷ÊÔ-À¶ÑÀÄ£¿é7*7)------------------------------------
+    #warning "config-3         == BOARD_LAUNCHPAD_NODEBUG"        //0-×ÔÎÒ±íÊö
+    #define BOARD_DEFINE            BOARD_DEFINE_LANUCHPAD      //1-Òý½Å¶¨Òå
+    #define BOARD_MESG              "Board launchpad."          //2-°åÐÅÏ¢´òÓ¡
+    #define                         CC2640R2DK_7XS              //3-Ð¾Æ¬·â×°
+    #define SOFT_VERSION            SOFT_VERSION_LAUNCHPAD      //4-Èí¼þ°æ±¾
+    #define                         IWUP_ROLE_WIRELESS_MODULE   //5-IWUPÐ­Òé ½ÇÉ«
+    #define BLE_ADV_ALOW_SLEEP      1                           //6-BLE¹ã²¥ÔÊÐíÐÝÃß
+    #define UART_ALOW_SLEEP         1                           //7-UARTÔÊÐíÐÝÃß
+    #define PA_ENABLE               0                           //8-PAÊ¹ÄÜ
+    #define CONSOLE_EMULATOR        0                           //9-µ÷ÊÔ¿ØÖÆÌ¨
+    #define _CS_TRACE_LEVEL         0                           //A-µ÷ÊÔÊä³öµÈ¼¶
+#elif defined BOARD_BLEONLOCK_S31           //(S31Ëø°åÀ¶ÑÀ4*4)------------------------------------
+    #warning "config-4       == BOARD_BLEONLOCK_S31"            //0-×ÔÎÒ±íÊö
+    #define BOARD_DEFINE            BOARD_DEFINE_BLEONLOCK_S31  //1-Òý½Å¶¨Òå
+    #define BOARD_MESG              "Board on lock S31."        //2-°åÐÅÏ¢´òÓ¡
+    #define                         CC2640R2DK_4XS              //3-Ð¾Æ¬·â×°
+    #define SOFT_VERSION            SOFT_VERSION_BLEONLOCK_S31  //4-Èí¼þ°æ±¾
+    #define                         IWUP_ROLE_WIRELESS_MODULE   //5-IWUPÐ­Òé ½ÇÉ«
+//    #define BLE_ADV_ALOW_SLEEP      1   //1                     //6-BLE¹ã²¥ÔÊÐíÐÝÃß
+//    #define UART_ALOW_SLEEP         0   //0                     //7-UARTÔÊÐíÐÝÃß
+    #define PA_ENABLE               0   //0                     //8-PAÊ¹ÄÜ
+    #define CONSOLE_EMULATOR        1   //1                     //9-µ÷ÊÔ¿ØÖÆÌ¨
+    #define _CS_TRACE_LEVEL         7   //7                     //A-µ÷ÊÔÊä³öµÈ¼¶
     #define COMPILIE_VERSION        "1-1"
-#elif defined BOARD_LAUNCHPAD_IWUP_LOCKBOARD  //(æ¨¡æ‹Ÿé”æ¿çš„ä¸²å£)------------------------------------
-    #warning "config-7       == BOARD_LAUNCHPAD_IWUP_LOCKBOARD" //0-è‡ªæˆ‘è¡¨è¿°
-    #define BOARD_DEFINE            BOARD_DEFINE_LANUCHPAD      //1-å¼•è„šå®šä¹‰
-    #define BOARD_MESG              "Board launchpad."          //2-æ¿ä¿¡æ¯æ‰“å°
-    #define                         CC2640R2DK_7XS              //3-èŠ¯ç‰‡å°è£…
-    #define SOFT_VERSION            SOFT_VERSION_LAUNCHPAD      //4-è½¯ä»¶ç‰ˆæœ¬
-    #define                         IWUP_ROLE_LOCK_BOARD        //5-IWUPåè®® è§’è‰²
-    #define BLE_ADV_ALOW_SLEEP      1                           //6-BLEå¹¿æ’­å…è®¸ä¼‘çœ 
-    #define UART_ALOW_SLEEP         0                           //7-UARTå…è®¸ä¼‘çœ 
-    #define PA_ENABLE               0                           //8-PAä½¿èƒ½
-    #define CONSOLE_EMULATOR        1                           //9-è°ƒè¯•æŽ§åˆ¶å°
-    #define _CS_TRACE_LEVEL         7                           //A-è°ƒè¯•è¾“å‡ºç­‰çº§
+#elif defined BOARD_LAUNCHPAD_IWUP_LOCKBOARD  //(Ä£ÄâËø°åµÄ´®¿Ú)------------------------------------
+    #warning "config-7       == BOARD_LAUNCHPAD_IWUP_LOCKBOARD" //0-×ÔÎÒ±íÊö
+    #define BOARD_DEFINE            BOARD_DEFINE_LANUCHPAD      //1-Òý½Å¶¨Òå
+    #define BOARD_MESG              "Board launchpad."          //2-°åÐÅÏ¢´òÓ¡
+    #define                         CC2640R2DK_7XS              //3-Ð¾Æ¬·â×°
+    #define SOFT_VERSION            SOFT_VERSION_LAUNCHPAD      //4-Èí¼þ°æ±¾
+    #define                         IWUP_ROLE_LOCK_BOARD        //5-IWUPÐ­Òé ½ÇÉ«
+    #define BLE_ADV_ALOW_SLEEP      1                           //6-BLE¹ã²¥ÔÊÐíÐÝÃß
+    #define UART_ALOW_SLEEP         0                           //7-UARTÔÊÐíÐÝÃß
+    #define PA_ENABLE               0                           //8-PAÊ¹ÄÜ
+    #define CONSOLE_EMULATOR        1                           //9-µ÷ÊÔ¿ØÖÆÌ¨
+    #define _CS_TRACE_LEVEL         7                           //A-µ÷ÊÔÊä³öµÈ¼¶
     #define COMPILIE_VERSION        "1-2"
 #else
     #error "BOARD NOT DEFINE!"

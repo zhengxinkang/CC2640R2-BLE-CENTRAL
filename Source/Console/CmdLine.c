@@ -1,7 +1,7 @@
 /*
  * CmdLine.c
  *
- *  Created on: 2017å¹´8æœˆ9æ—¥
+ *  Created on: 2017Äê8ÔÂ9ÈÕ
  *      Author: blue.zhengxinkang
  */
 
@@ -16,7 +16,7 @@
 #include "Console.h"
 #include "CmdLine.h"
 //*****************************************************************************
-// 1ã€include
+// 1¡¢include
 //*****************************************************************************
 #include <stdio.h>
 #include "Config/ConfigProtocol.h"
@@ -40,17 +40,17 @@
 //#include "SegsApi/LockSecureInterface.h"
 //#include "MemoryInfo_dncp.h"
 
-// å‘½ä»¤è¡Œç‰ˆæœ¬å®šä¹‰ï¼Œå‘½ä»¤æœ‰å˜æ›´æ—¶ï¼Œéœ€è¦ç›¸åº”æ›´æ–°æœ¬ç‰ˆæœ¬å·
+// ÃüÁîĞĞ°æ±¾¶¨Òå£¬ÃüÁîÓĞ±ä¸üÊ±£¬ĞèÒªÏàÓ¦¸üĞÂ±¾°æ±¾ºÅ
 const CmdLineVersion g_kCmdLineVersion =
 {
-        1,      // ä¸»ç‰ˆæœ¬å·
-        0,      // æ¬¡ç‰ˆæœ¬å·
-        0,      // ä¿®è®¢ç‰ˆæœ¬å·
-        0       // ç¼–è¯‘ç‰ˆæœ¬å·
+        1,      // Ö÷°æ±¾ºÅ
+        0,      // ´Î°æ±¾ºÅ
+        0,      // ĞŞ¶©°æ±¾ºÅ
+        0       // ±àÒë°æ±¾ºÅ
 };
 
 //*****************************************************************************
-// 2ã€å‘½ä»¤å¤„ç†å‡½æ•°å£°æ˜åˆ—è¡¨
+// 2¡¢ÃüÁî´¦Àíº¯ÊıÉùÃ÷ÁĞ±í
 //*****************************************************************************
 //static int Cmd_bleEventTest(int argc, char *argv[]);
 //static int Cmd_bleAdvDataTest(int argc, char *argv[]);
@@ -68,11 +68,11 @@ static int Cmd_TraceSetLevel(int argc, char *argv[]);
 //static int Cmd_TraceGetLevel(int argc, char *argv[]);
 
 /**
- * @brief å‘½ä»¤è¡Œå‘½ä»¤è¡¨ï¼Œä¿å­˜å‘½ä»¤å…³é”®å­—ä¸å…¶å¤„ç†å‡½æ•°ä¹‹é—´çš„å¯¹åº”å…³ç³»ã€‚
- * @details æ¯æ¡å‘½ä»¤å¯¹åº”ä¸€ä¸ªç»“ç‚¹ï¼Œç»“ç‚¹åŒ…æ‹¬ï¼šå‘½ä»¤å…³é”®å­—ã€å¤„ç†å‡½æ•°ã€ç®€çŸ­æè¿°æ–‡æœ¬ã€‚
+ * @brief ÃüÁîĞĞÃüÁî±í£¬±£´æÃüÁî¹Ø¼ü×ÖÓëÆä´¦Àíº¯ÊıÖ®¼äµÄ¶ÔÓ¦¹ØÏµ¡£
+ * @details Ã¿ÌõÃüÁî¶ÔÓ¦Ò»¸ö½áµã£¬½áµã°üÀ¨£ºÃüÁî¹Ø¼ü×Ö¡¢´¦Àíº¯Êı¡¢¼ò¶ÌÃèÊöÎÄ±¾¡£
  */
 //*****************************************************************************
-// 3ã€å‘½ä»¤è¡Œå‘½ä»¤è¡¨
+// 3¡¢ÃüÁîĞĞÃüÁî±í
 //*****************************************************************************
 const CmdLineEntry g_kConsoleCmdTable[] =
 {
@@ -112,7 +112,7 @@ void CmdLine_Init(void)
 }
 
 //*****************************************************************************
-// 4ã€å‘½ä»¤å¤„ç†å‡½æ•°
+// 4¡¢ÃüÁî´¦Àíº¯Êı
 //*****************************************************************************
 
 //----------------------------------------------------CmdLine randomTest-----------------
@@ -331,7 +331,7 @@ static int Cmd_testTaskTest(int argc, char *argv[])
 //    return 0;
 //}
 //----------------------------------------------------CmdLine Tools----------------------
-// æ˜¾ç¤ºå¸®åŠ©ï¼Œç®€å•æ˜¾ç¤ºå‘½ä»¤åˆ—è¡¨
+// ÏÔÊ¾°ïÖú£¬¼òµ¥ÏÔÊ¾ÃüÁîÁĞ±í
 int Cmd_help(int argc, char *argv[])
 {
     CmdLineEntry *cmdEntry;
@@ -342,10 +342,10 @@ int Cmd_help(int argc, char *argv[])
 
     cmdEntry = (CmdLineEntry *) &g_kConsoleCmdTable[0];
 
-    // éå†æ•´ä¸ªå‘½ä»¤è¡¨ï¼Œæ‰“å°å‡ºæœ‰æç¤ºä¿¡æ¯çš„å‘½ä»¤
+    // ±éÀúÕû¸öÃüÁî±í£¬´òÓ¡³öÓĞÌáÊ¾ĞÅÏ¢µÄÃüÁî
     while (cmdEntry->cmdKeyword)
     {
-        // å»¶æ—¶ä¸€ä¸‹ï¼Œç­‰å¾…æ§åˆ¶å°ç¼“å†²åŒºç©ºå‡ºè¶³å¤Ÿçš„ç©ºé—´
+        // ÑÓÊ±Ò»ÏÂ£¬µÈ´ı¿ØÖÆÌ¨»º³åÇø¿Õ³ö×ã¹»µÄ¿Õ¼ä
         //System_Delay(1);
 
         if (cmdEntry->cmdHelp)
@@ -373,7 +373,7 @@ int Cmd_welcome(int argc, char *argv[])
 }
 
 
-// æ˜¾ç¤ºå‚æ•°
+// ÏÔÊ¾²ÎÊı
 int Cmd_showparam(int argc, char *argv[])
 {
     int i = 0;
@@ -393,14 +393,14 @@ int Cmd_reset(int argc, char *argv[])
     return (5);
 }
 
-// å‘½ä»¤å¤„ç†å‡½æ•°ç¤ºä¾‹
+// ÃüÁî´¦Àíº¯ÊıÊ¾Àı
 int Cmd_demo(int argc, char *argv[])
 {
     if (0 == strcmp(argv[1], "subcmd1"))
     {
         if (0 == strcmp(argv[2], "param"))
         {
-            // è°ƒç”¨ç›¸å…³åŠŸèƒ½å‡½æ•°
+            // µ÷ÓÃÏà¹Ø¹¦ÄÜº¯Êı
             ConsoleOut("Exc: subcmd1 param");
         }
     }
@@ -423,7 +423,7 @@ int Cmd_demo(int argc, char *argv[])
     return (0);
 }
 
-//è·å–è¾“å‡ºçº§åˆ«
+//»ñÈ¡Êä³ö¼¶±ğ
 int Cmd_TraceGetLevel(int argc, char *argv[])
 {
     ConsoleOut("Trace Level is:");
@@ -476,7 +476,7 @@ int Cmd_TraceGetLevel(int argc, char *argv[])
     return 0;
 }
 
-//è®¾ç½®è¾“å‡ºçº§åˆ«
+//ÉèÖÃÊä³ö¼¶±ğ
 int Cmd_TraceSetLevel(int argc, char *argv[])
 {
     if(!memcmp("DISABLE", argv[1], sizeof("DISABLE")))

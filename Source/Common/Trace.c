@@ -5,7 +5,7 @@
 
 /**
  * @file
- * @brief å‘½ä»¤è¡Œè·Ÿè¸ªè°ƒè¯•ä¿¡æ¯è¾“å‡ºã€‚
+ * @brief ÃüÁîĞĞ¸ú×Ùµ÷ÊÔĞÅÏ¢Êä³ö¡£
  * @details
  * @version 1.0.0
  * @author kim.xiejinqiang
@@ -22,8 +22,8 @@
 unsigned char g_traceLevel = _CS_TRACE_LEVEL;
 
 /**
- * @brief è®¾ç½®è°ƒè¯•ä¿¡æ¯çš„åŠ¨æ€è¾“å‡ºçº§åˆ«ã€‚
- * @param level çº§åˆ«ä»£ç ï¼Œæ•°å€¼è¶Šå¤§ï¼Œè¾“å‡ºçš„è°ƒè¯•ä¿¡æ¯å°†è¶Šå¤šã€‚
+ * @brief ÉèÖÃµ÷ÊÔĞÅÏ¢µÄ¶¯Ì¬Êä³ö¼¶±ğ¡£
+ * @param level ¼¶±ğ´úÂë£¬ÊıÖµÔ½´ó£¬Êä³öµÄµ÷ÊÔĞÅÏ¢½«Ô½¶à¡£
  */
 void Trace_SetLevel(unsigned char level)
 {
@@ -31,8 +31,8 @@ void Trace_SetLevel(unsigned char level)
 }
 
 /**
- * @brief è·å–è°ƒè¯•ä¿¡æ¯çš„è¾“å‡ºçº§åˆ«ã€‚
- * @return çº§åˆ«ä»£ç ã€‚
+ * @brief »ñÈ¡µ÷ÊÔĞÅÏ¢µÄÊä³ö¼¶±ğ¡£
+ * @return ¼¶±ğ´úÂë¡£
  */
 unsigned char Trace_GetLevel()
 {
@@ -43,10 +43,10 @@ unsigned char Trace_GetLevel()
 #if CONSOLE_EMULATOR
 /**
  * @def TRACE_LEVEL
- * @brief ä»¥æŒ‡å®šçš„çº§åˆ«è¾“å‡ºä¿¡æ¯ã€‚
- * @details ä½¿ç”¨æ—¶å¿…é¡»æŒ‡å®šè¾“å‡ºçº§åˆ«ï¼Œä½¿ç”¨èµ·æ¥æ¯”è¾ƒéº»çƒ¦ï¼Œä½†å¯ä»¥ä½¿ç”¨ä¸€äº›è‡ªå®šä¹‰çº§åˆ«ã€‚
- * @note ä¸å»ºè®®ä½¿ç”¨è¯¥å®ç›´æ¥è¾“å‡ºä¿¡æ¯ï¼Œè€Œåº”è¯¥è°ƒç”¨ç³»ç»Ÿé¢„å…ˆå®šä¹‰å¥½çš„çº§åˆ«ï¼Œå› ä¸ºåªè¦æ‰“å¼€
- *  @ref _CS_TRACE_LEVEL ç¼–è¯‘å¼€å…³ï¼Œä¸ç®¡çº§åˆ«æ˜¯ä»€ä¹ˆï¼Œæœ¬å®éƒ½å°†è¢«ç¼–è¯‘ï¼Œä»£ç å¤§å°ä¸å—æ§åˆ¶ã€‚
+ * @brief ÒÔÖ¸¶¨µÄ¼¶±ğÊä³öĞÅÏ¢¡£
+ * @details Ê¹ÓÃÊ±±ØĞëÖ¸¶¨Êä³ö¼¶±ğ£¬Ê¹ÓÃÆğÀ´±È½ÏÂé·³£¬µ«¿ÉÒÔÊ¹ÓÃÒ»Ğ©×Ô¶¨Òå¼¶±ğ¡£
+ * @note ²»½¨ÒéÊ¹ÓÃ¸ÃºêÖ±½ÓÊä³öĞÅÏ¢£¬¶øÓ¦¸Ãµ÷ÓÃÏµÍ³Ô¤ÏÈ¶¨ÒåºÃµÄ¼¶±ğ£¬ÒòÎªÖ»Òª´ò¿ª
+ *  @ref _CS_TRACE_LEVEL ±àÒë¿ª¹Ø£¬²»¹Ü¼¶±ğÊÇÊ²Ã´£¬±¾ºê¶¼½«±»±àÒë£¬´úÂë´óĞ¡²»ÊÜ¿ØÖÆ¡£
  */
 void TRACE_LEVEL(unsigned char level, const char *strFormat, ...)
 {
@@ -57,7 +57,7 @@ void TRACE_LEVEL(unsigned char level, const char *strFormat, ...)
 
         /* Write out the Data.                                         */
         va_start(args, strFormat);
-        ///@todo:ä¼˜åŒ–ï¼Œå¤ªæ¶ˆè€—æ ˆèµ„æºTBD
+        ///@todo:ÓÅ»¯£¬Ì«ÏûºÄÕ»×ÊÔ´TBD
         Length = vsnprintf((char*)s_bufTx, (sizeof(s_bufTx) - 1), strFormat, args);
         va_end(args);
         StrLine_WriteData((uint8_t*)s_bufTx, Length);

@@ -1550,7 +1550,7 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
         memcpy(&countSendNum, pMsg->msg.readRsp.pValue+12, sizeof(countSendNum));
         memcpy(&countRecieveNum, pMsg->msg.readRsp.pValue+16, sizeof(countRecieveNum));
         // After a successful read, display the read value
-        Display_print5(dispHandle, 4, 0, "Read rsp: %02x %02x %02x ---send:%d ๆ”ถ:%d", pMsg->msg.readRsp.pValue[0],  pMsg->msg.readRsp.pValue[1],  pMsg->msg.readRsp.pValue[2],  countSendNum,  countRecieveNum);
+        Display_print5(dispHandle, 4, 0, "Read rsp: %02x %02x %02x ---send:%d สี:%d", pMsg->msg.readRsp.pValue[0],  pMsg->msg.readRsp.pValue[1],  pMsg->msg.readRsp.pValue[2],  countSendNum,  countRecieveNum);
         TRACE_DEBUG("Read rsp: ---send:%d recieve:%d\n", countSendNum,  countRecieveNum);
       }
 

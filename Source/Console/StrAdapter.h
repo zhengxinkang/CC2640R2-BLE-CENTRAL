@@ -1,7 +1,7 @@
 /*
  * UartAdapter.h
  *
- *  Created on: 2017å¹´8æœˆ9æ—¥
+ *  Created on: 2017Äê8ÔÂ9ÈÕ
  *      Author: blue.zhengxinkang
  */
 
@@ -9,7 +9,7 @@
 #define SOURCE_CONSOLE_UARTADAPTER_H_
 
 //******************************************************************
-// èµ„æºå®šä¹‰ï¼Œåœ¨è¿™é‡Œå®šä¹‰æœ¬é€‚é…å™¨ä½¿ç”¨åˆ°ç›¸å…³èµ„æº
+// ×ÊÔ´¶¨Òå£¬ÔÚÕâÀï¶¨Òå±¾ÊÊÅäÆ÷Ê¹ÓÃµ½Ïà¹Ø×ÊÔ´
 #include "Hal_UartEmulator.h"
 
 extern void Hal_uartEmulator_printf(const uint8_t *pcString, ...);

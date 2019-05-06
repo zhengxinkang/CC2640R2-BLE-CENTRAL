@@ -1,7 +1,7 @@
 /*
  * MyEventConfig.h
  *
- *  Created on: 2018å¹´7æœˆ7æ—¥
+ *  Created on: 2018Äê7ÔÂ7ÈÕ
  *      Author: zheng
  */
 

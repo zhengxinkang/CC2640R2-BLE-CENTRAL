@@ -1,7 +1,7 @@
 /*
  * VersionInfo.h
  *
- *  Created on: 2017å¹´8æœˆ10æ—¥
+ *  Created on: 2017Äê8ÔÂ10ÈÕ
  *      Author: blue.zhengxinkang
  */
 
@@ -13,10 +13,10 @@
 
 typedef struct ManufVersionStruct
 {
-    unsigned char major;       ///< ä¸»ç‰ˆæœ¬å·
-    unsigned char minor;       ///< æ¬¡ç‰ˆæœ¬å·
-    unsigned char revision;    ///< ä¿®è®¢ç‰ˆæœ¬å·
-    unsigned char build;       ///< ç¼–è¯‘ç‰ˆæœ¬å·
+    unsigned char major;       ///< Ö÷°æ±¾ºÅ
+    unsigned char minor;       ///< ´Î°æ±¾ºÅ
+    unsigned char revision;    ///< ÐÞ¶©°æ±¾ºÅ
+    unsigned char build;       ///< ±àÒë°æ±¾ºÅ
 }
 ManufVersion;
 
