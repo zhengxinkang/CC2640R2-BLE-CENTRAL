@@ -18,6 +18,7 @@ typedef enum{
     UI_TYPE_TESTED_FAIL,    //已经测试过，上次测试失败
     UI_TYPE_QUIT,           //退出测试
     UI_TYPE_PROCESS,        //测试过程
+    UI_TYPE_CURRENT_OK,     //显示通过电流
 }UI_TYPE;
 
 void UI(UI_TYPE uiType, uint32_t data, uint8_t *str, uint32_t dataReason);

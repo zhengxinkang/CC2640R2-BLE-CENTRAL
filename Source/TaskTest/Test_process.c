@@ -53,11 +53,11 @@ uint8_t checkResult[50];
 uint8_t checkSelfResult[LEN_SELF_TEST_RESULT];
 #define TOTAL_TEST_ITEM     22
                                             //0     //1     //2     //3     //4     //5     //6     //7     //8     //9     //10    //11    //12    //13    //14    //15    //16    //17    //18    //19    //20     //21
-                                            //USB电  //电池    //回声    //擦除    //配写    //配验    //自测    //正转    //反转    //反锁    //防撬    //设置键//清空键  //斜舌    //低功耗//刷卡   //键盘    //语音    //LED   //BLE   //写结果   //读结果
+                                            //USB电  //电池    //回声    //擦除    //配写    //配验    //自测    //正转    //反转    //反锁    //防撬    //设置键//清空键  //斜舌    //刷卡   //键盘    //语音    //LED   //BLE   //低功耗//写结果   //读结果
 //全面测试
 uint8_t processActive[TOTAL_TEST_ITEM] = {  1,      1,      1,      1,      1,      1,      1,      1,      1,      1,      1,      1,      1,      1,      1,      1,      1,      1,      1,      1,      1,      1};
 //低功耗测试
-//uint8_t processActive[TOTAL_TEST_ITEM] = {  1,      0,      1,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      1,      0,      0,      0,      0,      0,      0,      0};
+//uint8_t processActive[TOTAL_TEST_ITEM] = {  1,      0,      1,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      1,      0,      0,      0,      0,      0};
 //BLE
 //uint8_t processActive[TOTAL_TEST_ITEM] = {  1,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      0,      1,      0,      0};
 //LED
@@ -355,6 +355,9 @@ TEST_PROCESS_STATE Test_process()
         test_process_state = TEST_PROCESS_STATE_MOTOR_FORWARD;
         TRACE_DEBUG("---%d---电机正转测试----------",testItems);
         RET_TEST_MOTOR ret_motor = TestProcess_motorForward();
+        //失败，重测一次
+        if(0x00 != ret_motor)
+            ret_motor = TestProcess_motorForward();
         checkResult[testItems] = ret_motor;
         if(0x00 == checkResult[testItems])
         {
@@ -376,6 +379,9 @@ TEST_PROCESS_STATE Test_process()
         test_process_state = TEST_PROCESS_STATE_MOTOR_REVERSAL;
         TRACE_DEBUG("---%d---电机反转测试----------",testItems);
         RET_TEST_MOTOR ret_motor = TestProcess_motorReversal();
+        //失败，重测一次
+        if(0x00 != ret_motor)
+            ret_motor = TestProcess_motorReversal();
         checkResult[testItems] = ret_motor;
         if(0x00 == checkResult[testItems])
         {
@@ -496,31 +502,7 @@ TEST_PROCESS_STATE Test_process()
     }
     testItems++;
 
-    //14测试项---休眠功耗测试--------------------------------------------------------------------
-    if(processActive[testItems])
-    {
-        UI(UI_TYPE_PROCESS, testItems, "-min power   ", 0);
-        test_process_state = TEST_PROCESS_STATE_POWER_MIN;
-        TRACE_DEBUG("---%d---休眠功耗测试---------",testItems);
-        RET_TEST_POWER_MODE ret_powerModeSleep = TestProcess_powerMode(POWER_MODE_SLEEP);
-        checkResult[testItems] = ret_powerModeSleep;
-        if (0x00 == checkResult[testItems])
-        {
-            TRACE_DEBUG(">>>休眠功耗测试：成功.\n\n");
-        }
-        else
-        {
-            TRACE_DEBUG(">>>休眠功耗测试：失败！错误码：%d.\n\n", checkResult[testItems]);
-            test_process_state = TEST_PROCESS_STATE_POWER_MAX_FAIL;
-            GOTO_TESTEND
-        }
-        //复位目标-休眠后无法唤醒，只能重启后继续流程接下去
-//        if(processActive[testItems+1])
-            TestProcess_resetTarget();
-    }
-    testItems++;
-
-    //15测试项---刷卡测试----------------------------------------------------------------------------
+    //14测试项---刷卡测试----------------------------------------------------------------------------
     if(processActive[testItems])
     {
         UI(UI_TYPE_PROCESS, testItems, "-card        ", 0);
@@ -541,7 +523,7 @@ TEST_PROCESS_STATE Test_process()
     }
     testItems++;
 
-    //16测试项---键盘测试-------------------------------------------------------------------------------
+    //15测试项---键盘测试-------------------------------------------------------------------------------
     if(processActive[testItems])
     {
         UI(UI_TYPE_PROCESS, testItems, "-touch Btn   ", 0);
@@ -562,7 +544,7 @@ TEST_PROCESS_STATE Test_process()
     }
     testItems++;
 
-    //17测试项---语音测试--------------------------------------------------------------------
+    //16测试项---语音测试--------------------------------------------------------------------
     if(processActive[testItems])
     {
         UI(UI_TYPE_PROCESS, testItems, "-voice       ", 0);
@@ -583,7 +565,7 @@ TEST_PROCESS_STATE Test_process()
     }
     testItems++;
 
-    //18测试项---LED灯测试--------------------------------------------------------------------
+    //17测试项---LED灯测试--------------------------------------------------------------------
     if(processActive[testItems])
     {
         UI(UI_TYPE_PROCESS, testItems, "-led         ", 0);
@@ -604,14 +586,14 @@ TEST_PROCESS_STATE Test_process()
     }
     testItems++;
 
-    //19测试项---BLE模块与手机通信测试--------------------------------------------------------------------
+    //18测试项---BLE模块与手机通信测试--------------------------------------------------------------------
     if(processActive[testItems])
 
     {
         UI(UI_TYPE_PROCESS, testItems, "-ble         ", 0);
         test_process_state = TEST_PROCESS_STATE_BLE;
         TRACE_DEBUG("---%d---BLE通信测试----------",testItems);
-        RET_TEST_BLE ret_ble = TestProcess_bleByMacAddr(NULL, 43, 6, 3, 3);
+        RET_TEST_BLE ret_ble = TestProcess_bleByMacAddr(NULL, 40, 6, 3, 3);
         checkResult[testItems] = ret_ble;
         if(0x00 == checkResult[testItems])
         {
@@ -681,6 +663,57 @@ TEST_PROCESS_STATE Test_process()
             }
             GOTO_TESTEND
         }
+    }
+    testItems++;
+
+#define CURRENT_SLEEP_DOWN      30  //休眠电流下限
+#define CURRENT_SLEEP_UP        55  //休眠电流上限
+#define CURRENT_SLEEP_PRE       98 //预估电流上限，有必要延长时间再测一次
+    uint8_t currentSuccess = 0;
+    //19测试项---休眠功耗测试--------------------------------------------------------------------
+    if(processActive[testItems])
+    {
+        UI(UI_TYPE_PROCESS, testItems, "-min power   ", 0);
+        test_process_state = TEST_PROCESS_STATE_POWER_MIN;
+        TRACE_DEBUG("---%d---休眠功耗测试---------",testItems);
+        uint8_t ret_powerModeSleep = TestProcess_powerModeMin(CURRENT_SLEEP_DOWN, CURRENT_SLEEP_UP, CURRENT_SLEEP_PRE);
+        //转换测试结果
+        if(ret_powerModeSleep < CURRENT_SLEEP_DOWN)
+        {
+            //电流小于30uA
+            checkResult[testItems] = ret_powerModeSleep;
+        }
+        else if(ret_powerModeSleep < CURRENT_SLEEP_UP)
+        {
+            //电流30-55uA
+            checkResult[testItems] = 0x00;
+        }
+        else if(ret_powerModeSleep < CURRENT_SLEEP_PRE)
+        {
+            //电流56-98uA
+            checkResult[testItems] = ret_powerModeSleep;
+        }
+        else
+        {
+            //电流大于98uA
+            checkResult[testItems] = RET_TEST_POWER_MODE_MIN_POWER_OVERFLOW;
+        }
+
+        //处理测试结果
+        if (0x00 == checkResult[testItems])
+        {
+            TRACE_DEBUG(">>>休眠功耗测试：成功.\n\n");
+            currentSuccess = ret_powerModeSleep;
+        }
+        else
+        {
+            TRACE_DEBUG(">>>休眠功耗测试：失败！错误码：%d.\n\n", checkResult[testItems]);
+            test_process_state = TEST_PROCESS_STATE_POWER_MAX_FAIL;
+            GOTO_TESTEND
+        }
+        //复位目标-休眠后无法唤醒，只能重启后继续流程接下去
+//        if(processActive[testItems+1])
+            TestProcess_resetTarget();
     }
     testItems++;
 
@@ -773,7 +806,7 @@ TEST_PROCESS_STATE Test_process()
     //判断测试结果---------------------------------------------------------
     if(testRecord == TEST_RESULT_SUCCESS)
     {
-        UI(UI_TYPE_SUCCESS, 0, NULL, 0);
+        UI(UI_TYPE_SUCCESS, 0, NULL, currentSuccess);
         TRACE_DEBUG("总测试结果为==================================================|>>>成功<<<|。\n");
     }
     else

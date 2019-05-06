@@ -389,40 +389,47 @@ RET_TEST_BLE TestProcess_bleByMacAddr(uint8_t* addr ,uint8_t minRssi, uint8_t ti
             TRACE_DEBUG("唤醒BLE %dms后超时！\n", TIMEOUT_TEST_PROCESS_ACTION_ACTIVEBLE);
         }
     }
-
+#define MAX_TIMES_SEARCH    4
     //1-开始发现设备-dicover
 //    if(RET_TEST_BLE_SUCCESS == ret_test_ble && false == simpleCentral_getBindingStatus())
     if(RET_TEST_BLE_SUCCESS == ret_test_ble)
     {
-        //mac地址条件增加进来
-        simpleCentral_searchCondition(minRssi, timesSearchSatisfy, timesSearchNoSatisfy);
-        simpleCentral_setSearchDeviceAddr(s_ble_info.macAddr);
-        for(uint8_t i = 0; i<timesSearch ;i++)
+        for(uint8_t searchTime = 0; searchTime<MAX_TIMES_SEARCH; searchTime++)
         {
-            BF_UtilWaitHandle(ActionDiscover_Index);
-            events = TestEvent_pend(EVENT_TESTPROCESS_BLE_DISCOVER|EVENT_TESTPROCESS_BLE_DISCOVER_FAIL|EVENT_TESTPROCESS_BLE_DISCOVER_FAIL_RSSI, TIMEOUT_TEST_PROCESS_BLE_DISCOVER);
-            if (events & EVENT_TESTPROCESS_BLE_DISCOVER)
-            {
-                TRACE_CODE("TestProcess_ble dicover success.\n");
-                ret_test_ble = RET_TEST_BLE_SUCCESS;
-                break;
-            }
-            else if(events & EVENT_TESTPROCESS_BLE_DISCOVER_FAIL_RSSI)
-            {
-                TRACE_ERROR("TestProcess_ble dicover RSSI 不满足.\n");
-                ret_test_ble = RET_TEST_BLE_ERROR_RSSI;
-                break;
-            }
-            else if(events & EVENT_TESTPROCESS_BLE_DISCOVER_FAIL)
+            //mac地址条件增加进来
+            simpleCentral_searchCondition(minRssi, timesSearchSatisfy, timesSearchNoSatisfy);
+            simpleCentral_setSearchDeviceAddr(s_ble_info.macAddr);
+            for(uint8_t i = 0; i<timesSearch ;i++)
             {
                 BF_UtilWaitHandle(ActionDiscover_Index);
-                TRACE_CODE("TestProcess_ble dicover no device, find again.\n");
-                ret_test_ble = RET_TEST_BLE_DISCOVERTIMEOUT;
+                events = TestEvent_pend(EVENT_TESTPROCESS_BLE_DISCOVER|EVENT_TESTPROCESS_BLE_DISCOVER_FAIL|EVENT_TESTPROCESS_BLE_DISCOVER_FAIL_RSSI, TIMEOUT_TEST_PROCESS_BLE_DISCOVER);
+                if (events & EVENT_TESTPROCESS_BLE_DISCOVER)
+                {
+                    TRACE_CODE("TestProcess_ble dicover success.\n");
+                    ret_test_ble = RET_TEST_BLE_SUCCESS;
+                    break;
+                }
+                else if(events & EVENT_TESTPROCESS_BLE_DISCOVER_FAIL_RSSI)
+                {
+                    TRACE_ERROR("TestProcess_ble dicover RSSI 不满足.\n");
+                    ret_test_ble = RET_TEST_BLE_ERROR_RSSI;
+                    break;
+                }
+                else if(events & EVENT_TESTPROCESS_BLE_DISCOVER_FAIL)
+                {
+                    BF_UtilWaitHandle(ActionDiscover_Index);
+                    TRACE_CODE("TestProcess_ble dicover no device, find again.\n");
+                    ret_test_ble = RET_TEST_BLE_DISCOVERTIMEOUT;
+                }
+                else
+                {
+                    TRACE_ERROR("TestProcess_ble dicover timeout after %d ms!\n", TIMEOUT_TEST_PROCESS_BLE_DISCOVER);
+                    ret_test_ble = RET_TEST_BLE_DISCOVERTIMEOUT;
+                }
             }
-            else
+            if(RET_TEST_BLE_SUCCESS == ret_test_ble)
             {
-                TRACE_ERROR("TestProcess_ble dicover timeout after %d ms!\n", TIMEOUT_TEST_PROCESS_BLE_DISCOVER);
-                ret_test_ble = RET_TEST_BLE_DISCOVERTIMEOUT;
+                break;
             }
         }
     }
@@ -464,24 +471,30 @@ RET_TEST_BLE TestProcess_bleByMacAddr(uint8_t* addr ,uint8_t minRssi, uint8_t ti
         }
     }
 
+#define MAX_TIMES_CONNECT   2
     //3-连接设备-connect
     if (RET_TEST_BLE_SUCCESS == ret_test_ble)
     {
-        TRACE_CODE("TestProcess_ble connect start...\n");
-        BF_taskSleepMs( 200 );
-        BF_UtilWaitHandle(ActionConnect_Index);
+        for(uint8_t connetTime = 0; connetTime<MAX_TIMES_CONNECT; connetTime++)
+        {
+            TRACE_CODE("TestProcess_ble connect start...\n");
+            BF_taskSleepMs( 200 );
+            BF_UtilWaitHandle(ActionConnect_Index);
 
-        events = TestEvent_pend(EVENT_TESTPROCESS_BLE_CONNECT, TIMEOUT_TEST_PROCESS_BLE_CONNECT);
-        if (events & EVENT_TESTPROCESS_BLE_CONNECT)
-        {
-            TRACE_CODE("TestProcess_ble connect success.\n");
-            ret_test_ble = RET_TEST_BLE_SUCCESS;
-        }
-        else
-        {
-            TRACE_ERROR("TestProcess_ble connect timeout after %d ms!\n", TIMEOUT_TEST_PROCESS_BLE_CONNECT);
-            ret_test_ble = RET_TEST_BLE_ERROR_CONNECT;
-            BleTest_waitUtilDisconnect(FALSE);
+            events = TestEvent_pend(EVENT_TESTPROCESS_BLE_CONNECT, TIMEOUT_TEST_PROCESS_BLE_CONNECT);
+            if (events & EVENT_TESTPROCESS_BLE_CONNECT)
+            {
+                TRACE_CODE("TestProcess_ble connect success.\n");
+                ret_test_ble = RET_TEST_BLE_SUCCESS;
+                break;
+            }
+            else
+            {
+                TRACE_ERROR("TestProcess_ble connect timeout after %d ms!\n", TIMEOUT_TEST_PROCESS_BLE_CONNECT);
+                ret_test_ble = RET_TEST_BLE_ERROR_CONNECT;
+                if(connetTime >= MAX_TIMES_CONNECT-1)
+                    BleTest_waitUtilDisconnect(FALSE);
+            }
         }
     }
 

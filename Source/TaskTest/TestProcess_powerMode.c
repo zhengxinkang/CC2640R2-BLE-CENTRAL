@@ -18,108 +18,95 @@
 #include "Hal_electricCurrent.h"
 #include "TestProcess_resetTarget.h"
 
-
-#define TIMEOUT_TEST_PROCESS_POWERMODE      60000//60秒
-#define MIN_CURRENT                         65
-#define MAX_TIME_POWER_CHECK                2
+#define MAX_TIME_POWER_CHECK                3
 void SetPin_lowPower();
 
-RET_TEST_POWER_MODE TestProcess_powerMode(POWER_MODE powerMode)
+uint8_t TestProcess_powerModeMin(uint8_t minUaTooSmall, uint8_t minUa, uint8_t preMinUa)
 {
-    RET_TEST_POWER_MODE ret = RET_TEST_POWER_MODE_SUCCESS;
-    switch(powerMode)
+    uint8_t ret = RET_TEST_POWER_MODE_MIN_SUCCESS;
+    uint8_t currentRet = 0;
+    for (uint8_t time = 0; time < MAX_TIME_POWER_CHECK; time++)
     {
-        case POWER_MODE_SLEEP:
+        //命令主板进入低功耗
+        Task_sleep((200 * 1000) / Clock_tickPeriod);
+        uint8_t para = POWER_MODE_SLEEP;
+        SendCmd_qcTest_setDevicePower(&para, 1);
+
+        //命令主板进入低功耗
+        Task_sleep((100 * 1000) / Clock_tickPeriod);
+        SendCmd_qcTest_setDevicePower(&para, 1);
+
+        //将各个IO口设置为不漏电状态
+        Task_sleep((100 * 1000) / Clock_tickPeriod);
+        SetPin_lowPower();
+
+        //延迟1000ms，预统计一次500ms内的平均电流
+        Task_sleep((1000 * 1000) / Clock_tickPeriod);
+        uint32_t avgCurrentThis = avgCurrentCount(0, false, 1);
+        currentRet = avgCurrentThis;
+        if (avgCurrentThis <= minUaTooSmall)
         {
-            for(uint8_t time=0; time<MAX_TIME_POWER_CHECK; time++)
-            {
-                //设置功耗模式
-                Task_sleep((200*1000)/Clock_tickPeriod);
-
-                uint8_t para = POWER_MODE_SLEEP;
-                SendCmd_qcTest_setDevicePower(&para, 1);
-                Task_sleep((200*1000)/Clock_tickPeriod);
-                SetPin_lowPower();
-
-                //            TRACE_DEBUG("<<<<<<测试通过（电流小于00.060）请按下【成功】，测试不通过请按下【失败】\n");
-                Task_sleep((5000*1000)/Clock_tickPeriod);
-
-                uint32_t avgCurrent = avgCurrentCount(0, false, 8);
-                if(avgCurrent <= MIN_CURRENT)
-                {
-                    ret = RET_TEST_POWER_MODE_SUCCESS;
-                    TRACE_CODE("睡眠功耗确认为“成功”,休眠功耗为%d uA.\n", avgCurrent);
-                    break;
-                }
-                else
-                {
-                    //再次读取
-                    TRACE_CODE("睡眠功耗第一次确认失败,休眠功耗为%d uA!再次确认。\n", avgCurrent);
-                    Task_sleep((2000*1000)/Clock_tickPeriod);
-                    avgCurrent = avgCurrentCount(0, false, 8);
-                    if(avgCurrent <= MIN_CURRENT)
-                    {
-                        ret = RET_TEST_POWER_MODE_SUCCESS;
-                        TRACE_CODE("睡眠功耗确认为“成功”,休眠功耗为%d uA.\n", avgCurrent);
-                        break;
-                    }
-                    else
-                    {
-                        ret = RET_TEST_POWER_MODE_ERROR;
-                        if(time >= MAX_TIME_POWER_CHECK-1)
-                        {
-                            TRACE_CODE("睡眠功耗确认为“失败”,休眠功耗为%d uA!!!尝试%d次后放弃。\n", avgCurrent, MAX_TIME_POWER_CHECK);
-                            break;
-                        }
-                        else
-                        {
-                            TRACE_CODE("睡眠功耗确认为“失败”,休眠功耗为%d uA!!!,再次尝试。\n", avgCurrent);
-                            TestProcess_resetTarget();
-                        }
-                    }
-                }
-            }
+            TRACE_CODE("预检测,休眠功耗为%d uA，低于正常范围，继续统计4秒内平均电流。\n", avgCurrentThis);
+            continue;
+        }
+        else if (avgCurrentThis <= minUa)
+        {
+            TRACE_CODE("预检测，睡眠功耗确认为“成功”,休眠功耗为%d uA.\n", avgCurrentThis);
             break;
         }
-        case POWER_MODE_WAKE_ALL:
+        else if (avgCurrentThis <= preMinUa)
         {
-            //设置功耗模式
-            uint8_t para = POWER_MODE_WAKE_ALL;
-            SendCmd_qcTest_setDevicePower(&para, 1);
+            TRACE_CODE("预检测实时电流为%duA，在【%d-%duA】范围内，继续统计4秒内平均电流。\n",
+                       avgCurrentThis, minUa, preMinUa);
+        }
+        else
+        {
+            TRACE_ERROR("预检测实时电流为%duA，超过【%duA】，不等待，直接重试。\n", avgCurrentThis,
+                        preMinUa);
+            TestProcess_resetTarget();
+            continue;
+        }
 
-            //延迟500ms
-            Task_sleep((500*1000)/Clock_tickPeriod);
-            TRACE_DEBUG("<<<<<<等待全唤醒功耗测试结果，测试通过请按下成功键，测试不通过请按下失败键\n");
-
-            //等待按键消息10秒钟
-            uint32_t events = TestEvent_pend(EVENT_TESTPROCESS_CONFIRM_SUCCESS|EVENT_TESTPROCESS_CONFIRM_FAIL, TIMEOUT_TEST_PROCESS_POWERMODE);
-            if (events & EVENT_TESTPROCESS_CONFIRM_SUCCESS)
+        //统计4秒内的平均电流
+        Task_sleep((4000 * 1000) / Clock_tickPeriod);
+        uint32_t avgCurrent = avgCurrentCount(0, false, 8);
+        currentRet = avgCurrent;
+        if (avgCurrentThis <= minUaTooSmall)
+        {
+            TRACE_CODE("睡眠功耗确认为“失败”,休眠功耗为%d uA!!!,再次尝试。\n", avgCurrent);
+            TestProcess_resetTarget();
+            continue;
+        }
+        else if (avgCurrent <= minUa)
+        {
+            TRACE_CODE("睡眠功耗确认为“成功”,休眠功耗为%d uA.\n", avgCurrent);
+            break;
+        }
+        else
+        {
+            if (time >= MAX_TIME_POWER_CHECK - 1)
             {
-                ret = RET_TEST_POWER_MODE_SUCCESS;
-                TRACE_DEBUG("全唤醒功耗确认为“成功”.\n");
-            }
-            else if (events & EVENT_TESTPROCESS_CONFIRM_FAIL)
-            {
-                ret = RET_TEST_POWER_MODE_ERROR;
-                TRACE_DEBUG("全唤醒功耗确认为“失败”.\n");
+                TRACE_CODE("睡眠功耗确认为“失败”,休眠功耗为%d uA!!!尝试%d次后放弃。\n", avgCurrent,
+                           MAX_TIME_POWER_CHECK);
+                break;
             }
             else
             {
-                ret = RET_TEST_POWER_MODE_ERROR;
-                TRACE_DEBUG("全唤醒功耗确认%dms后超时！\n",TIMEOUT_TEST_PROCESS_POWERMODE);
+                TRACE_CODE("睡眠功耗确认为“失败”,休眠功耗为%d uA!!!,再次尝试。\n", avgCurrent);
+                TestProcess_resetTarget();
+                continue;
             }
-            break;
         }
-        case POWER_MODE_NORMAL:
-        {
-            //设置功耗模式
-            uint8_t para = POWER_MODE_NORMAL;
-            SendCmd_qcTest_setDevicePower(&para, 1);
-            TRACE_DEBUG("正常功耗模式设置成功.\n");
-            //延迟100ms
-            Task_sleep((100*1000)/Clock_tickPeriod);
-            break;
-        }
+    }
+
+    //分段结果
+    if (currentRet <= 98)
+    {
+        ret = currentRet;
+    }
+    else
+    {
+        ret = RET_TEST_POWER_MODE_MIN_POWER_OVERFLOW;
     }
     return ret;
 }

@@ -14,7 +14,7 @@
 #include "TestProcess_ble.h"
 
 #define TEST_TASK_STACK_SIZE    1024
-#define TEST_TASK_PRIORITY      1
+#define TEST_TASK_PRIORITY      2
 
 Event_Handle taskTestEvent;
 

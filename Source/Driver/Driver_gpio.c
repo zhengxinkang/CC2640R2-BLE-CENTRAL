@@ -93,7 +93,7 @@ static void callbackFxn(PIN_Handle handle, PIN_Id pinId)
 {
     if(PORT_SP_OUT == pinId)
     {
-        TRACE_CODE("声音输入中断。\n");
+//        TRACE_CODE("声音输入中断。\n");
         TestEvent_post(EVENT_TESTPROCESS_EVENT_VOICE);
     }
 }

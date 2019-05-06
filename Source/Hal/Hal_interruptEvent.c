@@ -13,6 +13,9 @@
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/knl/Clock.h>
 #include "Hal_oled.h"
+/*
+ * 注意：本文只允许短时间发送事件等操作，不允许长时间操作。
+*/
 
 //static bool startStatus = false;
 //----------------------------------------------------

@@ -63,8 +63,8 @@ RET_TEST_MOTOR TestProcess_motorForward()
     //电机回位----------------------------------
     uint8_t para = ACTION_TYPE_MOTOR_REVERSE;
     SendCmd_qcTest_action(&para, 1);
-    //延迟500ms
-    Task_sleep((500*1000)/Clock_tickPeriod);
+    //延迟300ms
+    Task_sleep((300*1000)/Clock_tickPeriod);
     return ret;
 }
 

@@ -25,6 +25,7 @@ void Hal_oled_init()
 
 void Hal_oled_currentChange(uint32_t avgUa, uint32_t thisUa)
 {
+//    BF_taskSleepMs(50);
     OLED_ShowString(0,0,"i=");
     if(avgUa < 1000)
     {
@@ -51,6 +52,7 @@ void Hal_oled_currentChange(uint32_t avgUa, uint32_t thisUa)
 
 void Hal_oled_strChange(OLED_STR_TYPE strType, uint8_t* str)
 {
+//    BF_taskSleepMs(50);
     switch(strType)
     {
         case OLED_STR_TYPE_ITEM:
@@ -73,6 +75,7 @@ void Hal_oled_strChange(OLED_STR_TYPE strType, uint8_t* str)
 
 void Hal_oled_dataChange(OLED_DATA_TYPE strType, uint32_t data)
 {
+//    BF_taskSleepMs(50);
     switch(strType)
     {
         case OLED_DATA_TYPE_ITEM:

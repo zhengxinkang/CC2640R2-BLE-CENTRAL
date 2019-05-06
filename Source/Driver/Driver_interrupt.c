@@ -12,7 +12,7 @@
 
 #define TIMES_CHANGE_STATE      3
 
-#define TIMER_INPUT_PERIOD      10
+#define TIMER_INPUT_PERIOD      5
 #define NUM_INPUT_PORT          24
 
 static uint8_t inputTimeIndex;
