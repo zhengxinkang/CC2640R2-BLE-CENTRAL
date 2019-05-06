@@ -1,27 +1,59 @@
 /*
  * VersionInfo.c
  *
- *  Created on: 2017年8月10日
- *      Author: blue.zhengxinkang
+ *  Created on: 2018年10月19日
+ *      Author: zheng
  */
 
+/**
+ * @file
+ * @brief 产品的版本相关信息。
+ * @details 提供软件版本号。
+ * @version 1.0.1
+ * @author zheng
+ * @date 2016-5-25
+ */
 #include "VersionInfo.h"
-//#include "ConfigProtocol.h"
+#include "ConfigProtocol.h"
 
-#if (SOFT_VERSION == SLOCKV4_BB_DNCP_SOFT_VERSION)
-    //#error"WA: SOFT_VERSION == DNCP_SOFT_VERSION"
-    static const ManufVersion s_kSoftwareVersion =
-    {
-     1,      // 主版本号
-     0,      // 次版本号
-     0,      // 修订版本号
-     0       // 编译版本号
-    };
+//------S31锁板上的蓝牙-----------
+/**
 
-#else
-    #error "***ERROR*** soft version not define!"
-#endif
+//---------------------------------------------------------
+V1.0.0.1
+郑新康
+更新时间：18-10-21   11:16
 
+更新说明：
+1、基于launchPad硬件发布第一个使用版本。
+
+*/
+static const ManufVersion s_kSoftwareVersion =
+{
+        1,      // 主版本号
+        0,      // 次版本号
+        0,      // 修订版本号
+        1       // 编译版本号
+};
+
+//硬件版本号
+/**
+//---------------------------------------------------------
+V1.0.0.0
+郑新康
+更新时间：18-10-21   11:16
+
+更新说明：
+1、launchPad硬件-cc2640r2
+
+*/
+static const ManufVersion s_kHardwareVersion =
+{
+        1,      // 主版本号
+        0,      // 次版本号
+        0,      // 修订版本号
+        0       // 编译版本号
+};
 
 /**
  * @brief 获取软件版本号。
@@ -32,14 +64,9 @@ ManufVersion VersionInfo_GetSoftwareVersion(void)
     return s_kSoftwareVersion;
 }
 
-/**
- * @brief 获取硬件（电路）版本号。
- * @return 硬件版本号。
- */
+
 ManufVersion VersionInfo_GetHardwareVersion(void)
 {
-    ManufVersion pcbVersion = {0};
-    //pcbVersion.major = HardVersion_GetPcbVersion();
-    //pcbVersion.minor = HardVersion_GetBomVersion();
-    return pcbVersion;
+    return s_kHardwareVersion;
 }
+

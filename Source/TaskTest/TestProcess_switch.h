@@ -15,8 +15,11 @@ typedef enum{
     RET_TEST_SWITCH_ERROR                   = 1,
 }RET_TEST_SWITCH;
 
-RET_TEST_SWITCH TestProcess_switchAntiLock();
-RET_TEST_SWITCH TestProcess_switchPreventDismantle();
+RET_TEST_SWITCH TestProcess_antiLock();
+RET_TEST_SWITCH TestProcess_preventDismantle();
+RET_TEST_SWITCH TestProcess_settingButton();
+RET_TEST_SWITCH TestProcess_clearButton();
+RET_TEST_SWITCH TestProcess_obliqueTongue();
 
 
 #endif /* SOURCE_TASKTEST_TESTPROCESS_SWITCH_H_ */

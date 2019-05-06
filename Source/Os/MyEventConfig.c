@@ -17,10 +17,4 @@ void MyEventConfig_handle(uint32_t events)
     {
         MyEvent_sendDataHandle();
     }
-
-    if (events & MY_TEST_PROCESS)
-    {
-        MyEvent_testProcessHandle();
-    }
-
 }

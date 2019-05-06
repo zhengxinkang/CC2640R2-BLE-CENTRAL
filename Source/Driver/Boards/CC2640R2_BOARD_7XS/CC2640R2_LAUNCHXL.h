@@ -115,6 +115,10 @@ extern const PIN_Config BoardGpioInitTable[];
 //#define CC2640R2_LAUNCHXL_EMULATOR_UART_RX    IOID_2         /* RXD */
 //#define CC2640R2_LAUNCHXL_EMULATOR_UART_TX    IOID_3         /* TXD */
 
+//电源控制
+#define PORT_POWER_BAT                          IOID_4
+#define PORT_POWER_USB                          IOID_5
+
 //LED灯
 #define CC2640R2_LAUNCHXL_PIN_RLED              IOID_6
 #define CC2640R2_LAUNCHXL_PIN_GLED              IOID_7
@@ -133,13 +137,27 @@ extern const PIN_Config BoardGpioInitTable[];
 #define CC2640R2_LAUNCHXL_PIN_BTN1              IOID_13
 #define CC2640R2_LAUNCHXL_PIN_BTN2              IOID_14
 
+//输入信号
+#define PORT_TEST_RESET_TARGET                  IOID_15
+#define PORT_TEST_START                         IOID_16
+#define PORT_TEST_MODEL_S31                     IOID_17
+#define PORT_TEST_MODEL_S31X                    IOID_18
+
+//输出信号
+#define PORT_TEST_OBLIQUE_LOCK_TONGUE           IOID_19 //斜舌
+#define PORT_TEST_SETTING_BUTTON                IOID_20 //设置键
+#define PORT_TEST_CLEAR_BUTTON                  IOID_21 //清空键
+
 //ADC采样
 #define CC2640R2_LAUNCHXL_DIO23_ANALOG          IOID_23
 
 //uart0
 #define CC2640R2_LAUNCHXL_UART_TX               IOID_25         /* TXD */
 #define CC2640R2_LAUNCHXL_UART_RX               IOID_26         /* RXD */
+
 //---define end---------------------------------------------------------------------------------------
+#define BOARD_PORT_UART_RX                      CC2640R2_LAUNCHXL_UART_RX
+#define BOARD_PORT_UART_TX                      CC2640R2_LAUNCHXL_UART_TX
 
 /* Analog Capable DIOs */
 //#define CC2640R2_LAUNCHXL_DIO23_ANALOG          IOID_23

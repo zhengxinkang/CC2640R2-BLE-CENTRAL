@@ -14,7 +14,7 @@
 
 
 // How often to perform periodic event (in msec)
-#define TIMER_SENDDATA_PERIOD_DEFAULT               200
+#define TIMER_SENDDATA_PERIOD_DEFAULT               300
 
 
 extern Clock_Struct sendDataClock;

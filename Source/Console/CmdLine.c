@@ -28,6 +28,11 @@
 #include "Test_process.h"
 #include "Driver_adc.h"
 #include "Driver_gpio.h"
+#include "IWUP_config.h"
+#include "IWUP_cmd_group/CmdGroup_qcTest.h"
+#include "IWUP_notify_group/NotifyGroup_qcTest.h"
+#include "TestProcess_powerMode.h"
+#include "BoardAction.h"
 //#include "Ble_adv.h"
 //#include "Ble_advDataConfig.h"
 //#include "StateMachine_ble.h"
@@ -58,9 +63,16 @@ const CmdLineVersion g_kCmdLineVersion =
 //static int Cmd_bleAdvDataTest(int argc, char *argv[]);
 //static int Cmd_bleAdvTest(int argc, char *argv[]);
 //static int Cmd_wakeTxTest(int argc, char *argv[]);
+#if defined     IWUP_ROLE_WIRELESS_MODULE
+static int Cmd_iwupCmdTest(int argc, char *argv[]);
+#elif defined   IWUP_ROLE_LOCK_BOARD
+static int Cmd_iwupNotifyTest(int argc, char *argv[]);
+#endif
 static int Cmd_gpioTest(int argc, char *argv[]);
 static int Cmd_adcTest(int argc, char *argv[]);
 static int Cmd_testTaskTest(int argc, char *argv[]);
+static int Cmd_setPinLowPower(int argc, char *argv[]);
+static int Cmd_boardAction(int argc, char *argv[]);
 
 static int Cmd_help(int argc, char *argv[]);
 static int Cmd_version(int argc, char *argv[]);
@@ -70,6 +82,7 @@ static int Cmd_reset(int argc, char *argv[]);
 static int Cmd_demo(int argc, char *argv[]);
 static int Cmd_TraceSetLevel(int argc, char *argv[]);
 //static int Cmd_TraceGetLevel(int argc, char *argv[]);
+
 
 /**
  * @brief 命令行命令表，保存命令关键字与其处理函数之间的对应关系。
@@ -95,9 +108,16 @@ const CmdLineEntry g_kConsoleCmdTable[] =
 //    { "bleAdvData",         Cmd_bleAdvDataTest,     "\t\t: bleAdvData advRefresh/advPrint num." },
 //    { "bleAdv",             Cmd_bleAdvTest,         "\t\t\t: bleAdv enable/disable/restart/disconnect/isConnected/bleSendData/resetBle." },
 //    { "wakeTxTest",         Cmd_wakeTxTest,         "\t\t: wakeTxTest high/low." },
+#if defined     IWUP_ROLE_WIRELESS_MODULE
+    { "iwupCmdTest",        Cmd_iwupCmdTest,        "\t\t: iwupCmdTest SendCmd_general_getDeviceInfo/... para" },
+#elif defined   IWUP_ROLE_LOCK_BOARD
+    { "iwupNotifyTest",     Cmd_iwupNotifyTest,     "\t\t: iwupNotifyTest SendNotify_Echo/SendNotify_general_button/..." },
+#endif
     { "gpioTest",               Cmd_gpioTest,               "\t\t: gpioTest" },
     { "adcTest",                Cmd_adcTest,                "\t\t\t: adcTest" },
-    { "testTaskTest",           Cmd_testTaskTest,           "\t\t: testTaskTest EVENT_START_TEST." },
+    { "testTaskTest",           Cmd_testTaskTest,           "\t\t: testTaskTest EVENT_START_TEST" },
+    { "setPinLowPower",         Cmd_setPinLowPower,         "\t\t: setPinLowPower" },
+    { "boardAction",            Cmd_boardAction,            "\t\t: boardAction" },
 
     { "help",       Cmd_help,       "\t\t\t: Display list of commands. Short format: h or ?." },
     { "?",          Cmd_help,       0 },
@@ -120,6 +140,107 @@ void CmdLine_Init(void)
 //*****************************************************************************
 // 4、命令处理函数
 //*****************************************************************************
+//----------------------------------------------------CmdLine setPinLowPower-----------------
+static int Cmd_boardAction(int argc, char *argv[])
+{
+    uint8_t hexData[30];
+    if(0 != strlen(argv[2])%2)
+    {
+        TRACE_ERROR("Para len error! para len not Double number!\n");
+        return 0;
+    }
+    StringToHexGroup((char*)argv[2], strlen(argv[2]), (char*)hexData);
+
+    if(!memcmp("setModeNormal", argv[1], strlen("setModeNormal")))
+    {
+        BoardAction_setModeNormal();
+        TRACE_DEBUG("正常模式。\n");
+    }
+    else if(!memcmp("buttonSetting", argv[1], strlen("buttonSetting")))
+    {
+        BoardAction_setting(300);
+        TRACE_DEBUG("执行设置-%dms。\n",300);
+    }
+    else if(!memcmp("buttonClear", argv[1], strlen("buttonClear")))
+    {
+        TRACE_DEBUG("开始清空-%dms。\n",6000);
+        BoardAction_clear(6000);
+        TRACE_DEBUG("清空完成。\n");
+    }
+    return 0;
+}
+//----------------------------------------------------CmdLine setPinLowPower-----------------
+static int Cmd_setPinLowPower(int argc, char *argv[])
+{
+    TRACE_DEBUG("Cmd_setPinLowPower.\n");
+    SetPin_lowPower();
+    return 0;
+}
+
+//----------------------------------------------------CmdLine iwupTest-----------------
+#if defined     IWUP_ROLE_WIRELESS_MODULE
+static int Cmd_iwupCmdTest(int argc, char *argv[])
+{
+    uint8_t hexData[30];
+    if(0 != strlen(argv[2])%2)
+    {
+        TRACE_ERROR("Para len error! para len not Double number!\n");
+        return 0;
+    }
+    StringToHexGroup((char*)argv[2], strlen(argv[2]), (char*)hexData);
+//CMDGROUP_QCTEST ##################
+    if(!memcmp("SendCmd_qcTest_echo", argv[1], strlen("SendCmd_qcTest_echo")))
+    {
+        SendCmd_qcTest_echo( hexData, strlen(argv[2])/2 );
+    }
+    else if(!memcmp("SendCmd_qcTest_selfTest", argv[1], strlen("SendCmd_qcTest_selfTest")))
+    {
+        SendCmd_qcTest_selfTest( hexData, strlen(argv[2])/2 );
+    }
+    else if(!memcmp("SendCmd_qcTest_action", argv[1], strlen("SendCmd_qcTest_action")))
+    {
+        SendCmd_qcTest_action( hexData, strlen(argv[2])/2 );
+    }
+    else if(!memcmp("SendCmd_qcTest_getDeviceInfo", argv[1], strlen("SendCmd_qcTest_getDeviceInfo")))
+    {
+        SendCmd_qcTest_getDeviceInfo();
+    }
+    else if(!memcmp("SendCmd_qcTest_getDeviceStatus", argv[1], strlen("SendCmd_qcTest_getDeviceStatus")))
+    {
+        SendCmd_qcTest_getDeviceStatus();;
+    }
+    else if(!memcmp("SendCmd_qcTest_setDevicePower", argv[1], strlen("SendCmd_qcTest_setDevicePower")))
+    {
+        uint8_t para = 0x00;
+        SendCmd_qcTest_setDevicePower( &para, 1 );
+    }
+    else if(!memcmp("SendCmd_qcTest_setDeviceInfo", argv[1], strlen("SendCmd_qcTest_setDeviceInfo")))
+    {
+        SendCmd_qcTest_setDeviceInfo( hexData, strlen(argv[2])/2 );
+    }
+    return 0;
+}
+#elif defined   IWUP_ROLE_LOCK_BOARD
+static int Cmd_iwupNotifyTest(int argc, char *argv[])
+{
+    uint8_t hexData[30];
+    if(0 != strlen(argv[2])%2)
+    {
+        TRACE_ERROR("Para len error! para len not Double number!\n");
+        return 0;
+    }
+    StringToHexGroup((char*)argv[2], strlen(argv[2]), (char*)hexData);
+//NOTIFYGROUP_QCTEST ##################
+    if(!memcmp("SendNotify_qcTest_card", argv[1], strlen("SendNotify_qcTest_card")))
+    {
+        SendNotify_qcTest_card( hexData, strlen(argv[2])/2 );
+    }
+    else if(!memcmp("SendNotify_qcTest_keyBoard", argv[1], strlen("SendNotify_qcTest_keyBoard")))
+    {
+        SendNotify_qcTest_keyBoard( hexData, strlen(argv[2])/2 );
+    }
+}
+#endif
 
 //----------------------------------------------------Cmd_gpioTest-----------------
 static int Cmd_gpioTest(int argc, char *argv[])
@@ -141,7 +262,7 @@ static int Cmd_gpioTest(int argc, char *argv[])
     }
     else if(!memcmp("GPIO_SET", argv[1], strlen("GPIO_SET")))
     {
-        PortValue portValue = StringToUint32(argv[3]);
+        PortValue portValue = (PortValue)StringToUint32(argv[3]);
         if(!memcmp("PORT_ANTI_LOCK", argv[2], strlen("PORT_ANTI_LOCK")))
         {
             Driver_gpioSet(PORT_ANTI_LOCK, portValue);
@@ -169,11 +290,12 @@ static int Cmd_testTaskTest(int argc, char *argv[])
 {
     if(!memcmp("EVENT_START_TEST", argv[1], strlen("EVENT_START_TEST")))
     {
-        char macAddr[6];
+        uint8_t macAddr[6];
         TRACE_DEBUG("send EVENT_START_TEST.\n");
-        StringToHexGroup(argv[2], strlen(argv[2]), macAddr);
+        StringToHexGroup(argv[2], strlen(argv[2]), (char*)macAddr);
         Test_process_setMacAddr(macAddr);
-        TestEvent_post(EVENT_START_TEST);
+        if(!IsBusy_testProcess())
+            TestEvent_post(EVENT_START_TEST);
     }
     return 0;
 }

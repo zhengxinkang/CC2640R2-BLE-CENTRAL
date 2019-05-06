@@ -9,7 +9,7 @@ char			Uint32ToString	(unsigned int uint32Data,	char *str							);
 unsigned int	StringToHex		(char *str,					unsigned char length				);
 char			HexToString     (unsigned int hexData, unsigned char hexBitNum,char *str);
 
-char			StringToHexGroup(char *str,					unsigned char len_str,	char *hex	);
+signed char		StringToHexGroup(char *str,					unsigned char len_str,	char *hex	);
 char            HexGroupToString(uint8_t *hex,unsigned char hexNum,uint8_t *str, char separator);
 unsigned        bcd2bin(unsigned char val);
 unsigned char   bin2bcd(unsigned val);

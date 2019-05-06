@@ -14,7 +14,7 @@
 #include "TestProcess_ble.h"
 
 #define TEST_TASK_STACK_SIZE    1024
-#define TEST_TASK_PRIORITY      2
+#define TEST_TASK_PRIORITY      1
 
 Event_Handle taskTestEvent;
 
@@ -46,7 +46,7 @@ static void Test_taskFxn(UArg a0, UArg a1)
     for(;;)
     {
         uint32_t events;
-        events = TestEvent_pend(EVENT_START_TEST, ICALL_TIMEOUT_FOREVER);
+        events = TestEvent_pend(EVENT_START_TEST, 0x0fffffff);
 
         if(events)
         {

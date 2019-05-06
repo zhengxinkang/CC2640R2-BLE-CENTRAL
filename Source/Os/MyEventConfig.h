@@ -23,13 +23,11 @@
 #define SBC_START_DISCOVERY_EVT                 Event_Id_00
 #define MY_UARTEMULATRO_EVT                     Event_Id_01
 #define MY_SENDDATA_EVT                         Event_Id_02
-#define MY_TEST_PROCESS                         Event_Id_03
 
 #define SBC_ALL_EVENTS                        (SBC_ICALL_EVT            | \
                                                SBC_QUEUE_EVT            | \
                                                MY_UARTEMULATRO_EVT      |\
                                                MY_SENDDATA_EVT          |\
-                                               MY_TEST_PROCESS          |\
                                                SBC_START_DISCOVERY_EVT)
 
 
@@ -38,7 +36,6 @@ void        MyEventConfig_handle(uint32_t events);
 
 extern void MyEvent_uartEmulatorHandle();
 extern void MyEvent_sendDataHandle();
-extern void MyEvent_testProcessHandle();
 
 
 #endif /* SOURCE_OS_MYEVENTCONFIG_H_ */

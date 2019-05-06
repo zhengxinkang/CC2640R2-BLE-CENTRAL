@@ -57,6 +57,25 @@ extern "C"
  * INCLUDES
  */
 #include "Types.h"
+
+typedef enum{
+    RET_FIND_DEVICE_INLIST_OK               = 0,    //找到设备
+    RET_FIND_DEVICE_INLIST_ERROR_SCANNING   = 1,    //扫描中
+    RET_FIND_DEVICE_INLIST_ERROR_NODEVICE   = 2,    //列表中没有设备
+    RET_FIND_DEVICE_INLIST_ERROR_NOFIND     = 3,    //未找到该设备
+}RET_FIND_DEVICE_INLIST;
+
+typedef enum{
+    RET_CONNECT_OK                          = 0,    //成功开始连接
+    RET_CONNECT_ERROR_NODEVICE              = 1,    //没有设备
+    RET_CONNECT_ERROR_SCANNING              = 2,    //扫描中
+}RET_CONNECT;
+
+typedef enum{
+    RET_DISCOVER_OK                         = 0,
+    RET_DISCOVER_ERROR_BLE_STATE            = 1,    //ble状态错误
+    RET_DISCOVER_ERROR_SCAN_RESULT          = 2,    //已经有扫描结果
+}RET_DISCOVER;
 /*********************************************************************
 *  EXTERNAL VARIABLES
 */
@@ -81,6 +100,15 @@ void simpleCentral_setSearchDeviceAddr(uint8_t* searchAddr);
 extern void Timer_sendDataHandle(UArg arg);
 extern void MyEvent_sendDataHandle();
 void simpleCentral_action();
+
+
+extern void             BleTest_writeData();
+extern void             BleTest_readData();
+extern bool             BleTest_finish(bool isSuccess);
+
+RET_FIND_DEVICE_INLIST  BleTest_findDeviceInList();
+RET_CONNECT             BleTest_connect();
+RET_DISCOVER            BleTest_discover();
 /*********************************************************************
 *********************************************************************/
 

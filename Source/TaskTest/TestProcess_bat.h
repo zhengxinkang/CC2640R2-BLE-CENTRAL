@@ -16,6 +16,6 @@ typedef enum{
 }RET_TEST_BAT;
 
 RET_TEST_BAT TestProcess_bat();
-
+RET_TEST_BAT TestProcess_usb();
 
 #endif /* SOURCE_TASKTEST_TESTPROCESS_BAT_H_ */

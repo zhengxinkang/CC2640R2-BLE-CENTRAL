@@ -42,7 +42,7 @@
 //    #define UART_ALOW_SLEEP         0                           //7-UART允许休眠
     #define PA_ENABLE               0                           //8-PA使能
     #define CONSOLE_EMULATOR        1                           //9-调试控制台
-    #define _CS_TRACE_LEVEL         7                           //A-调试输出等级
+    #define _CS_TRACE_LEVEL         5                           //A-调试输出等级
     #define COMPILIE_VERSION        "1-0"
     #define BLE_ROLE_MESG           "Simple Central."
 #elif defined BOARD_LAUNCHPAD_NODEBUG       //(不调试-蓝牙模块7*7)------------------------------------

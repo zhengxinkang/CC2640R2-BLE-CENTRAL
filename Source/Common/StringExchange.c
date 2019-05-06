@@ -91,7 +91,7 @@ unsigned int StringToHex(char *str,unsigned char length){
 *| return	|char					|0|
 *  ----------------------------------------------------------------------*/
 char HexToString(unsigned int hexData, unsigned char hexBitNum,char *str){
-	char result = 0;
+    signed char result = 0;
     char bit = 0;
     bit = hexBitNum;
 
@@ -122,7 +122,7 @@ char HexToString(unsigned int hexData, unsigned char hexBitNum,char *str){
 *  ----------------------------------------------------------------------
 *| return	|char					|0:SUCCESS	|-1:??????????|
 *  ----------------------------------------------------------------------*/
-char StringToHexGroup(char *str, unsigned char len_str, char *hex){
+signed char StringToHexGroup(char *str, unsigned char len_str, char *hex){
 	unsigned char i = 0;
 	if(0 != len_str%2){
 		return (-1);

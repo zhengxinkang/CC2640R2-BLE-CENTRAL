@@ -46,6 +46,7 @@
 									<listOptionValue builtIn="false" value="${COM_TI_SIMPLELINK_CC2640R2_SDK_INCLUDE_PATH}"/>
 									<listOptionValue builtIn="false" value="${PROJECT_ROOT}"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/BasicFunction"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/BleCentral"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Common"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Config"/>
@@ -54,6 +55,8 @@
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Driver/Boards"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Hal"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Os"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Protocol"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Protocol/IWUP"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/SDK"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/SDK/ICall"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/SDK/ICallBLE"/>
@@ -111,7 +114,7 @@
 									<listOptionValue builtIn="false" value="ICALL_MAX_NUM_ENTITIES=6"/>
 									<listOptionValue builtIn="false" value="ICALL_MAX_NUM_TASKS=3"/>
 									<listOptionValue builtIn="false" value="ICALL_STACK0_ADDR"/>
-									<listOptionValue builtIn="false" value="POWER_SAVING"/>
+									<listOptionValue builtIn="false" value="xPOWER_SAVING"/>
 									<listOptionValue builtIn="false" value="RF_SINGLEMODE"/>
 									<listOptionValue builtIn="false" value="STACK_LIBRARY"/>
 									<listOptionValue builtIn="false" value="USE_ICALL"/>

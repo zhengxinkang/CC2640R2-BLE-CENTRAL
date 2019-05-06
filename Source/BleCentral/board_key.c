@@ -64,6 +64,7 @@
 #include "util.h"
 #include "board_key.h"
 #include "board.h"
+#include "Trace.h"
 
 /*********************************************************************
  * TYPEDEFS
@@ -174,6 +175,7 @@ void Board_initKeys(keysPressedCB_t appKeyCB)
  *
  * @return  none
  */
+bool fandou = FALSE;
 static void Board_keyCallback(PIN_Handle hPin, PIN_Id pinId)
 {
   keysPressed = 0;
@@ -214,8 +216,8 @@ static void Board_keyCallback(PIN_Handle hPin, PIN_Id pinId)
     keysPressed |= KEY_RIGHT;
   }
 #endif
-
-  Util_startClock(&keyChangeClock);
+  if (fandou == FALSE)
+      Util_startClock(&keyChangeClock);
 }
 
 /*********************************************************************
@@ -229,11 +231,15 @@ static void Board_keyCallback(PIN_Handle hPin, PIN_Id pinId)
  */
 static void Board_keyChangeHandler(UArg a0)
 {
-  if (appKeyChangeHandler != NULL)
-  {
-    // Notify the application
-    (*appKeyChangeHandler)(keysPressed);
-  }
+    //·À¶¶
+    if (fandou == TRUE)
+        fandou = FALSE;
+    if (appKeyChangeHandler != NULL)
+    {
+        // Notify the application
+        (*appKeyChangeHandler)(keysPressed);
+        TRACE_CODE("Key press:%d.\n", keysPressed);
+    }
 }
 /*********************************************************************
 *********************************************************************/
