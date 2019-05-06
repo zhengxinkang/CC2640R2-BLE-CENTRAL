@@ -293,7 +293,7 @@ static uint16_t svcEndHdl = 0;
 static uint16_t charHdl = 0;
 
 // Value to write
-static uint8_t charVal = 0;
+//static uint8_t charVal = 0;
 
 // Value read/write toggle
 static bool doWrite = FALSE;
@@ -310,6 +310,7 @@ static readRssi_t readRssi[MAX_NUM_BLE_CONNS];
 // Key option state.
 static keyPressConnOpt_t keyPressConnOpt = DISCONNECT;
 
+static uint32_t countSend = 0;
 /*********************************************************************
  * LOCAL FUNCTIONS
  */
@@ -1071,12 +1072,14 @@ static void SimpleBLECentral_handleKeys(uint8_t shift, uint8_t keys)
               // Do a write
               attWriteReq_t req;
 
-              req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, 1, NULL);
+              req.pValue = GATT_bm_alloc(connHandle, ATT_WRITE_REQ, 20, NULL);
               if ( req.pValue != NULL )
               {
                 req.handle = charHdl;
-                req.len = 1;
-                req.pValue[0] = charVal;
+                req.len = 20;
+                memcpy(req.pValue, "TestQcStart000000000", 20);
+                countSend++;
+                memcpy(req.pValue+12, &countSend, sizeof(countSend));
                 req.sig = 0;
                 req.cmd = 0;
 
@@ -1211,8 +1214,12 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
       }
       else
       {
+        uint32_t countSendNum = 0;
+        uint32_t countRecieveNum = 0;
+        memcpy(&countSendNum, pMsg->msg.readRsp.pValue+12, sizeof(countSendNum));
+        memcpy(&countRecieveNum, pMsg->msg.readRsp.pValue+16, sizeof(countRecieveNum));
         // After a successful read, display the read value
-        Display_print1(dispHandle, 4, 0, "Read rsp: %d", pMsg->msg.readRsp.pValue[0]);
+        Display_print5(dispHandle, 4, 0, "Read rsp: %02x %02x %02x ---send:%d 收:%d", pMsg->msg.readRsp.pValue[0],  pMsg->msg.readRsp.pValue[1],  pMsg->msg.readRsp.pValue[2],  countSendNum,  countRecieveNum);
       }
 
       procedureInProgress = FALSE;
@@ -1229,7 +1236,11 @@ static void SimpleBLECentral_processGATTMsg(gattMsgEvent_t *pMsg)
       {
         // After a successful write, display the value that was written and
         // increment value
-        Display_print1(dispHandle, 4, 0, "Write sent: %d", charVal++);
+        uint32_t countSendNum = 0;
+        uint32_t countRecieveNum = 0;
+        memcpy(&countSendNum, pMsg->msg.readRsp.pValue+12, sizeof(countSendNum));
+        memcpy(&countRecieveNum, pMsg->msg.readRsp.pValue+16, sizeof(countRecieveNum));
+        Display_print5(dispHandle, 4, 0, "Write sent: %02x %02x %02x ---send:%d recieve:%d", pMsg->msg.readRsp.pValue[0],  pMsg->msg.readRsp.pValue[1],  pMsg->msg.readRsp.pValue[2],   countSendNum,  countRecieveNum);
       }
 
       procedureInProgress = FALSE;
@@ -1572,6 +1583,7 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
       discState = BLE_DISC_STATE_SVC;
 
       // Discovery simple service
+      Display_print2(dispHandle, 10, 0, "Start find server by UUID %02x%02x...", uuid[1], uuid[0]);
       VOID GATT_DiscPrimaryServiceByUUID(connHandle, uuid, ATT_BT_UUID_SIZE,
                                          selfEntity);
     }
@@ -1582,6 +1594,7 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
     if (pMsg->method == ATT_FIND_BY_TYPE_VALUE_RSP &&
         pMsg->msg.findByTypeValueRsp.numInfo > 0)
     {
+      Display_print2(dispHandle, 11, 0, "Service found, store handles,svcStartHdl=%04x; svcEndHdl=%04x", svcStartHdl, svcEndHdl);
       svcStartHdl = ATT_ATTR_HANDLE(pMsg->msg.findByTypeValueRsp.pHandlesInfo, 0);
       svcEndHdl = ATT_GRP_END_HANDLE(pMsg->msg.findByTypeValueRsp.pHandlesInfo, 0);
     }
@@ -1603,13 +1616,14 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
         req.type.len = ATT_BT_UUID_SIZE;
         req.type.uuid[0] = LO_UINT16(SIMPLEPROFILE_CHAR1_UUID);
         req.type.uuid[1] = HI_UINT16(SIMPLEPROFILE_CHAR1_UUID);
-
+        Display_print2(dispHandle, 12, 0, "Start Discover characteristic by UUID %02x%02x...", req.type.uuid[1], req.type.uuid[0]);
         VOID GATT_ReadUsingCharUUID(connHandle, &req, selfEntity);
       }
     }
   }
   else if (discState == BLE_DISC_STATE_CHAR)
   {
+    Display_print0(dispHandle, 13, 0, "Discover characteristic finish.");
     // Characteristic found, store handle
     if ((pMsg->method == ATT_READ_BY_TYPE_RSP) &&
         (pMsg->msg.readByTypeRsp.numPairs > 0))
@@ -1619,6 +1633,8 @@ static void SimpleBLECentral_processGATTDiscEvent(gattMsgEvent_t *pMsg)
 
       Display_print0(dispHandle, 2, 0, "Simple Svc Found");
       procedureInProgress = FALSE;
+      countSend = 0;
+      Display_print1(dispHandle, 13, 0, "Discover characteristic success, charHdl = %04x.", charHdl);
     }
 
     discState = BLE_DISC_STATE_IDLE;
