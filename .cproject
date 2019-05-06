@@ -45,10 +45,12 @@
 									<listOptionValue builtIn="false" value="${INHERITED_INCLUDE_PATH}"/>
 									<listOptionValue builtIn="false" value="${COM_TI_SIMPLELINK_CC2640R2_SDK_INCLUDE_PATH}"/>
 									<listOptionValue builtIn="false" value="${PROJECT_ROOT}"/>
-									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Application"/>
-									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Startup"/>
-									<listOptionValue builtIn="false" value="${PROJECT_LOC}/PROFILES"/>
-									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Include"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/BleCentral"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Driver"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/SDK"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/SDK/ICall"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/SDK/ICallBLE"/>
 									<listOptionValue builtIn="false" value="${SRC_BLE_DIR}/controller/cc26xx_r2/inc"/>
 									<listOptionValue builtIn="false" value="${SRC_BLE_DIR}/inc"/>
 									<listOptionValue builtIn="false" value="${SRC_BLE_DIR}/rom"/>
