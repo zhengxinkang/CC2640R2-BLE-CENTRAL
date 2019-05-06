@@ -33,8 +33,8 @@ typedef enum{
     USR_CLR,
     USR_RELOCK,
     FQ_SW,
-    LED_Y,
     LED_G,
+    LED_Y,
     LED_R,
     SERIAL_ERROR,
 }EXPAND_OUTPUT_SERIAL;

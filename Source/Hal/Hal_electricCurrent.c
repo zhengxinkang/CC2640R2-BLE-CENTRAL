@@ -79,6 +79,7 @@ static void current_timeoutHandler()
 {
     BF_UtilWaitHandle(currentTimeIndex);
     current[currentIndex++]  = Read_1CH_adc(0);
+
     if(currentIndex == CHECK_TIMES)
     {
         currentIndex = 0;
@@ -86,6 +87,8 @@ static void current_timeoutHandler()
         uint8_t currentCount = 0;
         for(uint8_t i = 0;i<CHECK_TIMES;i++)
         {
+            TRACE_MARK("第%02d电流大小%d uA。\n",i, current[i]);
+
             if(current[i] > 0)
             {
                 currentTotal += current[i];
@@ -114,7 +117,7 @@ static void current_timeoutHandler()
             }
             else
             {
-//                TRACE_FATAL("Give up data %u.\t-%u\n",current[i],astringent);
+                TRACE_FATAL("Give up data %u.\t-%u\n",current[i],astringent);
                 current[i] = 0;
             }
         }
@@ -136,7 +139,7 @@ static void current_timeoutHandler()
             }
             else
             {
-//                TRACE_ERROR("Give up data %u.\t-%u\n",current[i],astringent);
+                TRACE_ERROR("Give up data %u.\t-%u\n",current[i],astringent);
                 current[i] = 0;
             }
         }
@@ -158,7 +161,7 @@ static void current_timeoutHandler()
             }
             else
             {
-//                TRACE_DEBUG("Give up data %u.\t-%u\n",current[i],astringent);
+                TRACE_DEBUG("Give up data %u.\t-%u\n",current[i],astringent);
                 current[i] = 0;
             }
         }
@@ -180,15 +183,15 @@ static void current_timeoutHandler()
             }
             else
             {
-//                TRACE_MARK("Give up data %u.\t-%u\n",current[i],astringent);
+                TRACE_MARK("Give up data %u.\t-%u\n",current[i],astringent);
                 current[i] = 0;
             }
         }
         uint32_t currentAverage5 = currentTotal/currentCount;
         uint32_t avgCurrent = avgCurrentCount(currentAverage5, true, 8);
         uint32_t thisCurrent = avgCurrentCount(currentAverage5, false, 1);
-//        TRACE_DEBUG("50次采集（20ms每次）平均电压为：%u uV\t-%u uV\t-%u uV\n", currentAverage1,currentAverage3,currentAverage5);
-//        TRACE_DEBUG("%d次电流统计后的结果为：>>>%u \n", AVG_TIMES_COUNT, avgCurrent);
+        TRACE_DEBUG("50次采集（20ms每次）平均电压为：%u uV\t-%u uV\t-%u uV\n", currentAverage1,currentAverage3,currentAverage5);
+        TRACE_DEBUG("%d次电流统计后的结果为：>>>%u \n", AVG_TIMES_COUNT, avgCurrent);
         Hal_oled_currentChange( avgCurrent, thisCurrent);
     }
 }

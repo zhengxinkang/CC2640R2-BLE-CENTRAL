@@ -145,7 +145,7 @@ double Read_1CH_adc(uchar ch)
         Adc_dat[2] = ~Adc_dat[2];
 //        SendByte('-');
     }
-    else
+//    else
 //        SendByte('+');
     adda1 = (Adc_dat[0] * 65536 + Adc_dat[1] * 256 + Adc_dat[2]);
     adda1 = adda1 * 0.0993; //默认PGA为1，即满量程+-500MV

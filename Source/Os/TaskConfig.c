@@ -36,6 +36,7 @@
 #include "Hal_oled.h"
 #include "Lock_atcion.h"
 #include "Hal_buzz.h"
+#include "Hal_led.h"
 
 void AllTask_create()
 {
@@ -74,6 +75,8 @@ void Module_initInTask()
     Lock_action_init();
     Buzz_init();
     Buzz_action(200, 100, 1);
+    Led_init();
+    Led_action(500, 200, 2);
 //    Driver_uart_open();
 //    Driver_uartInit(115200);
 //    Uart_adapter_init();
