@@ -97,6 +97,29 @@ void Hal_oled_dataChange(OLED_DATA_TYPE strType, uint32_t data)
             OLED_ShowNum(12, 6, data, 3);
         }
         break;
+        case OLED_DATA_TYPE_CURRENT:
+        {
+            OLED_ShowNum(0, 2, data, 6);
+        }
+        break;
     }
 }
 
+void Hal_oled_abnormalCount(uint32_t count)
+{
+    OLED_ShowString(0,4,"error:");
+    OLED_ShowNum(7, 4, count, 4);
+}
+
+void Hal_oled_timeChange(UTCTimeStruct s_time)
+{
+    OLED_ShowNum(0, 6, s_time.month+1, 2);
+    OLED_ShowString(2,6,"-");
+    OLED_ShowNum(3, 6, s_time.day+1, 2);
+
+    OLED_ShowNum(7, 6, s_time.hour, 2);
+    OLED_ShowString(9,6,"-");
+    OLED_ShowNum(10, 6, s_time.minutes, 2);
+    OLED_ShowString(12,6,"-");
+    OLED_ShowNum(13, 6, s_time.seconds, 2);
+}

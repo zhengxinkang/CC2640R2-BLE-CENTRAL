@@ -10,7 +10,7 @@
 
 //#define UART_EMULATOR_ECHO_TEST_ON
 #define UART_EMULATOR_RX_LEN        (SCIF_UART_RX_FIFO_MAX_COUNT+1)
-#define UART_EMULATOR_TX_LEN        1200
+#define UART_EMULATOR_TX_LEN        600
 
 typedef enum
 {

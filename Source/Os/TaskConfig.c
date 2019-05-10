@@ -37,6 +37,11 @@
 #include "Lock_atcion.h"
 #include "Hal_buzz.h"
 #include "Hal_led.h"
+#include "UTC_clock.h"
+#include "w25qxx.h"
+#include "Hal_flash.h"
+#include "Hal_abnormalRecord.h"
+#include "Driver_spi.h"
 
 void AllTask_create()
 {
@@ -52,7 +57,6 @@ void AllTask_create()
 
 void Module_initInTask()
 {
-
     TimerConfig_init();
 #if CONSOLE_EMULATOR
     Driver_uartEmulator_init(115200);
@@ -60,6 +64,7 @@ void Module_initInTask()
 #endif  //CONSOLE_EMULATOR
     Driver_adcInit();
     Driver_gpioInit();
+    UTC_init();
 
     TestProcess_bleInit();
     //老化治具，先关闭串口
@@ -74,9 +79,8 @@ void Module_initInTask()
     Hal_oled_init();
     Lock_action_init();
     Buzz_init();
-    Buzz_action(200, 100, 1);
+//    Buzz_action(200, 100, 1);
     Led_init();
-    Led_action(500, 200, 2);
 //    Driver_uart_open();
 //    Driver_uartInit(115200);
 //    Uart_adapter_init();
@@ -97,5 +101,14 @@ void Module_initInTask()
     TargetModel_init(TARGET_MODEL_D3100);
 #else
     #error "TEST TARGET ERROR!"
+#endif
+
+#ifdef TEST_CURRENT_MONITOR
+//    W25QXX_Init();
+    extFlash_open();
+    TRACE_DEBUG("FLASH ID IS : %x",extFlash_readId());
+    UTC_setClock(Hal_flash_readTime());
+    Hal_electricCurrent_offsetRead();
+    Hal_oled_abnormalCount(Hal_abnormalRecord_indexRead());
 #endif
 }

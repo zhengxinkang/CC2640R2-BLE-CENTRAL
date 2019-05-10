@@ -92,6 +92,16 @@ void UI(UI_TYPE uiType, uint32_t data, uint8_t *str, uint32_t dataReason)
             Buzz_action(500, 0, 1);
             break;
         }
+        case UI_TYPE_CURRENT_MONITOR:
+        {
+            Hal_oled_dataChange(OLED_DATA_TYPE_CURRENT, data);       /*  Hal_oled_strChange(OLED_STR_TYPE_ITEM, "stop");*/
+            Hal_oled_strChange(OLED_STR_TYPE_LASTTIME, "-------");  Hal_oled_dataChange(OLED_DATA_TYPE_LASTTIME, 000);
+            Hal_oled_strChange(OLED_STR_TYPE_THISTIME, "-------");  Hal_oled_dataChange(OLED_DATA_TYPE_THISTIME, 000);
+                                                                        Hal_oled_dataChange(OLED_DATA_TYPE_REASON, 000);
+//            BF_taskSleepMs(50);
+            Buzz_action(30, 0, 1);
+            break;
+        }
     }
 }
 

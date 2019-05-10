@@ -40,6 +40,14 @@
 #include "Hal_expandInput.h"
 #include "Driver_voice.h"
 #include "Lock_atcion.h"
+#include "BF_Util.h"
+#include "UTC_clock.h"
+#include "w25qxx.h"
+#include "Hal_flash.h"
+#include "Driver_internalFlash.h"
+#include "Driver_spi.h"
+#include "Hal_electricCurrent.h"
+#include "Hal_oled.h"
 //#include "Ble_adv.h"
 //#include "Ble_advDataConfig.h"
 //#include "StateMachine_ble.h"
@@ -94,6 +102,10 @@ static int Cmd_welcome(int argc, char *argv[]);
 static int Cmd_reset(int argc, char *argv[]);
 static int Cmd_demo(int argc, char *argv[]);
 static int Cmd_TraceSetLevel(int argc, char *argv[]);
+static int Cmd_timeTest(int argc, char *argv[]);
+static int Cmd_flashTest(int argc, char *argv[]);
+static int Cmd_currentOffsetSet(int argc, char *argv[]);
+static int Cmd_abnormalTest(int argc, char *argv[]);
 //static int Cmd_TraceGetLevel(int argc, char *argv[]);
 
 
@@ -137,6 +149,10 @@ const CmdLineEntry g_kConsoleCmdTable[] =
     { "expandOutTest",          Cmd_expandOutTest,          "\t\t: expandOutTest serial value" },
     { "expandInTest",           Cmd_expandInTest,           "\t\t: expandInTest serial" },
     { "voiceTest",              Cmd_voiceTest,              "\t\t: voiceTest data" },
+    { "timeTest",               Cmd_timeTest,               "\t\t: timeTest" },
+    { "flashTest",              Cmd_flashTest,              "\t\t: flashTest" },
+    { "currentOffsetSet",       Cmd_currentOffsetSet,       "\t: currentOffsetSet" },
+    { "abnormalTest",           Cmd_abnormalTest,           "\t: abnormalTest" },
 
     { "help",       Cmd_help,       "\t\t\t: Display list of commands. Short format: h or ?." },
     { "?",          Cmd_help,       0 },
@@ -151,14 +167,218 @@ const CmdLineEntry g_kConsoleCmdTable[] =
     { 0, 0, 0 }
 };
 
+static uint8_t printTimeIndex=0;
+static void print_timeoutHandler();
+#define TIMER_PRINT_PERIOD      5
+
 void CmdLine_Init(void)
 {
     Console_Init();
+    BF_UtilRegeistTimerCallback(print_timeoutHandler, &printTimeIndex, TIMER_PRINT_PERIOD);
 }
 
 //*****************************************************************************
 // 4、命令处理函数
 //*****************************************************************************
+
+//----------------------------------------------------CmdLine abnormalTest-----------------
+static uint32_t round = 0;
+static uint64_t addr = 0;
+static uint64_t addr_start = 0;
+
+static int Cmd_abnormalTest(int argc, char *argv[])
+{
+    if(round == 0)
+    {
+        uint32_t num;
+        sscanf(argv[1],"%d", &num);
+        addr_start = FLASH_ADDR_TEXT_START + (num-1)*0x1000*10;
+        BF_UtilWaitHandle(printTimeIndex);
+        TRACE_DEBUG("读取记录：\n");
+    }
+    else
+    {
+        TRACE_DEBUG("读取记录，正在操作，请稍后再试。\n");
+    }
+    return;
+}
+
+static void print_timeoutHandler()
+{
+    uint32_t buf[52];
+    addr = addr_start +0x100*round;
+    TRACE_DEBUG("地址为：%x\n", addr);
+//    W25QXX_Read(buf, addr, 208);
+    extFlash_read((size_t)addr, 208, (uint8_t*)buf);
+    uint32_t avg=buf[50];
+    uint32_t second = buf[51];
+    UTCTimeStruct s_time;
+    UTC_convertUTCTime(&s_time, second);
+    TRACE_INFO("%04d-%02d-%02d %02d:%02d:(%02d): ",
+                s_time.year,s_time.month+1,s_time.day+1,
+                s_time.hour,s_time.minutes,s_time.seconds, buf[50]);
+    uint32_t avg_f = avg/1000;
+    uint32_t avg_l = (avg%1000)/100;
+
+    if(avg == 0xffffffff)
+        goto FINISH;
+    else if(avg < 1000)
+        TRACE_INFO("平均电流【%d】\tuA\n",avg);
+    else
+        TRACE_INFO("平均电流【%d.%d】\tmA\n",avg_f,avg_l);
+
+    for(uint8_t j=0; j<1; j++)
+    {
+        addr = addr_start +0x100*round;
+        for (uint8_t k = 0; k < 50; k++)
+        {
+            TRACE_DEBUG("%d\t", buf[k]);
+            if (k % 25 == 24)
+                TRACE_DEBUG("\n");
+        }
+        TRACE_DEBUG("\n");
+        round++;
+    }
+
+    if(round < 160)
+    {
+        BF_UtilWaitHandle(printTimeIndex);
+    }
+    else
+    {
+FINISH:
+        TRACE_INFO("finish。\n");
+        round = 0;
+    }
+}
+
+//----------------------------------------------------CmdLine currentOffsetSet-----------------
+static int Cmd_currentOffsetSet(int argc, char *argv[])
+{
+    int32_t offset = 0;
+    uint32_t avgCurrent = avgCurrentCount(0, false, 8);
+    int32_t oldOffset = Hal_electricCurrent_offsetGet();
+    offset = avgCurrent-3+oldOffset;
+    TRACE_DEBUG("进行校准：%d\n",offset);
+    Hal_flash_writeCurrentOffset(offset);
+    Hal_electricCurrent_offsetRead();
+    return 0;
+}
+
+//----------------------------------------------------CmdLine flashTest-----------------
+static int Cmd_flashTest(int argc, char *argv[])
+{
+    uint8_t buf[256];
+    if (!memcmp("read", argv[1], strlen("read")))
+    {
+        uint64_t addr;
+        sscanf(argv[2],"%x", &addr);
+//        W25QXX_Read(buf, addr, sizeof(buf));
+        extFlash_read(addr, sizeof(buf), buf);
+        for (uint8_t i = 0; i < 16; i++)
+        {
+            TRACE_DEBUG_HEXGROUP(buf + i * 16, 16, ' ');
+        }
+    }
+    else if (!memcmp("eraseChip", argv[1], strlen("eraseChip")))
+    {
+        TRACE_DEBUG("擦除芯片-开始。\n");
+//        W25QXX_Erase_Chip();
+        extFlash_eraseChip();
+        TRACE_DEBUG("擦除芯片-结束。\n",);
+    }
+    else if (!memcmp("interFlash", argv[1], strlen("interFlash")))
+    {
+        flashParam.time = 123;
+        flashParamParamWrite();
+
+        flashParam.time = 0;
+        flashParam.currentOffset = 0;
+
+        flashParamParamRead();
+        TRACE_DEBUG("预期数据为123 xxx,实际数据为%d %d \n", flashParam.time, flashParam.currentOffset);
+
+        flashParam.currentOffset = 456;
+        flashParamParamWrite();
+        flashParamParamRead();
+        TRACE_DEBUG("预期数据为123 456,实际数据为%d %d \n", flashParam.time, flashParam.currentOffset);
+    }
+    else if (!memcmp("ReadId", argv[1], strlen("readId")))
+    {
+        uint32_t id = extFlash_readId();
+        TRACE_DEBUG("Flash id:%x \n", id);
+    }
+
+//    for(uint8_t i=0; i<255; i++)
+//    {
+//        buf[i] = i;
+//    }
+//    W25QXX_Write_NoCheck(buf, 0x00000000, sizeof(buf));
+//    memset(buf, 0x00, sizeof(buf));
+//    W25QXX_Read(buf, 0x00000000, sizeof(buf));
+//    for(uint8_t i=0; i<16; i++)
+//    {
+//        TRACE_DEBUG_HEXGROUP(buf+i*16, 16, ' ');
+//    }
+
+    return 0;
+}
+
+//----------------------------------------------------CmdLine timeTest-----------------
+static int Cmd_timeTest(int argc, char *argv[])
+{
+    if (!memcmp("set", argv[1], strlen("set")))
+    {
+        TRACE_DEBUG("设置时间：\n");
+        UTCTimeStruct s_time;
+        uint32_t year, mon, day, hour, min, sec;
+        sscanf(argv[2],"%d", &year);
+        sscanf(argv[3],"%d", &mon);
+        sscanf(argv[4],"%d", &day);
+
+        sscanf(argv[5],"%d", &hour);
+        sscanf(argv[6],"%d", &min);
+        sscanf(argv[7],"%d", &sec);
+
+        s_time.year = year;
+        s_time.month = mon-1;
+        s_time.day = day-1;
+        s_time.hour = hour;
+        s_time.minutes = min;
+        s_time.seconds = sec;
+//        s_time.tm_wday = week;
+//        if( rtc_valid_tm(&s_time))
+//            TRACE_DEBUG("input time is  Illegal.\n");
+
+        TRACE_DEBUG(">>>setTime: %04d-%02d-%02d \t %02d:%02d:%02d \n",\
+              s_time.year,   s_time.month+1,  s_time.day+1, s_time.hour, s_time.minutes,  s_time.seconds);
+        UTCTime second = UTC_convertUTCSecs( &s_time );
+        Hal_flash_writeTime(second);
+        UTC_setClock(second);
+        Hal_oled_timeChange(s_time);
+    }
+    else if(!memcmp("get", argv[1], strlen("get")))
+    {
+        UTCTime second = Hal_flash_readTime();
+        UTCTimeStruct s_time;
+        UTC_convertUTCTime( &s_time, second );
+        TRACE_DEBUG(">>>getTime: %04d-%02d-%02d \t %02d:%02d:%02d\n",\
+              s_time.year,   s_time.month+1,  s_time.day+1, s_time.hour, s_time.minutes,  s_time.seconds);
+    }
+    else if(!memcmp("show", argv[1], strlen("show")))
+    {
+        UTCTime thisTime;
+        TRACE_DEBUG("Cmd_timeTest!\n");
+        thisTime = UTC_getClock();
+        UTCTimeStruct thisTimeStruct;
+        UTC_convertUTCTime(&thisTimeStruct, thisTime);
+        TRACE_DEBUG("内存时间-%d年%d月%d日 %d时%d分%d秒\n",
+                    thisTimeStruct.year,thisTimeStruct.month+1,thisTimeStruct.day+1,
+                    thisTimeStruct.hour,thisTimeStruct.minutes,thisTimeStruct.seconds);
+    }
+    return 0;
+}
+
 //----------------------------------------------------CmdLine voiceTest-----------------
 static int Cmd_voiceTest(int argc, char *argv[])
 {

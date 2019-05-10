@@ -10,7 +10,9 @@
 
 
 void Hal_electricCurrent_init();
-uint32_t avgCurrentCount(uint32_t currentThis, bool isShift, uint8_t times);
+void Hal_electricCurrent_offsetRead();
+uint32_t Hal_electricCurrent_offsetGet();
+int32_t avgCurrentCount(int32_t currentThis, bool isShift, uint8_t times);
 
 
 #endif /* SOURCE_HAL_HAL_ELECTRICCURRENT_H_ */

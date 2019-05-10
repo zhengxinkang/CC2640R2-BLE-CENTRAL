@@ -1,0 +1,24 @@
+/*
+ * testCurrentConfig.h
+ *
+ *  Created on: 2019Äê5ÔÂ6ÈÕ
+ *      Author: zheng
+ */
+
+#ifndef SOURCE_TASKTEST_CURRENTMONITOR_TESTCURRENTCONFIG_H_
+#define SOURCE_TASKTEST_CURRENTMONITOR_TESTCURRENTCONFIG_H_
+
+
+#define PRE_MIN_CURRENT         35
+#define PRE_MAX_CURRENT         140
+
+#define MIN_CURRENT             40
+#define MAX_CURRENT             120
+
+#define MIN_ABNROMAL_CURRENT    20
+#define MAX_ABNROMAL_CURRENT    100
+
+#define UP_ABNORMAL_CURRENT     250
+
+
+#endif /* SOURCE_TASKTEST_CURRENTMONITOR_TESTCURRENTCONFIG_H_ */

@@ -18,7 +18,7 @@
 /*********************************************/
 // Task configuration
 #define SBP_TASK_PRIORITY               2
-#define SBP_TASK_STACK_SIZE             3048
+#define SBP_TASK_STACK_SIZE             1548
 
 
 /**********************************************/

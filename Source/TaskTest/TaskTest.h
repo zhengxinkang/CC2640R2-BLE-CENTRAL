@@ -46,6 +46,7 @@
 #define EVENT_LIGHT_ON                          Event_Id_27
 #define EVENT_LIGHT_OFF                         Event_Id_28
 #define EVENT_TESTPROCESS_BLE_DISCOVER_FAIL_RSSI     Event_Id_29
+#define EVENT_CURRENT_ABNORMAL                  Event_Id_30
 //#define EVENT_DO_UNLOCK                         Event_Id_01
 //#define EVENT_BOLT_LOCK                         Event_Id_02
 //#define EVENT_BOLT_UNLOCK                       Event_Id_03

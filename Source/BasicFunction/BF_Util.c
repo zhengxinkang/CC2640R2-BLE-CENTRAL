@@ -304,3 +304,10 @@ void BF_taskSleepMs(uint32_t ms)
     Task_sleep((ms * 1000) / Clock_tickPeriod);
 }
 
+void BF_taskSleepUs(uint32_t us)
+{
+    if(us>10)
+        Task_sleep((us) / Clock_tickPeriod);
+    else
+        Task_sleep(1);
+}

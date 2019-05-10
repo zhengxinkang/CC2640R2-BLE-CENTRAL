@@ -19,6 +19,7 @@ typedef enum{
     UI_TYPE_QUIT,           //退出测试
     UI_TYPE_PROCESS,        //测试过程
     UI_TYPE_CURRENT_OK,     //显示通过电流
+    UI_TYPE_CURRENT_MONITOR,//显示监测异常的电流
 }UI_TYPE;
 
 void UI(UI_TYPE uiType, uint32_t data, uint8_t *str, uint32_t dataReason);

@@ -97,6 +97,7 @@ TEST_PROCESS_STATE Test_process();
 bool IsBusy_testProcess();
 void AddBle_process();
 void Test_process_setMacAddr(uint8_t* addr);
+bool Test_process_getStatus();
 
 
 #endif /* SOURCE_TASKTEST_TEST_PROCESS_H_ */

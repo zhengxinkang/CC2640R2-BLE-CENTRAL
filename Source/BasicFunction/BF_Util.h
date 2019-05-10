@@ -92,6 +92,7 @@ bool BF_UtilCompairHex(uint8_t *hexA, uint8_t *hexB, uint8_t len);
 //void BF_UtilGetRand(void *array, uint8_t len, uint8_t size);
 void BF_UtilConverByteBigEndian(uint8_t *array, void *data, uint8_t size, bool toByte);
 void BF_taskSleepMs(uint32_t ms);
+void BF_taskSleepUs(uint32_t us);
 /*********************************************************************
 *********************************************************************/
 
