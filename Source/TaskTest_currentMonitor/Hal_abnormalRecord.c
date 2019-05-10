@@ -12,6 +12,7 @@
 #include "Hal_oled.h"
 #include "Trace.h"
 #include "Hal_abnormalRecord.h"
+#include "UTC_clock.h"
 
 void Hal_abnormalRecord_init()
 {
@@ -19,6 +20,13 @@ void Hal_abnormalRecord_init()
     extFlash_eraseChip();
     Hal_flash_writeAbnormalIndex(0x00);
     Hal_oled_abnormalCount(Hal_abnormalRecord_indexRead());
+
+    UTCTime second = 0;
+    UTCTimeStruct s_time;
+    UTC_convertUTCTime(&s_time, 0);
+    Hal_flash_writeTime(second);
+    UTC_setClock(second);
+    Hal_oled_timeChange(s_time);
 }
 
 uint32_t Hal_abnormalRecord_indexRead()

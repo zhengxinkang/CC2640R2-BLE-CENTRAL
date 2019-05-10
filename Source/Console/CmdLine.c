@@ -256,9 +256,9 @@ FINISH:
 static int Cmd_currentOffsetSet(int argc, char *argv[])
 {
     int32_t offset = 0;
-    uint32_t avgCurrent = avgCurrentCount(0, false, 8);
+    int32_t thisCurrent = avgCurrentCount(0, false, 1);
     int32_t oldOffset = Hal_electricCurrent_offsetGet();
-    offset = avgCurrent-3+oldOffset;
+    offset = thisCurrent-3+oldOffset;
     TRACE_DEBUG("进行校准：%d\n",offset);
     Hal_flash_writeCurrentOffset(offset);
     Hal_electricCurrent_offsetRead();

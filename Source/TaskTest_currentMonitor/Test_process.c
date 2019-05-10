@@ -67,6 +67,7 @@ static bool status_test=false;
 TEST_PROCESS_STATE Test_process()
 {
     Hal_abnormalRecord_init();
+    Hal_led_GYR(0, 0, 0);
 
     uint32_t events;
     status_test=true;

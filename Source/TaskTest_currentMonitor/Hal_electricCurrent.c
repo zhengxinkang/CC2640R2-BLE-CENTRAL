@@ -246,12 +246,12 @@ void Hal_abnormal_judge(int32_t currentAvgr, int32_t currentThis)
     if(Test_process_getStatus())
     {
         if( (currentThis<MIN_ABNROMAL_CURRENT || currentThis>MAX_ABNROMAL_CURRENT)
-                && currentAvgr>UP_ABNORMAL_CURRENT )
+                && (currentAvgr>UP_ABNORMAL_CURRENT||currentAvgr<MIN_ABNROMAL_CURRENT) )
         {
             if(0 == status_record)
             {
                 Hal_led_GYR(0, 0, 1);
-                TRACE_DEBUG("电流异常，开始记录（瞬时%duA）(平均%uA)。\n",currentThis,currentAvgr);
+                TRACE_DEBUG("电流异常，开始记录（瞬时%duA）(平均%duA)。\n",currentThis,currentAvgr);
                 Buzz_action(1000, 100, 1);
                 uint32_t second = UTC_getClock();
                 UTCTimeStruct s_time;
@@ -289,7 +289,13 @@ void Hal_abnormal_judge(int32_t currentAvgr, int32_t currentThis)
         }
         else
         {
-            Led_action(100, 50, 1);
+            static uint32_t countSecond=0;
+            if( (countSecond++)%6==0 )
+                Led_action(200, 0, 1);
         }
+    }
+    else
+    {
+        status_record = 0;
     }
 }
