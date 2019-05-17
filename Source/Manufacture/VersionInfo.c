@@ -43,7 +43,7 @@ static const ManufVersion s_kSoftwareVersion =
 {
         2,      // Ö÷°æ±¾ºÅ
         0,      // ´Î°æ±¾ºÅ
-        1,      // ÐÞ¶©°æ±¾ºÅ
+        2,      // ÐÞ¶©°æ±¾ºÅ
         0       // ±àÒë°æ±¾ºÅ
 };
 

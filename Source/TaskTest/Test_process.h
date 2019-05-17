@@ -90,6 +90,9 @@ typedef enum{
     TEST_PROCESS_STATE_ERASE_EEPROM     = 0x19,
     TEST_PROCESS_STATE_ERASE_EEPROM_FAIL     = 0x99,
 
+
+    TEST_PROCESS_STATE_FANLE            = 0xf1,     //电流片接反了。
+    TEST_PROCESS_STATE_MEIJIEHAO        = 0xf2,     //电流片没接好。
     TEST_PROCESS_STATE_IDLE             = 0xf0,
 }TEST_PROCESS_STATE;
 
@@ -97,6 +100,7 @@ TEST_PROCESS_STATE Test_process();
 bool IsBusy_testProcess();
 void AddBle_process();
 void Test_process_setMacAddr(uint8_t* addr);
+void Clear_process();
 bool Test_process_getStatus();
 
 

@@ -21,7 +21,6 @@
 //----------------------------------------------------
 void SwInt1_pressDown()
 {
-    TestEvent_post(EVENT_TESTPROCESS_CONFIRM_FAIL);
 //    TestEvent_post(EVENT_ADD_CARD);
 //    Hal_oled_stateChange("Add card      ");
 }
@@ -72,6 +71,7 @@ void SwInt3_preesUp()
 //----------------------------------------------------
 void SwInt1_press2S()
 {
+    TestEvent_post(EVENT_TESTPROCESS_CONFIRM_FAIL);
 //    static bool isLocked;
 //    isLocked = !isLocked;
 //    Lock_action_relock(isLocked);

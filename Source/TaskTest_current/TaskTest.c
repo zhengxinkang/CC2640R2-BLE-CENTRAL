@@ -45,6 +45,7 @@ static void Test_taskFxn(UArg a0, UArg a1)
 
     for(;;)
     {
+        TestEvent_pend(0xffffffff, 1);
         uint32_t events;
         events = TestEvent_pend(EVENT_START_TEST|EVENT_TESTPROCESS_CONFIRM_FAIL, 0x0fffffff);
 

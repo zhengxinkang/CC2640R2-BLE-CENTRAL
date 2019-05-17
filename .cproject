@@ -886,6 +886,7 @@
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Driver"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Driver/Boards"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Hal"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Manufacture"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Os"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Protocol"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Protocol/IWUP"/>
@@ -1032,7 +1033,7 @@
 						</tool>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="Source/Hal/Hal_electricCurrent.c|Source/TaskTest/TaskTest.c|Source/TaskTest/Test_process.c|TOOLS/src|TOOLS/cc26xx_app.cmd" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="Source/Config/testCurrentConfig.h|Source/TaskTest_currentMonitor|Source/Hal/Hal_electricCurrent.c|Source/TaskTest/TaskTest.c|Source/TaskTest/Test_process.c|TOOLS/src|TOOLS/cc26xx_app.cmd" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -1094,6 +1095,7 @@
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Driver"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Driver/Boards"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Hal"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Manufacture"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Os"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Protocol"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/Source/Protocol/IWUP"/>

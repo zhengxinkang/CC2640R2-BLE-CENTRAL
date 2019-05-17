@@ -53,27 +53,41 @@ bool IsBusy_testProcess()
 
 #define MAX_TIMES_WAIT  15
 
-#define PRE_MIN_CURRENT 40
-#define PRE_MAX_CURRENT 90
+#define PRE_MAX_CURRENT 200
 
-#define MIN_CURRENT     40
-#define MAX_CURRENT     75
+#define MIN_CURRENT     30
+#define MAX_CURRENT     80
+
+#define CURRENT_TOO_LOW 10
 
 
 TEST_PROCESS_STATE Test_process()
 {
-    //     Hal_led_YGR(bool yellow, bool green, bool red);
+    Hal_oledDisplay_str(1, 0, "testing...  ");
     Hal_led_GYR(0, 0, 0);
-    UI(UI_TYPE_READY, 0, NULL, 0);
+
     TEST_PROCESS_STATE ret_test = TEST_PROCESS_STATE_SUCESS;
-    uint32_t avgCurrentThis, avgCurrentTotal =888,dis_current;
+    int32_t avgCurrentThis, avgCurrentTotal =888;
     TRACE_DEBUG("电流测试开始。\n");
     Buzz_action(100, 0, 1);
     for(uint8_t index_pre=0; index_pre<MAX_TIMES_WAIT; index_pre++)
     {
         avgCurrentThis = avgCurrentCount(0, false, 1);
-
-        if(avgCurrentThis >= PRE_MIN_CURRENT&&avgCurrentThis <= PRE_MAX_CURRENT)
+        if(avgCurrentThis<0)
+            avgCurrentThis=0;
+        if(avgCurrentThis == 1)
+        {
+            ret_test = TEST_PROCESS_STATE_FANLE;
+            TRACE_DEBUG("本次获取到的实时电流为1uA,电极接反了！\n");
+            break;
+        }
+        else if(avgCurrentThis <= CURRENT_TOO_LOW)
+        {
+            ret_test = TEST_PROCESS_STATE_MEIJIEHAO;
+            TRACE_DEBUG("本次获取到的实时电流为%duA,电极没接好！\n", avgCurrentThis);
+            break;
+        }
+        else if(avgCurrentThis <= PRE_MAX_CURRENT)
         {
             ret_test = TEST_PROCESS_STATE_SUCESS;
             TRACE_DEBUG("本次获取到的实时电流为%duA,在预测范围内，进入平均电流测试。\n", avgCurrentThis);
@@ -83,8 +97,8 @@ TEST_PROCESS_STATE Test_process()
         {
             ret_test = TEST_PROCESS_STATE_BAT_FAIL;
             TRACE_DEBUG("本次获取到的实时电流为%duA,bu 不在预测范围内，等待再次采集！\n", avgCurrentThis);
-            Buzz_action(50, 0, 1);
-            Led_action(100, 0, 1);
+            Buzz_action(50, 50, 1);
+            Led_action(50, 150, 5);
         }
         BF_taskSleepMs(1000);
     }
@@ -95,6 +109,8 @@ TEST_PROCESS_STATE Test_process()
         Led_action(500, 500, 4);
         BF_taskSleepMs(4000);
         avgCurrentTotal = avgCurrentCount(0, false, 8);
+        if(avgCurrentTotal<0)
+            avgCurrentTotal=0;
         if(avgCurrentTotal >= MIN_CURRENT&&avgCurrentTotal <= MAX_CURRENT)
         {
             ret_test = TEST_PROCESS_STATE_SUCESS;
@@ -112,18 +128,40 @@ TEST_PROCESS_STATE Test_process()
         Buzz_action(1500, 400, 2);
         Hal_led_GYR(1, 0, 0);
 
-        UI(UI_TYPE_SUCCESS, 0, NULL, avgCurrentTotal);
+        Hal_oledDisplay_str(1, 0, "PASS-");
+        Hal_oledDisplay_num(1, 5, avgCurrentTotal,7);
+    }
+    else if(TEST_PROCESS_STATE_MEIJIEHAO == ret_test)
+    {
+        Buzz_action(100, 50, 4);
+        Hal_led_GYR(0, 0, 1);
+
+        avgCurrentTotal = avgCurrentCount(0, false, 8);
+        if(avgCurrentTotal<0)
+            avgCurrentTotal=0;
+        Hal_oledDisplay_str(1, 0, "NG  -Offline");
+    }
+    else if(TEST_PROCESS_STATE_FANLE == ret_test)
+    {
+        Buzz_action(100, 50, 4);
+        Hal_led_GYR(0, 0, 1);
+
+        avgCurrentTotal = avgCurrentCount(0, false, 8);
+        if(avgCurrentTotal<0)
+            avgCurrentTotal=0;
+        Hal_oledDisplay_str(1, 0, "NG  -Reverse");
+//        Hal_oledDisplay_num(1, 5, avgCurrentTotal,6);
     }
     else
     {
         Buzz_action(100, 50, 7);
         Hal_led_GYR(0, 0, 1);
 
-        dis_current = avgCurrentTotal;
-        if(dis_current>999)
-            dis_current = 999;
-
-        UI(UI_TYPE_FAIL, 0, NULL, avgCurrentTotal);
+        avgCurrentTotal = avgCurrentCount(0, false, 8);
+        if(avgCurrentTotal<0)
+            avgCurrentTotal=0;
+        Hal_oledDisplay_str(1, 0, "NG  -");
+        Hal_oledDisplay_num(1, 5, avgCurrentTotal,7);
     }
 
     return ret_test;

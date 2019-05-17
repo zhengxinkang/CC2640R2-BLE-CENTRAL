@@ -38,10 +38,10 @@
 #include "Hal_buzz.h"
 #include "Hal_led.h"
 #include "UTC_clock.h"
-#include "w25qxx.h"
 #include "Hal_flash.h"
-#include "Hal_abnormalRecord.h"
 #include "Driver_spi.h"
+#include "Hal_oledDisplay.h"
+
 
 void AllTask_create()
 {
@@ -76,11 +76,13 @@ void Module_initInTask()
     Hal_electricCurrent_init();
 //    Init_adcIC();
     Driver_interrupt_init();
-    Hal_oled_init();
+//    Hal_oled_init();
+    Hal_oledDisplay_init();
     Lock_action_init();
     Buzz_init();
 //    Buzz_action(200, 100, 1);
     Led_init();
+    Hal_electricCurrent_offsetRead();
 //    Driver_uart_open();
 //    Driver_uartInit(115200);
 //    Uart_adapter_init();
@@ -104,11 +106,11 @@ void Module_initInTask()
 #endif
 
 #ifdef TEST_CURRENT_MONITOR
-//    W25QXX_Init();
+#include "Hal_abnormalRecord.h"
     extFlash_open();
     TRACE_DEBUG("FLASH ID IS : %x",extFlash_readId());
     UTC_setClock(Hal_flash_readTime());
-    Hal_electricCurrent_offsetRead();
     Hal_oled_abnormalCount(Hal_abnormalRecord_indexRead());
+    Hal_oledDisplay_str(1,0,"[ready]  ");
 #endif
 }

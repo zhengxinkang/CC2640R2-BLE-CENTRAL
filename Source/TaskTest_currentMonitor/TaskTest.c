@@ -14,7 +14,7 @@
 #include "TestProcess_ble.h"
 #include "Hal_buzz.h"
 
-#define TEST_TASK_STACK_SIZE    1024
+#define TEST_TASK_STACK_SIZE    800
 #define TEST_TASK_PRIORITY      2
 
 Event_Handle taskTestEvent;
@@ -47,7 +47,7 @@ static void Test_taskFxn(UArg a0, UArg a1)
     for(;;)
     {
         uint32_t events;
-        events = TestEvent_pend(EVENT_START_TEST, 0x0fffffff);
+        events = TestEvent_pend(EVENT_START_TEST|EVENT_TESTPROCESS_CONFIRM_FAIL, 0x0fffffff);
 
         if(events)
         {
@@ -59,8 +59,8 @@ static void Test_taskFxn(UArg a0, UArg a1)
             }
             else if (events & EVENT_TESTPROCESS_CONFIRM_FAIL)
             {
-//                TRACE_DEBUG("Event add card.\n");
-//                AddBle_process();
+                TRACE_DEBUG("Çå³ý²âÊÔ¼ÇÂ¼.\n");
+                Clear_process();
             }
 //            else if (events & EVENT_TRY_PW)
 //            {

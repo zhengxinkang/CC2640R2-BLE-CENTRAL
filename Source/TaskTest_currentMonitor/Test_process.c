@@ -37,6 +37,7 @@
 #include "testCurrentConfig.h"
 #include "hal_led.h"
 #include "Hal_abnormalRecord.h"
+#include "Hal_oledDisplay.h"
 
 
 static TEST_PROCESS_STATE test_process_state = TEST_PROCESS_STATE_IDLE;
@@ -62,12 +63,11 @@ bool IsBusy_testProcess()
 //#define MIN_CURRENT     40
 //#define MAX_CURRENT     75
 
-static bool status_test=false;
+static bool status_test = false;
 
 TEST_PROCESS_STATE Test_process()
 {
-    Hal_abnormalRecord_init();
-    Hal_led_GYR(0, 0, 0);
+    Hal_oledDisplay_str(1,0,"[testing] ");
 
     uint32_t events;
     status_test=true;
@@ -76,41 +76,49 @@ TEST_PROCESS_STATE Test_process()
         //去抖动
         TestEvent_pend(0xffffffff, 1);
 
-        events = TestEvent_pend(EVENT_CURRENT_ABNORMAL|EVENT_TESTPROCESS_CONFIRM_SUCCESS, 1000);
+        events = TestEvent_pend(EVENT_CURRENT_ABNORMAL|EVENT_TESTPROCESS_CONFIRM_SUCCESS, 2000);
         if(events & EVENT_CURRENT_ABNORMAL)
         {
-            TRACE_DEBUG("可能异常，进行电流确认：\n");
-            //过4秒，统计4秒内的平均电流
-            Task_sleep((8000 * 1000) / Clock_tickPeriod);
-            uint32_t avgCurrent = avgCurrentCount(0, false, 8);
-
-            if(avgCurrent>=MIN_CURRENT && avgCurrent<=MAX_CURRENT)
-            {
-                TRACE_DEBUG("确认结果：电流正常波动（%duA）。\n",avgCurrent);
-                Buzz_action(200, 100, 3);
-            }
-            else
-            {
-                TRACE_DEBUG("确认结果：电流异常（%duA）,退出测试！\n",avgCurrent);
-                Hal_led_GYR(0, 0, 1);
-                Buzz_action(200, 100, 7);
-
-                UI(UI_TYPE_CURRENT_MONITOR, avgCurrent, NULL, 0);
-                break;
-            }
+//            TRACE_DEBUG("可能异常，进行电流确认：\n");
+//            //过4秒，统计4秒内的平均电流
+//            Task_sleep((8000 * 1000) / Clock_tickPeriod);
+//            uint32_t avgCurrent = avgCurrentCount(0, false, 8);
+//
+//            if(avgCurrent>=MIN_CURRENT && avgCurrent<=MAX_CURRENT)
+//            {
+//                TRACE_DEBUG("确认结果：电流正常波动（%duA）。\n",avgCurrent);
+//                Buzz_action(200, 100, 3);
+//            }
+//            else
+//            {
+//                TRACE_DEBUG("确认结果：电流异常（%duA）,退出测试！\n",avgCurrent);
+//                Hal_led_GYR(0, 0, 1);
+//                Buzz_action(200, 100, 7);
+//
+//                UI(UI_TYPE_CURRENT_MONITOR, avgCurrent, NULL, 0);
+//                break;
+//            }
         }
         else if(events & EVENT_TESTPROCESS_CONFIRM_SUCCESS)
         {
+            Hal_oledDisplay_str(1,0,"[stop]   ");
             Buzz_action(500, 100, 1);
-            TRACE_DEBUG("退出测试！\n");
+            TRACE_DEBUG("暂停测试！\n");
             break;
-        }
-        else
-        {
-//            Led_action(200, 100, 1);
         }
     }
     status_test=false;
+}
+
+void Clear_process()
+{
+    Hal_oledDisplay_str(1,0,"[clear]  ");
+    Buzz_action(1000, 100, 1);
+
+    Hal_abnormalRecord_init();
+    Hal_led_GYR(0, 0, 0);
+
+    TRACE_DEBUG("清空记录，停止测试！\n");
 }
 
 bool Test_process_getStatus()

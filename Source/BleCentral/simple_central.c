@@ -144,7 +144,7 @@
 #define SBC_TASK_PRIORITY                     2
 
 #ifndef SBC_TASK_STACK_SIZE
-#define SBC_TASK_STACK_SIZE                   1500
+#define SBC_TASK_STACK_SIZE                   1400
 #endif
 
 // Application states

@@ -12,7 +12,7 @@
 #include "Driver_simulateSpi.h"
 #define GAIN_NUM_ADC 2
 void Init_mcp3901(uchar Pga_sel0, uchar Pga_sel1); //≥ı ºªØMCP3901
-double Read_1CH_adc(uchar ch);
+int32_t Read_1CH_adc(uchar ch);
 
 
 #endif /* SOURCE_DRIVER_DRIVER_ADCMPC3901_H_ */

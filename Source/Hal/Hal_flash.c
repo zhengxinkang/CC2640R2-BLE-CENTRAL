@@ -6,7 +6,6 @@
  */
 #include "stdint.h"
 #include "Hal_flash.h"
-#include "w25qxx.h"
 #include "Driver_internalFlash.h"
 
 //----------------------------------------------------

@@ -19,6 +19,7 @@
 #include "Driver_simulateSpi.h"
 #include "Trace.h"
 #include "Driver_gpio.h"
+#include "Hal_electricCurrent.h"
 #define  uchar unsigned char
 #define  uint unsigned int
 //#include "mcp3901.h"
@@ -110,20 +111,11 @@ void Init_mcp3901(uchar Pga_sel0, uchar Pga_sel1) //初始化MCP3901
                                                                                //外部参考电压,晶振作为时钟
 }
 
-/***********************************************************************
- 程序功能：读取一个通道的ADC数值。
- 参数：ch
- 参数功能：选择ADC通道
- 参数值：0---ADC通道0
- 1---ADC通道1
- ***********************************************************************/
-double Read_1CH_adc(uchar ch)
+int32_t Read_1CH_adc(uchar ch)
 {
     double adda1;
-//    uchar ds[10];
-//    SendByte('A');
-//    SendByte(ch | 0x30);
-//    SendByte(':');
+    int32_t adda_int;
+    bool isNegative = false;
 
     if (ch == 0)                                                         //读取通道0
     {
@@ -140,37 +132,29 @@ double Read_1CH_adc(uchar ch)
 
     if (Adc_dat[0] & 0x80) //判断电压极性
     {
+        //电压是负的
         Adc_dat[0] = ~Adc_dat[0];
         Adc_dat[1] = ~Adc_dat[1];
         Adc_dat[2] = ~Adc_dat[2];
-//        SendByte('-');
+        isNegative = true;
+        //  SendByte('-');
     }
-//    else
-//        SendByte('+');
+    else
+    {
+        //  SendByte('+');
+    }
     adda1 = (Adc_dat[0] * 65536 + Adc_dat[1] * 256 + Adc_dat[2]);
     adda1 = adda1 * 0.0993; //默认PGA为1，即满量程+-500MV
                             //5000000/((0.5/2.5)*8388608*PGA*3)=0.0993(外部参考电压)
                             //5000000/((0.5/2.37)*8388608*PGA*3)=0.0941（内部参考电压）
-    //adda1=(adda1*23.7)/PGA;//若PGA大于1，则在计算的时候需要除以PGA的倍率值，
-    //才能还原实际采集的电压值
-//    ds[0] = (long) adda1 / 100000 | 0x30;
-//    ds[1] = (long) adda1 % 100000 / 10000 | 0x30;
-//    ds[2] = (long) adda1 % 10000 / 1000 | 0x30;
-//    ds[3] = '.';
-//    ds[4] = (long) adda1 % 1000 / 100 | 0x30;
-//    ds[5] = (long) adda1 % 100 / 10 | 0x30;
-//    ds[6] = '\r';
-//    ds[7] = '\n';
-//    ds[8] = '\0';
-//    Printf(ds);                           //串口输出数据
-//    TRACE_DEBUG("%s",ds);
-//    delay(7200);                           //读取程序间隔延时，减小此数值可提高采样率
-    adda1 = adda1/GAIN_NUM_ADC - BIAS_VOLTAGE;
-    if(adda1 < 0)
-        adda1 = 0;
-//    TRACE_CODE("%lf uV\r\n",adda1);
-    return (adda1);
+    adda1 = adda1/GAIN_NUM_ADC;
+    adda_int = (int32_t)adda1;
+    if(isNegative)
+        adda_int = -adda_int;
+
+    return (adda_int);
 }
+
 /***************************************************************************
  程序功能：主函数，MCP3901芯片读取ADC值。
  参数：无

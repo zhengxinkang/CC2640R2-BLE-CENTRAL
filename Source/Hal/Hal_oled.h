@@ -24,7 +24,7 @@ typedef enum{
     OLED_STR_TYPE_LASTTIME             ,
     OLED_STR_TYPE_THISTIME             ,
 }OLED_STR_TYPE;
-void Hal_oled_init();
+
 void Hal_oled_currentChange(uint32_t avgUa, uint32_t thisUa);
 void Hal_oled_strChange(OLED_STR_TYPE strType, uint8_t* str);
 void Hal_oled_dataChange(OLED_DATA_TYPE strType, uint32_t data);

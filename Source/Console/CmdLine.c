@@ -42,7 +42,6 @@
 #include "Lock_atcion.h"
 #include "BF_Util.h"
 #include "UTC_clock.h"
-#include "w25qxx.h"
 #include "Hal_flash.h"
 #include "Driver_internalFlash.h"
 #include "Driver_spi.h"
@@ -256,9 +255,8 @@ FINISH:
 static int Cmd_currentOffsetSet(int argc, char *argv[])
 {
     int32_t offset = 0;
-    int32_t thisCurrent = avgCurrentCount(0, false, 1);
-    int32_t oldOffset = Hal_electricCurrent_offsetGet();
-    offset = thisCurrent-3+oldOffset;
+
+    offset = Read_1CH_adc(0);
     TRACE_DEBUG("进行校准：%d\n",offset);
     Hal_flash_writeCurrentOffset(offset);
     Hal_electricCurrent_offsetRead();

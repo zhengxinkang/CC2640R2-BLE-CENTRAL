@@ -17,7 +17,7 @@
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_PROGRAM.D:\workspace\workspace_v8\CC2640R2-BLE-CENTRAL\targetConfigs\CC2640R2F.ccxml.Texas Instruments XDS110 USB Debug Probe/Cortex_M3_0" value="${build_artifact:CC2640R2-BLE-CENTRAL}"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_PROJECT.D:\workspace\workspace_v8\CC2640R2-BLE-CENTRAL\targetConfigs\CC2640R2F.ccxml.Texas Instruments XDS110 USB Debug Probe/Cortex_M3_0" value="CC2640R2-BLE-CENTRAL"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_TARGET_CONFIG" value="${target_config_active_default:CC2640R2-BLE-CENTRAL}"/>
-<stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.D:\workspace\workspace_v8\CC2640R2-BLE-CENTRAL\targetConfigs\CC2640R2F.ccxml.Texas Instruments XDS110 USB Debug Probe/Cortex_M3_0" value="D:/workspace\workspace_v8\CC2640R2-BLE-CENTRAL\TEST_CURRENT_MONITOR\CC2640R2-BLE-CENTRAL.out"/>
+<stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.D:\workspace\workspace_v8\CC2640R2-BLE-CENTRAL\targetConfigs\CC2640R2F.ccxml.Texas Instruments XDS110 USB Debug Probe/Cortex_M3_0" value="D:/workspace\workspace_v8\CC2640R2-BLE-CENTRAL\TEST_CURRENT_STANDBY\CC2640R2-BLE-CENTRAL.out"/>
 <mapAttribute key="com.ti.ccstudio.debug.ui.displayFormats">
 <mapEntry key="Texas Instruments XDS110 USB Debug Probe/Cortex_M3_0@##separator##@0" value="32-Bit Hex - TI Style"/>
 </mapAttribute>

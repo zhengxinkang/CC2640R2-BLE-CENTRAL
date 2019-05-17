@@ -143,30 +143,17 @@ extern const PIN_Config BoardGpioInitTable[];
 //反锁开关-GPIO输出
 #define PORT_ANTI_LOCK                          PIN_UNASSIGNED  //IOID_10
 
-#ifdef TEST_CURRENT_MONITOR
-//    #define BOARD_PORT_FLASH_SPI_CSn            IOID_11
-//    #define BOARD_PORT_FLASH_SPI_MISO           IOID_12
-//    #define BOARD_PORT_FLASH_SPI_MOSI           IOID_13
-//    #define BOARD_PORT_FLASH_SPI_CLK            IOID_14
+/* SPI Board */
+#define CC2640R2_LAUNCHXL_SPI_FLASH_CS          IOID_11
+#define CC2640R2_LAUNCHXL_SPI0_MISO             IOID_12
+#define CC2640R2_LAUNCHXL_SPI0_MOSI             IOID_13
+#define CC2640R2_LAUNCHXL_SPI0_CLK              IOID_14
 
-    #define CC2640R2_LAUNCHXL_SPI_FLASH_CS          IOID_11
-    /* SPI Board */
-    #define CC2640R2_LAUNCHXL_SPI0_MISO             IOID_12
-    #define CC2640R2_LAUNCHXL_SPI0_MOSI             IOID_13
-    #define CC2640R2_LAUNCHXL_SPI0_CLK              IOID_14
-
-    //防撬开关-GPIO输出
-    #define PORT_PREVENT_DISMANTLE              PIN_UNASSIGNED
-    //Discrete Inputs 按键输入
-    #define CC2640R2_LAUNCHXL_PIN_BTN1          PIN_UNASSIGNED
-    #define CC2640R2_LAUNCHXL_PIN_BTN2          PIN_UNASSIGNED
-#else
-    //防撬开关-GPIO输出
-    #define PORT_PREVENT_DISMANTLE                  IOID_11
-    //Discrete Inputs 按键输入
-    #define CC2640R2_LAUNCHXL_PIN_BTN1              IOID_13
-    #define CC2640R2_LAUNCHXL_PIN_BTN2              PIN_UNASSIGNED  //IOID_14
-#endif
+//防撬开关-GPIO输出
+#define PORT_PREVENT_DISMANTLE                  PIN_UNASSIGNED
+//Discrete Inputs 按键输入
+#define CC2640R2_LAUNCHXL_PIN_BTN1              PIN_UNASSIGNED
+#define CC2640R2_LAUNCHXL_PIN_BTN2              PIN_UNASSIGNED
 
 //输入信号
 #define PORT_TEST_START                         PIN_UNASSIGNED  //IOID_16
